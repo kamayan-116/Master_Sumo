@@ -2282,6 +2282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rikishiUI: {fileID: 1876593708349831391}
   enemy: {fileID: 0}
+  enemyUI: {fileID: 0}
   dohyoObj: {fileID: 0}
   playerCamera: {fileID: 7938998735298334565}
   playerObj: {fileID: 3627811573610610426}
@@ -2322,12 +2323,17 @@ MonoBehaviour:
   graLRNum: 0
   gravityPlace: {x: 0, y: 0, z: 0}
   gravityWorldPos: {x: 0, y: 0, z: 0}
+  right1: 0
+  front1: 0
+  right2: 0
+  front2: 0
   spineAngle: {x: 0, y: 0, z: 0}
   angleY: 0
   enemyAngleY: 0
   viewPos: {x: 0, y: 0, z: 0}
   viewDir: {x: 0, y: 0, z: 0}
   angularDif: 0
+  angDifAbs: 0
   gameStart: 0
   playerModeDecide: 0
   levelModeDecide: 0
@@ -4030,6 +4036,42 @@ Transform:
   m_Father: {fileID: 4820667264307913973}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7169778732053915744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2583336578617008060}
+  m_Layer: 5
+  m_Name: FootOpePanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2583336578617008060
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7169778732053915744}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4191709464324056182}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7205899685536707519
 GameObject:
   m_ObjectHideFlags: 0
@@ -4094,6 +4136,7 @@ RectTransform:
   - {fileID: 2215909169530130123}
   - {fileID: 4272408612749465147}
   - {fileID: 406161332939474458}
+  - {fileID: 2583336578617008060}
   m_Father: {fileID: 8390028251565734470}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
