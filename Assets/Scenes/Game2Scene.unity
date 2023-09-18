@@ -233,6 +233,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 300
       objectReference: {fileID: 0}
+    - target: {fileID: 2583336578617008060, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -417.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2583336578617008060, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -415
+      objectReference: {fileID: 0}
     - target: {fileID: 3055602550670212457, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
       value: 

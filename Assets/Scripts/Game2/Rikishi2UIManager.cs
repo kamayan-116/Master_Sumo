@@ -20,6 +20,8 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveDownArrow; // 下方向重心移動可能画像
     [SerializeField] private Image graMoveLeftArrow; // 左方向重心移動可能画像
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
+    [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
+    [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
     #endregion
 
     // Start is called before the first frame update
@@ -95,6 +97,12 @@ public class Rikishi2UIManager : MonoBehaviour
     #endregion
 
     #region プレイ中のUI
+    // 操作中の足の色を変更する関数
+    public void SetFootOperateColor(int _operateNum)
+    {
+        footOperateImage.sprite = footOperateSprite[_operateNum];
+    }
+    
     // 重心パネルの色を変更する関数
     public void SetGraPanelColor(int _playerNum)
     {
