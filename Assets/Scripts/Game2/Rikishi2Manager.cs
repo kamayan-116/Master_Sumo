@@ -92,6 +92,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool levelModeDecide = false;  // レベルモード決定ボタンを押したか否か
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
+    [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
+    [SerializeField] private bool rFOpeInput = false;  // 右足の操作をしているか否か
     [SerializeField] private bool  isCollision = false;  // 相手と当たっているか否か
     [SerializeField] private bool  isEnd = false;  // 勝敗決着しているか否か
     [SerializeField] private bool  isResult;  // 勝敗結果の表示（true:勝ち,false:負け）
@@ -236,6 +238,7 @@ public class Rikishi2Manager : MonoBehaviour
             case Game2Manager.GameState.Play:
                 SetEnemyTransform();
                 SetEnemyAngle();
+                SetFootInput();
                 rikishiUI.SetMoveGraOkUI(angDifAbs);
                 SetGravityPlace();
                 rikishiUI.SetGravityUI(graLRNum, graFBNum);
@@ -579,11 +582,14 @@ public class Rikishi2Manager : MonoBehaviour
         float lFFBGra = 0;
         float lFLRPos = 0;
         float lFFBPos = 0;
+        bool lFLRInput = false;
+        bool lFFBInput = false; 
 
         if((rightPosi < 0f && -footMax < lFLRNum) || (rightPosi > 0f && lFLRNum < clossMax))
         {
             rFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
             lFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
+            lFLRInput = true;
             if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
             {
                 SetGraChangeNum(playerNum, -rightPosi, 0);
@@ -598,11 +604,16 @@ public class Rikishi2Manager : MonoBehaviour
             }
             // GamePad.SetVibration(0, 1, 1);
         }
+        else
+        {
+            lFLRInput = false;
+        }
 
         if((frontPosi < 0f && -footMax < lFFBNum) || (frontPosi > 0f && lFFBNum < footMax))
         {
             rFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
             lFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
+            lFFBInput = true;
             if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
             {
                 SetGraChangeNum(playerNum, 0, -frontPosi);
@@ -620,6 +631,19 @@ public class Rikishi2Manager : MonoBehaviour
             }
             // GamePad.SetVibration(0, 1, 1);
         }
+        else
+        {
+            lFFBInput = false;
+        }
+
+        if(!lFLRInput && !lFFBInput)
+        {
+            lFOpeInput = false;
+        }
+        else
+        {
+            lFOpeInput = true;
+        }
 
         enemy.SetGraChangeNum(playerNum, lFLRGra, lFFBGra);
         enemy.SetPlayerPos(lFLRPos, lFFBPos);
@@ -635,11 +659,14 @@ public class Rikishi2Manager : MonoBehaviour
         float rFFBGra = 0;
         float rFLRPos = 0;
         float rFFBPos = 0;
+        bool rFLRInput = false;
+        bool rFFBInput = false;
 
         if((rightPosi < 0f && -clossMax < rFLRNum) || (rightPosi > 0f && rFLRNum < footMax))
         {
             rFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
             lFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
+            rFLRInput = true;
             if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
             {
                 SetGraChangeNum(playerNum, -rightPosi, 0);
@@ -654,11 +681,16 @@ public class Rikishi2Manager : MonoBehaviour
             }
             // GamePad.SetVibration(0, 1, 1);
         }
+        else
+        {
+            rFLRInput = false;
+        }
 
         if((frontPosi < 0f && -footMax < rFFBNum) || (frontPosi > 0f && rFFBNum < footMax))
         {
             rFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
             lFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
+            rFFBInput = true;
             if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
             {
                 SetGraChangeNum(playerNum, 0, -frontPosi);
@@ -676,10 +708,40 @@ public class Rikishi2Manager : MonoBehaviour
             }
             // GamePad.SetVibration(0, 1, 1);
         }
+        else
+        {
+            rFFBInput = false;
+        }
+
+        if(!rFLRInput && !rFFBInput)
+        {
+            rFOpeInput = false;
+        }
+        else
+        {
+            rFOpeInput = true;
+        }
 
         enemy.SetGraChangeNum(playerNum, rFLRGra, rFFBGra);
         enemy.SetPlayerPos(rFLRPos, rFFBPos);
         SetFootPlace();    
+    }
+
+    // 各足の入力状態の確認を行う関数
+    private void SetFootInput()
+    {
+        if(!lFOpeInput && !rFOpeInput)
+        {
+            rikishiUI.SetFootOperateColor(0);
+        }
+        else if(lFOpeInput && !rFOpeInput)
+        {
+            rikishiUI.SetFootOperateColor(1);
+        }
+        else if(!lFOpeInput && rFOpeInput)
+        {
+            rikishiUI.SetFootOperateColor(2);
+        }
     }
     #endregion
     

@@ -2415,6 +2415,8 @@ MonoBehaviour:
   levelModeDecide: 0
   weightStick: 0
   weightInput: 0
+  lFOpeInput: 0
+  rFOpeInput: 0
   isCollision: 0
   isEnd: 0
   isResult: 0
@@ -4252,7 +4254,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a7211f1779da400408c0a7118405289e, type: 3}
   - {fileID: 21300000, guid: b933fc1cb9913e04986a94ce2e888bc6, type: 3}
   - {fileID: 21300000, guid: 7f86917c766d468448a75dba0947d98c, type: 3}
-  - {fileID: 21300000, guid: e14e2dd721361d6419be780a3c018d11, type: 3}
 --- !u!1 &7383196115577664697
 GameObject:
   m_ObjectHideFlags: 0
