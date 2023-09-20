@@ -20,6 +20,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveDownArrow; // 下方向重心移動可能画像
     [SerializeField] private Image graMoveLeftArrow; // 左方向重心移動可能画像
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
+    [SerializeField] private Sprite[] arrowSprite; // 矢印の画像配列（0が相手、1が自身）
     [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
     [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
@@ -154,28 +155,49 @@ public class Rikishi2UIManager : MonoBehaviour
             );
     }
 
-    // 重心移動可能のUIを表示する関数
+    // 重心移動プレイヤーのUI画像を変更する関数
     public void SetMoveGraOkUI(float _angDifAbs)
     {
         if(_angDifAbs <= 60)
         {
-            graMoveDownArrow.gameObject.SetActive(true);
+            graMoveDownArrow.sprite = arrowSprite[0];
         }
         else if(_angDifAbs <= 120)
         {
-            graMoveUpArrow.gameObject.SetActive(true);
-            graMoveDownArrow.gameObject.SetActive(false);
-            graMoveLeftArrow.gameObject.SetActive(true);
-            graMoveRightArrow.gameObject.SetActive(true);
+            graMoveUpArrow.sprite = arrowSprite[0];
+            graMoveDownArrow.sprite = arrowSprite[1];
+            graMoveLeftArrow.sprite = arrowSprite[0];
+            graMoveRightArrow.sprite = arrowSprite[0];
         }
         else
         {
-            graMoveUpArrow.gameObject.SetActive(false);
-            graMoveDownArrow.gameObject.SetActive(true);
-            graMoveLeftArrow.gameObject.SetActive(false);
-            graMoveRightArrow.gameObject.SetActive(false);
+            graMoveUpArrow.sprite = arrowSprite[1];
+            graMoveDownArrow.sprite = arrowSprite[0];
+            graMoveLeftArrow.sprite = arrowSprite[1];
+            graMoveRightArrow.sprite = arrowSprite[1];
         }
     }
+
+    // 重心移動方向のUIを表示する関数
+    public void SetArrowActive(int _arrowDir, bool _isActive)
+    {
+        switch(_arrowDir)
+        {
+            case 0:
+                graMoveUpArrow.gameObject.SetActive(_isActive);
+                break;
+            case 1:
+                graMoveDownArrow.gameObject.SetActive(_isActive);
+                break;
+            case 2:
+                graMoveLeftArrow.gameObject.SetActive(_isActive);
+                break;
+            case 3:
+                graMoveRightArrow.gameObject.SetActive(_isActive);
+                break;
+        }
+    }
+
     #endregion
 
     // ゲーム結果の表示

@@ -297,7 +297,7 @@ public class Rikishi2Manager : MonoBehaviour
 
                         if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
                         {
-                            enemy.SetGraChangeNum(playerNum, 0, 0);
+                            SetEnemyGravity(0, 0);
                         }
 
                         if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("MoveFoot1") == 0f ||
@@ -369,7 +369,7 @@ public class Rikishi2Manager : MonoBehaviour
 
                         if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
                         {
-                            enemy.SetGraChangeNum(playerNum, 0, 0);
+                            SetEnemyGravity(0, 0);
                         }
 
                         if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
@@ -545,18 +545,25 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region プレイヤーの入力に関するスクリプト
-    // 左JoyStickによる相手の重心値の変化入力を行う関数
+    // 左JoyStickによる相手の重心値の変化入力とUI変化を行う関数
     private void SetEnemyGravity(float rightPosi, float frontPosi)
     {
         angleY = this.transform.eulerAngles.y;
         enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
-        float graChaLRNum = 0;
-        float graChaFBNum = 0;
+        float graChaELRNum = 0;
+        float graChaEFBNum = 0;
+        float graChaMLRNum = 0;
+        float graChaMFBNum = 0;
 
         if(angDifAbs <= 120f)
         {
-            graChaLRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-            graChaFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            graChaELRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            graChaEFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+        }
+        else
+        {
+            graChaMLRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            graChaMFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
         }
 
         if(angDifAbs <= 60f || 
@@ -564,11 +571,49 @@ public class Rikishi2Manager : MonoBehaviour
             (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
             )
         {
-            graChaLRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-            graChaFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            graChaELRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+            graChaEFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+        }
+        else
+        {
+            graChaMLRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+            graChaMFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
         }
 
-        enemy.SetGraChangeNum(playerNum, graChaLRNum, graChaFBNum);
+        enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+        // SetGraChangeNum(playerNum, graChaMLRNum, graChaMFBNum);
+
+        if(frontPosi > 0)
+        {
+            rikishiUI.SetArrowActive(0, true);
+            rikishiUI.SetArrowActive(1, false);
+        }
+        else if(frontPosi == 0)
+        {
+            rikishiUI.SetArrowActive(0, false);
+            rikishiUI.SetArrowActive(1, false);
+        }
+        else
+        {
+            rikishiUI.SetArrowActive(0, false);
+            rikishiUI.SetArrowActive(1, true);
+        }
+
+        if(rightPosi > 0)
+        {
+            rikishiUI.SetArrowActive(2, false);
+            rikishiUI.SetArrowActive(3, true);
+        }
+        else if(rightPosi == 0)
+        {
+            rikishiUI.SetArrowActive(2, false);
+            rikishiUI.SetArrowActive(3, false);
+        }
+        else
+        {
+            rikishiUI.SetArrowActive(2, true);
+            rikishiUI.SetArrowActive(3, false);
+        }
     }
 
     // 右JoyStickによる自身の重心値の変化入力を行う関数

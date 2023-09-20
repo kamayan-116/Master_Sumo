@@ -225,6 +225,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: arrowSprite.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 7c9bb165806faa54d8d3eacd788555e1, type: 3}
+    - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: arrowSprite.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: 79e01d12095e70748ade5cb98180de03, type: 3}
     - target: {fileID: 2061619350969948283, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
