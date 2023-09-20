@@ -253,53 +253,55 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     #region プレイヤー1の入力
                     case 1:
-                        if((Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f) &&
-                            Input.GetAxis("Rotation1") == 0f
-                            )
+                        if(Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f)
                         {
                             SetEnemyGravity(Input.GetAxis("LeftHorizontal1"), Input.GetAxis("LeftVertical1"));
                         }
 
                         if((Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && 
-                            Input.GetAxis("Rotation1") == 0f
+                            Input.GetAxis("MoveFoot1") == 0f
                             )
                         {
                             SetOwnGravity(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
                         }
 
-                        if(Input.GetAxis("LeftHorizontal1") < 0f && Input.GetAxis("Rotation1") < 0f &&
+                        if(Input.GetAxis("MoveFoot1") < 0f &&
                             (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                             )
                         {
                             SetLeftFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
                         }
 
-                        if(Input.GetAxis("LeftHorizontal1") > 0f && Input.GetAxis("Rotation1") < 0f &&
+                        if(Input.GetAxis("MoveFoot1") > 0f &&
                             (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                             )
                         {
                             SetRightFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
                         }
 
-                        if(Input.GetAxis("Rotation1") > 0f && Input.GetAxis("LeftHorizontal1") != 0f)
+                        if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f)
                         {
-                            SetWholeAngle(enemy.gameObject, -Input.GetAxis("LeftHorizontal1"));
+                            SetLeftFootNum(0, 0);
+                            SetRightFootNum(0, 0);
                         }
 
-                        if(Input.GetAxis("Rotation1") > 0f && Input.GetAxis("RightHorizontal1") != 0f)
+                        if(Input.GetAxis("Rotation1") != 0f)
                         {
-                            SetWholeAngle(this.gameObject, Input.GetAxis("RightHorizontal1"));
+                            SetWholeAngle(enemy.gameObject, -Input.GetAxis("Rotation1"));
                         }
 
-                        if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f && Input.GetAxis("Rotation1") == 0f ||
-                            (Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f) && Input.GetAxis("Rotation1") != 0f
-                            )
+                        if(Input.GetAxis("MyRotation1") != 0f)
+                        {
+                            SetWholeAngle(this.gameObject, Input.GetAxis("MyRotation1"));
+                        }
+
+                        if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
                         {
                             enemy.SetGraChangeNum(playerNum, 0, 0);
                         }
 
-                        if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("Rotation1") == 0f ||
-                            (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && Input.GetAxis("Rotation1") != 0f
+                        if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("MoveFoot1") == 0f ||
+                            (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && Input.GetAxis("MoveFoot1") != 0f
                             )
                         {
                             SetGraChangeNum(playerNum, 0, 0);
@@ -323,53 +325,55 @@ public class Rikishi2Manager : MonoBehaviour
                     #endregion
                     #region プレイヤー2の入力
                     case 2:
-                        if((Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f) &&
-                            Input.GetAxis("Rotation2") == 0f
-                            )
+                        if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
                         {
                             SetEnemyGravity(Input.GetAxis("LeftHorizontal2"), Input.GetAxis("LeftVertical2"));
                         }
 
                         if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
-                            Input.GetAxis("Rotation2") == 0f
+                            Input.GetAxis("MoveFoot2") == 0f
                             )
                         {
                             SetOwnGravity(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
                         }
 
-                        if(Input.GetAxis("LeftHorizontal2") < 0f && Input.GetAxis("Rotation2") < 0f &&
+                        if(Input.GetAxis("MoveFoot2") < 0f &&
                             (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                             )
                         {
                             SetLeftFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
                         }
 
-                        if(Input.GetAxis("LeftHorizontal2") > 0f && Input.GetAxis("Rotation2") < 0f &&
+                        if(Input.GetAxis("MoveFoot2") > 0f &&
                             (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                             )
                         {
                             SetRightFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
                         }
 
-                        if(Input.GetAxis("Rotation2") > 0f && Input.GetAxis("LeftHorizontal2") != 0f)
+                        if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
                         {
-                            SetWholeAngle(enemy.gameObject, -Input.GetAxis("LeftHorizontal2"));
+                            SetLeftFootNum(0, 0);
+                            SetRightFootNum(0, 0);
                         }
 
-                        if(Input.GetAxis("Rotation2") > 0f && Input.GetAxis("RightHorizontal2") != 0f)
+                        if(Input.GetAxis("Rotation2") != 0f)
                         {
-                            SetWholeAngle(this.gameObject, Input.GetAxis("RightHorizontal2"));
+                            SetWholeAngle(enemy.gameObject, -Input.GetAxis("Rotation2"));
                         }
 
-                        if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f && Input.GetAxis("Rotation2") == 0f ||
-                            (Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f) && Input.GetAxis("Rotation2") != 0f
-                            )
+                        if(Input.GetAxis("MyRotation2") != 0f)
+                        {
+                            SetWholeAngle(this.gameObject, Input.GetAxis("MyRotation2"));
+                        }
+
+                        if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
                         {
                             enemy.SetGraChangeNum(playerNum, 0, 0);
                         }
 
-                        if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("Rotation2") == 0f ||
-                            (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("Rotation2") != 0f
+                        if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
+                            (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
                             )
                         {
                             SetGraChangeNum(playerNum, 0, 0);
