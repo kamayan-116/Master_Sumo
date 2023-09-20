@@ -221,6 +221,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1343233661053293707, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2061619350969948283, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -235,11 +239,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2583336578617008060, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -417.5
+      value: -405
       objectReference: {fileID: 0}
     - target: {fileID: 2583336578617008060, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -415
+      value: -390
+      objectReference: {fileID: 0}
+    - target: {fileID: 2868591405038371658, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3055602550670212457, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
@@ -337,10 +345,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 7c9bb165806faa54d8d3eacd788555e1, type: 3}
+    - target: {fileID: 4860507762371965799, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 461104cde209e7f43a7800787f055027, type: 3}
     - target: {fileID: 5278282270716622301, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 7c9bb165806faa54d8d3eacd788555e1, type: 3}
+    - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -365,6 +381,10 @@ PrefabInstance:
       propertyPath: m_NormalizedViewPortRect.width
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9103451553311600423, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 461104cde209e7f43a7800787f055027, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
 --- !u!4 &502546567 stripped
@@ -414,10 +434,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1343233661053293707, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2206704258233908635, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
       value: 
       objectReference: {fileID: 502546569}
+    - target: {fileID: 2868591405038371658, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 3055602550670212457, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
       value: 
@@ -488,6 +516,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}

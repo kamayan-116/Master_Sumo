@@ -22,12 +22,18 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
     [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
     [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
+    [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
+    [SerializeField] private Image rFCircleImage; // 右足の操作中のUI画像
+    private float lfCircley;  // 左足のUIのワールドY座標
+    private float rfCircley;  // 右足のUIのワールドY座標
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
         weightInitialNum = weightSlider.value;
+        lfCircley = lFCircleImage.gameObject.transform.position.y;
+        rfCircley = rFCircleImage.gameObject.transform.position.y;
     }
 
     // Update is called once per frame
@@ -101,6 +107,20 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetFootOperateColor(int _operateNum)
     {
         footOperateImage.sprite = footOperateSprite[_operateNum];
+    }
+
+    // 操作中の足のUIを表示する関数
+    public void SetFootOpeActive(bool _lfActive, bool _rfActive)
+    {
+        lFCircleImage.gameObject.SetActive(_lfActive);
+        rFCircleImage.gameObject.SetActive(_rfActive);
+    }
+
+    // 足のUIを移動する関数
+    public void SetFootOpeUIPlace(Vector3 _lfplace, Vector3 _rfplace)
+    {
+        lFCircleImage.gameObject.transform.position = new Vector3( _lfplace.x, lfCircley, _lfplace.z);
+        rFCircleImage.gameObject.transform.position = new Vector3( _rfplace.x, rfCircley, _rfplace.z);
     }
     
     // 重心パネルの色を変更する関数

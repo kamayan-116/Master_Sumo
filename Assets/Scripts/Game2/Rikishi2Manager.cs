@@ -647,11 +647,10 @@ public class Rikishi2Manager : MonoBehaviour
         else
         {
             lFOpeInput = true;
+            enemy.SetGraChangeNum(playerNum, lFLRGra, lFFBGra);
+            enemy.SetPlayerPos(lFLRPos, lFFBPos);
+            SetFootPlace();
         }
-
-        enemy.SetGraChangeNum(playerNum, lFLRGra, lFFBGra);
-        enemy.SetPlayerPos(lFLRPos, lFFBPos);
-        SetFootPlace();
     }
 
     // 右足の入力値の変化を行う関数
@@ -724,11 +723,10 @@ public class Rikishi2Manager : MonoBehaviour
         else
         {
             rFOpeInput = true;
-        }
-
-        enemy.SetGraChangeNum(playerNum, rFLRGra, rFFBGra);
-        enemy.SetPlayerPos(rFLRPos, rFFBPos);
-        SetFootPlace();    
+            enemy.SetGraChangeNum(playerNum, rFLRGra, rFFBGra);
+            enemy.SetPlayerPos(rFLRPos, rFFBPos);
+            SetFootPlace();
+        }    
     }
 
     // 各足の入力状態の確認を行う関数
@@ -737,14 +735,17 @@ public class Rikishi2Manager : MonoBehaviour
         if(!lFOpeInput && !rFOpeInput)
         {
             rikishiUI.SetFootOperateColor(0);
+            rikishiUI.SetFootOpeActive(false, false);
         }
         else if(lFOpeInput && !rFOpeInput)
         {
             rikishiUI.SetFootOperateColor(1);
+            rikishiUI.SetFootOpeActive(true, false);
         }
         else if(!lFOpeInput && rFOpeInput)
         {
             rikishiUI.SetFootOperateColor(2);
+            rikishiUI.SetFootOpeActive(false, true);
         }
     }
     #endregion
@@ -764,7 +765,7 @@ public class Rikishi2Manager : MonoBehaviour
                 front2 = frontPosi;
                 break;
         }
-
+        
         SetGravityNum(right1 + right2, front1 + front2);
     }
 
@@ -861,6 +862,14 @@ public class Rikishi2Manager : MonoBehaviour
     // 足の位置の変更を行う関数
     private void SetFootPlace()
     {
+        lfObj.transform.localPosition = 
+            new Vector3
+            (
+                lFLRNum * moveLRDisMagNum + lfInitialPos.x,
+                lfInitialPos.y,
+                lFFBNum * moveFBDisMagNum + lfInitialPos.z
+            );
+
         rfObj.transform.localPosition = 
             new Vector3
             (
@@ -869,13 +878,7 @@ public class Rikishi2Manager : MonoBehaviour
                 rFFBNum * moveFBDisMagNum + rfInitialPos.z
             );
 
-        lfObj.transform.localPosition = 
-            new Vector3
-            (
-                lFLRNum * moveLRDisMagNum + lfInitialPos.x,
-                lfInitialPos.y,
-                lFFBNum * moveFBDisMagNum + lfInitialPos.z
-            );
+        rikishiUI.SetFootOpeUIPlace(lfObj.transform.position, rfObj.transform.position);
     }
     #endregion
 
