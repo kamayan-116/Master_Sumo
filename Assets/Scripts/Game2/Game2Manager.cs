@@ -37,6 +37,7 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Button easyButton;  // EasyModeのボタンUI
     [SerializeField] private Button normalButton;  // NormalModeのボタンUI
     [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
+    [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
 
     [Header("カメラ")]
@@ -256,6 +257,7 @@ public class Game2Manager : MonoBehaviour
     public void SetGameResult(int _winnerNum)
     {
         SetGameState(GameState.End);
+        gameResultUI.SetActive(true);
         StartCoroutine("SetReplayButton");
         
         switch(_winnerNum)
@@ -284,7 +286,8 @@ public class Game2Manager : MonoBehaviour
     #region Replayに関するスクリプト
     // ReplayButtonを押した(値のリセット)
     public void PushReplayDown()
-    {   
+    {
+        gameResultUI.SetActive(false);   
         replayButton.gameObject.SetActive(false);
         SetGameState(GameState.BeforePlay);
         isSelect = false;

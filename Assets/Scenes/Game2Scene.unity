@@ -681,6 +681,7 @@ MonoBehaviour:
   easyButton: {fileID: 1227371597}
   normalButton: {fileID: 851999028}
   gyojiText: {fileID: 1830620486}
+  gameResultUI: {fileID: 1898417162}
   replayButton: {fileID: 781688342}
   cameraObj: {fileID: 1539995576}
   cameraInitialPos: {x: 0, y: 0, z: 0}
@@ -986,6 +987,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1898417162 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 340273059327281508, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 8431638723842185045}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8431638723842185045
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -67,6 +67,10 @@ public class Rikishi2Manager : MonoBehaviour
     private Vector3 center;  // プレイヤーの重心初期座標
     [SerializeField] private Vector3 gravityPlace;  // プレイヤーの重心初期座標
     public Vector3 gravityWorldPos;  // プレイヤーの重心ワールド座標
+    [SerializeField] private float leftRight = 0f;  // 左スティックからの自身の左右の重心移動値
+    [SerializeField] private float leftFront = 0f;  // 左スティックからの自身の前後の重心移動値
+    [SerializeField] private float rightRight = 0f;  // 右スティックからの自身の左右の重心移動値
+    [SerializeField] private float rightFront = 0f;  // 右スティックからの自身の前後の重心移動値
     [SerializeField] private float right1 = 0f;  // プレイヤー１からの左右の重心移動値
     [SerializeField] private float front1 = 0f;  // プレイヤー１からの前後の重心移動値
     [SerializeField] private float right2 = 0f;  // プレイヤー２からの左右の重心移動値
@@ -92,6 +96,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool levelModeDecide = false;  // レベルモード決定ボタンを押したか否か
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
+    [SerializeField] private bool isLRPush = false;  // 左スティックで相手の重心を左右に操作しているか
+    [SerializeField] private bool isFBPush = false;  // 左スティックで相手の重心を前後に操作しているか
     [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
     [SerializeField] private bool rFOpeInput = false;  // 右足の操作をしているか否か
     [SerializeField] private bool  isCollision = false;  // 相手と当たっているか否か
@@ -262,7 +268,7 @@ public class Rikishi2Manager : MonoBehaviour
                             Input.GetAxis("MoveFoot1") == 0f
                             )
                         {
-                            SetOwnGravity(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
+                            SetOwnGravity(2, Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
                         }
 
                         if(Input.GetAxis("MoveFoot1") < 0f &&
@@ -304,7 +310,7 @@ public class Rikishi2Manager : MonoBehaviour
                             (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && Input.GetAxis("MoveFoot1") != 0f
                             )
                         {
-                            SetGraChangeNum(playerNum, 0, 0);
+                            SetOwnGravity(2, 0 ,0);
                         }
 
                         if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f &&
@@ -334,7 +340,7 @@ public class Rikishi2Manager : MonoBehaviour
                             Input.GetAxis("MoveFoot2") == 0f
                             )
                         {
-                            SetOwnGravity(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
+                            SetOwnGravity(2, Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
                         }
 
                         if(Input.GetAxis("MoveFoot2") < 0f &&
@@ -376,7 +382,7 @@ public class Rikishi2Manager : MonoBehaviour
                             (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
                             )
                         {
-                            SetGraChangeNum(playerNum, 0, 0);
+                            SetOwnGravity(2, 0 ,0);
                         }
 
                         if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f &&
@@ -555,34 +561,59 @@ public class Rikishi2Manager : MonoBehaviour
         float graChaMLRNum = 0;
         float graChaMFBNum = 0;
 
-        if(angDifAbs <= 120f)
+        #region 左スティックの入力による重心値の変化量の計算
+        if(rightPosi != 0 || frontPosi != 0)
         {
-            graChaELRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-            graChaEFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            if(angDifAbs <= 120f)
+            {
+                graChaELRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                graChaEFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                isLRPush = true;
+            }
+            else
+            {
+                graChaMLRNum += rightPosi;
+                isLRPush = false;
+            }
+
+            if(angDifAbs <= 60f || 
+                (60f <= angDifAbs && angDifAbs <= 120f && frontPosi > 0f) ||
+                (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
+                )
+            {
+                graChaELRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                graChaEFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                isFBPush = true;
+            }
+            else
+            {
+                graChaMFBNum += frontPosi;
+                isFBPush = false;
+            }
+
+            if(isFBPush && isLRPush)
+            {
+                enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+            }
+            else if(!isFBPush && !isLRPush)
+            {
+                SetOwnGravity(1, graChaMLRNum, graChaMFBNum);
+            }
+            else
+            {
+                enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+                SetOwnGravity(1, graChaMLRNum, graChaMFBNum);
+            }
         }
         else
         {
-            graChaMLRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-            graChaMFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+            SetOwnGravity(1, graChaMLRNum, graChaMFBNum);
         }
+        
+        #endregion
 
-        if(angDifAbs <= 60f || 
-            (60f <= angDifAbs && angDifAbs <= 120f && frontPosi > 0f) ||
-            (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
-            )
-        {
-            graChaELRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-            graChaEFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-        }
-        else
-        {
-            graChaMLRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-            graChaMFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-        }
-
-        enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
-        // SetGraChangeNum(playerNum, graChaMLRNum, graChaMFBNum);
-
+        #region 左スティックの入力による矢印UIの変更
         if(frontPosi > 0)
         {
             rikishiUI.SetArrowActive(0, true);
@@ -614,12 +645,25 @@ public class Rikishi2Manager : MonoBehaviour
             rikishiUI.SetArrowActive(2, true);
             rikishiUI.SetArrowActive(3, false);
         }
+        #endregion
     }
 
-    // 右JoyStickによる自身の重心値の変化入力を行う関数
-    private void SetOwnGravity(float rightPosi, float frontPosi)
+    // 自身の重心値の変化入力を行う関数
+    private void SetOwnGravity(int _lrNum, float rightPosi, float frontPosi)
     {
-        SetGraChangeNum(playerNum, rightPosi, frontPosi);
+        switch(_lrNum)
+        {
+            case 1:
+                leftRight = rightPosi;
+                leftFront = frontPosi;
+                break;
+            case 2:
+                rightRight = rightPosi;
+                rightFront = frontPosi;
+                break;
+        }
+        
+        SetGraChangeNum(playerNum, leftRight + rightRight, leftFront + rightFront);
     }
 
     // 左足の入力値の変化を行う関数
