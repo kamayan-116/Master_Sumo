@@ -34,6 +34,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
+    [SerializeField] private float startPushTime = 0f;  // 立会いのボタンを押す時間
     [SerializeField] private float dragNum = 0f;  // 倒れる際の抵抗値
     [SerializeField] private float maxAngle;  // 倒れている時の最大角度
     private float angleMagNum = 20f;  // 角度による抵抗値減速係数
@@ -96,6 +97,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool levelModeDecide = false;  // レベルモード決定ボタンを押したか否か
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
+    [SerializeField] private bool isStartPush = false;  // 立会いのスタートを押したか否か
     [SerializeField] private bool isLRPush = false;  // 左スティックで相手の重心を左右に操作しているか
     [SerializeField] private bool isFBPush = false;  // 左スティックで相手の重心を前後に操作しているか
     [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
@@ -242,6 +244,22 @@ public class Rikishi2Manager : MonoBehaviour
                 #endregion
                 break;
             case Game2Manager.GameState.Play:
+                switch(playerNum)
+                {
+                    case 1:
+                        if(Input.GetButtonDown("Decide1"))
+                        {
+                            isStartPush = true;
+                        }
+                        break;
+                    case 2:
+                        if(Input.GetButtonDown("Decide2"))
+                        {
+                            isStartPush = true;
+                        }
+                        break;
+                }
+                SetTimeMeasure();
                 SetEnemyTransform();
                 SetEnemyAngle();
                 SetFootInput();
@@ -417,7 +435,7 @@ public class Rikishi2Manager : MonoBehaviour
     }
 
     // 初期状態の記録
-    public void SetInitialNum()
+    private void SetInitialNum()
     {
         playerInitialScale = playerObj.transform.localScale;
         thisInitialPos = this.transform.position;
@@ -430,6 +448,15 @@ public class Rikishi2Manager : MonoBehaviour
         footLengNum = lfObj.transform.position.y;
         wholeY = wholeObj.transform.position.y;
         center = new Vector3(0f, wholeY, -0.03f);
+    }
+
+    // 立会いの入力時間の計測
+    private void SetTimeMeasure()
+    {
+        if(!isStartPush)
+        {
+            startPushTime += Time.deltaTime;
+        }
     }
 
     #region 体重に関するスクリプト
@@ -1121,6 +1148,7 @@ public class Rikishi2Manager : MonoBehaviour
         playerModeDecide = false;
         levelModeDecide = false;
         weightInput = false;
+        isStartPush = false;
         isEnd = false;
         isReplay = false;
         this.transform.position = thisInitialPos;
@@ -1128,6 +1156,7 @@ public class Rikishi2Manager : MonoBehaviour
         playerObj.transform.localPosition = playerInitialPos;
         playerObj.transform.localRotation = playerInitialRot;
         playerObj.transform.localScale = playerInitialScale;
+        startPushTime = 0;
         lFFBNum = 0;
         lFLRNum = 0;
         rFFBNum = 0;

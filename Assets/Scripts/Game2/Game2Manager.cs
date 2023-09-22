@@ -232,9 +232,9 @@ public class Game2Manager : MonoBehaviour
         yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
         seAudioSource.PlayOneShot(startSound);
+        SetGameState(GameState.Play);
         float startWaitTime = startSound.length + waitTime;
         yield return new WaitForSeconds(startWaitTime);
-        SetGameState(GameState.Play);
         playAudioSource.Play();
         gyojiText.gameObject.SetActive(false);
     }
