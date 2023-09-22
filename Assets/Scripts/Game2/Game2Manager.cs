@@ -64,6 +64,17 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Vector3 p2Gravity;  // プレイヤー2の重心座標
     [SerializeField] private Vector2 p2Place;  // プレイヤー2の位置座標
     [SerializeField] private bool p2WeightInput = false;  // プレイヤー2の体重入力
+
+    [Header("サウンド")]
+    [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
+    [SerializeField] private AudioClip startSound;  // のこったのサウンド
+    [SerializeField] private AudioClip playSound;  // 試合中のサウンド
+    [SerializeField] private AudioClip resultSound;  // 勝負ありのサウンド
+    [SerializeField] private AudioClip announceSound;  // ただいまの決まり手はのサウンド
+    [SerializeField] private AudioClip[] kimariteSound;  // 決まり手のサウンド
+    [SerializeField] private AudioClip[] winnerSound;  // 勝者のサウンド
+    [SerializeField] private AudioSource playAudioSource;  // プレイ中のAudioSource
+    [SerializeField] private AudioSource seAudioSource;  // 効果音のAudioSource
     
     private static Game2Manager instance;
     public static Game2Manager Instance {get => instance;}
@@ -90,6 +101,17 @@ public class Game2Manager : MonoBehaviour
         SetCenterGravityPlace();
         SetCenterPlace();
         SetCameraPlace();
+
+        // playAudioSource.Play();
+        // if(gameState == GameState.Play)
+        // {
+        //     Debug.Log("okok");
+        //     playAudioSource.Play();
+        // }
+        // else
+        // {
+        //     playAudioSource.Stop();
+        // }
     }
 
     // ゲーム状態の保存
@@ -206,6 +228,7 @@ public class Game2Manager : MonoBehaviour
         {
             gyojiText.gameObject.SetActive(true);
             gyojiText.text = "はっけよい";
+            seAudioSource.PlayOneShot(shoutSound);
             StartCoroutine("UIFalse");
         }
     }
@@ -213,9 +236,10 @@ public class Game2Manager : MonoBehaviour
     // 行司の掛け声のテキストを消すコルーチン関数
     private IEnumerator UIFalse()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.3f);
         gyojiText.text = "のこった";
-        yield return new WaitForSeconds(0.5f);
+        seAudioSource.PlayOneShot(startSound);
+        yield return new WaitForSeconds(1f);
         SetGameState(GameState.Play);
         gyojiText.gameObject.SetActive(false);
     }
@@ -258,6 +282,7 @@ public class Game2Manager : MonoBehaviour
     {
         SetGameState(GameState.End);
         gameResultUI.SetActive(true);
+        seAudioSource.PlayOneShot(resultSound);
         StartCoroutine("SetReplayButton");
         
         switch(_winnerNum)
