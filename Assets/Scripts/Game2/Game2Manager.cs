@@ -350,9 +350,6 @@ public class Game2Manager : MonoBehaviour
             case 12:
                 resultText.text = "後ろもたれ";
                 break;
-            case 13:
-                resultText.text = "勇み足";
-                break;
         }
         gameResultUI.SetActive(true);
         seAudioSource.PlayOneShot(kimariteSound[_kimarite]);

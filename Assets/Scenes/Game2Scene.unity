@@ -747,7 +747,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 397a29e190ea29c40889a259ea01d6a3, type: 3}
   - {fileID: 8300000, guid: 3d33f84d295f5f341a7777d3780e67da, type: 3}
   - {fileID: 8300000, guid: 00c52be3462999540aa2a731dba84d0d, type: 3}
-  - {fileID: 8300000, guid: 73b93c68bcbee444c9045d62a06fb3dd, type: 3}
   winnerSound:
   - {fileID: 8300000, guid: 260ba8d4a2d81ba4aa74b49276d59bb6, type: 3}
   - {fileID: 8300000, guid: e4691f45fc7b06e4abf2ae2b09a37e41, type: 3}
