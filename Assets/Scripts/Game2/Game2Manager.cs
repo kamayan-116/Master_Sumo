@@ -7,6 +7,8 @@ public class Game2Manager : MonoBehaviour
 {
     #region 変数宣言
     public bool isSelect = false;  // GameModeの選択をしたか否か（したらtrue）
+    [SerializeField] private int kimariteNum;  // 決まり手ナンバー
+    private float waitTime = 0.3f;  // 各音声間の休止タイム
     public enum GameState
     {
         BeforePlay,
@@ -38,6 +40,7 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Button normalButton;  // NormalModeのボタンUI
     [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
     [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
+    [SerializeField] private Text resultText;  // 決まり手のテキスト
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
 
     [Header("カメラ")]
@@ -101,17 +104,6 @@ public class Game2Manager : MonoBehaviour
         SetCenterGravityPlace();
         SetCenterPlace();
         SetCameraPlace();
-
-        // playAudioSource.Play();
-        // if(gameState == GameState.Play)
-        // {
-        //     Debug.Log("okok");
-        //     playAudioSource.Play();
-        // }
-        // else
-        // {
-        //     playAudioSource.Stop();
-        // }
     }
 
     // ゲーム状態の保存
@@ -236,11 +228,14 @@ public class Game2Manager : MonoBehaviour
     // 行司の掛け声のテキストを消すコルーチン関数
     private IEnumerator UIFalse()
     {
-        yield return new WaitForSeconds(1.3f);
+        float shoutTime = shoutSound.length + waitTime;
+        yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
         seAudioSource.PlayOneShot(startSound);
-        yield return new WaitForSeconds(1f);
+        float startWaitTime = startSound.length + waitTime;
+        yield return new WaitForSeconds(startWaitTime);
         SetGameState(GameState.Play);
+        playAudioSource.Play();
         gyojiText.gameObject.SetActive(false);
     }
     #endregion
@@ -280,10 +275,11 @@ public class Game2Manager : MonoBehaviour
     // ゲーム結果の決定
     public void SetGameResult(int _winnerNum)
     {
+        playAudioSource.Stop();
         SetGameState(GameState.End);
-        gameResultUI.SetActive(true);
         seAudioSource.PlayOneShot(resultSound);
-        StartCoroutine("SetReplayButton");
+        kimariteNum = SetWinReason();
+        StartCoroutine(SetKimarite(kimariteNum, _winnerNum-1));
         
         switch(_winnerNum)
         {
@@ -296,6 +292,74 @@ public class Game2Manager : MonoBehaviour
                 p2UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
                 break;
         }
+    }
+
+    // 決まり手の決定
+    private int SetWinReason()
+    {
+        int reasonNum = 8;
+        return reasonNum;
+    }
+
+    // 決まり手の発表とアナウンスをするコルーチン関数
+    private IEnumerator SetKimarite(int _kimarite, int _winner)
+    {
+        float resWaitTime = resultSound.length + 0.9f;
+        yield return new WaitForSeconds(resWaitTime);
+        seAudioSource.PlayOneShot(announceSound);
+        float annWaitTime = announceSound.length + waitTime;
+        yield return new WaitForSeconds(annWaitTime);
+        switch(_kimarite)
+        {
+            case 0:
+                resultText.text = "寄り切り";
+                break;
+            case 1:
+                resultText.text = "寄り倒し";
+                break;
+            case 2:
+                resultText.text = "押し出し";
+                break;
+            case 3:
+                resultText.text = "押し倒し";
+                break;
+            case 4:
+                resultText.text = "浴びせ倒し";
+                break;
+            case 5:
+                resultText.text = "すくい投げ";
+                break;
+            case 6:
+                resultText.text = "上手投げ";
+                break;
+            case 7:
+                resultText.text = "引き落とし";
+                break;
+            case 8:
+                resultText.text = "はたき込み";
+                break;
+            case 9:
+                resultText.text = "外掛け";
+                break;
+            case 10:
+                resultText.text = "内掛け";
+                break;
+            case 11:
+                resultText.text = "掛け投げ";
+                break;
+            case 12:
+                resultText.text = "後ろもたれ";
+                break;
+            case 13:
+                resultText.text = "勇み足";
+                break;
+        }
+        gameResultUI.SetActive(true);
+        seAudioSource.PlayOneShot(kimariteSound[_kimarite]);
+        float winWaitTime = kimariteSound[_kimarite].length + waitTime;
+        yield return new WaitForSeconds(winWaitTime);
+        seAudioSource.PlayOneShot(winnerSound[_winner]);
+        StartCoroutine("SetReplayButton");
     }
 
     // replayボタンを遅れて登場させるコルーチン関数
@@ -312,7 +376,8 @@ public class Game2Manager : MonoBehaviour
     // ReplayButtonを押した(値のリセット)
     public void PushReplayDown()
     {
-        gameResultUI.SetActive(false);   
+        gameResultUI.SetActive(false);
+        resultText.text = "";
         replayButton.gameObject.SetActive(false);
         SetGameState(GameState.BeforePlay);
         isSelect = false;

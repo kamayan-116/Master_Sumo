@@ -697,6 +697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelect: 0
+  kimariteNum: 0
   gameState: 0
   gamePlayer: 0
   gameMode: 0
@@ -708,6 +709,7 @@ MonoBehaviour:
   normalButton: {fileID: 851999028}
   gyojiText: {fileID: 1830620486}
   gameResultUI: {fileID: 1898417162}
+  resultText: {fileID: 1783435118}
   replayButton: {fileID: 781688342}
   cameraObj: {fileID: 1539995576}
   cameraInitialPos: {x: 0, y: 0, z: 0}
@@ -762,7 +764,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 75f87a112ba105042a88e649c4dbc9fd, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -1219,6 +1221,17 @@ Transform:
   m_Father: {fileID: 1374932572}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
+--- !u!114 &1783435118 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1590888931317497779, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 8431638723842185045}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1830620486 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8431638724564458003, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
