@@ -77,14 +77,24 @@ public class Rikishi2Manager : MonoBehaviour
     private Vector3 center;  // プレイヤーの重心初期座標
     [SerializeField] private Vector3 gravityPlace;  // プレイヤーの重心初期座標
     public Vector3 gravityWorldPos;  // プレイヤーの重心ワールド座標
-    [SerializeField] private float leftRight = 0f;  // 左スティックからの自身の左右の重心移動値
-    [SerializeField] private float leftFront = 0f;  // 左スティックからの自身の前後の重心移動値
-    [SerializeField] private float rightRight = 0f;  // 右スティックからの自身の左右の重心移動値
-    [SerializeField] private float rightFront = 0f;  // 右スティックからの自身の前後の重心移動値
-    [SerializeField] private float right1 = 0f;  // プレイヤー１からの左右の重心移動値
-    [SerializeField] private float front1 = 0f;  // プレイヤー１からの前後の重心移動値
-    [SerializeField] private float right2 = 0f;  // プレイヤー２からの左右の重心移動値
-    [SerializeField] private float front2 = 0f;  // プレイヤー２からの前後の重心移動値
+    [SerializeField] private float attackLLR = 0f;  // 左スティックからの相手への左右の重心移動値
+    [SerializeField] private float attackLFB = 0f;  // 左スティックからの相手への前後の重心移動値
+    [SerializeField] private float attackMoveLLR = 0f;  // 左足移動時の相手への左右の重心移動値
+    [SerializeField] private float attackMoveLFB = 0f;  // 左足移動時の相手への前後の重心移動値
+    [SerializeField] private float attackMoveRLR = 0f;  // 右足移動時の相手への左右の重心移動値
+    [SerializeField] private float attackMoveRFB = 0f;  // 右足移動時の相手への前後の重心移動値
+    [SerializeField] private float leftLR = 0f;  // 左スティックからの自身の左右の重心移動値
+    [SerializeField] private float leftFB = 0f;  // 左スティックからの自身の前後の重心移動値
+    [SerializeField] private float rightLR = 0f;  // 右スティックからの自身の左右の重心移動値
+    [SerializeField] private float rightFB = 0f;  // 右スティックからの自身の前後の重心移動値
+    [SerializeField] private float moveLFLR = 0f;  // 左足移動時の自身の左右の重心移動値
+    [SerializeField] private float moveLFFB = 0f;  // 左足移動時の自身の前後の重心移動値
+    [SerializeField] private float moveRFLR = 0f;  // 右足移動時の自身の左右の重心移動値
+    [SerializeField] private float moveRFFB = 0f;  // 右足移動時の自身の前後の重心移動値
+    [SerializeField] private float right1 = 0f;  // プレイヤー１からの左右の重心移動値の合計
+    [SerializeField] private float front1 = 0f;  // プレイヤー１からの前後の重心移動値の合計
+    [SerializeField] private float right2 = 0f;  // プレイヤー２からの左右の重心移動値の合計
+    [SerializeField] private float front2 = 0f;  // プレイヤー２からの前後の重心移動値の合計
     private float  inputMin = 0.1f;  // 入力値の最小値
     [Header("角度計算")]
     [SerializeField] private Vector3 spineAngle;  // 上半身の角度
@@ -316,7 +326,7 @@ public class Rikishi2Manager : MonoBehaviour
                         case 1:
                             if(Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f)
                             {
-                                SetEnemyGravity(Input.GetAxis("LeftHorizontal1"), Input.GetAxis("LeftVertical1"));
+                                SetEnemyGraInput(Input.GetAxis("LeftHorizontal1"), Input.GetAxis("LeftVertical1"));
                             }
 
                             if((Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && 
@@ -358,7 +368,7 @@ public class Rikishi2Manager : MonoBehaviour
 
                             if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
                             {
-                                SetEnemyGravity(0, 0);
+                                SetEnemyGraInput(0, 0);
                             }
 
                             if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("MoveFoot1") == 0f ||
@@ -388,7 +398,7 @@ public class Rikishi2Manager : MonoBehaviour
                         case 2:
                             if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
                             {
-                                SetEnemyGravity(Input.GetAxis("LeftHorizontal2"), Input.GetAxis("LeftVertical2"));
+                                SetEnemyGraInput(Input.GetAxis("LeftHorizontal2"), Input.GetAxis("LeftVertical2"));
                             }
 
                             if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
@@ -430,7 +440,7 @@ public class Rikishi2Manager : MonoBehaviour
 
                             if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
                             {
-                                SetEnemyGravity(0, 0);
+                                SetEnemyGraInput(0, 0);
                             }
 
                             if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
@@ -689,8 +699,8 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region プレイヤーの入力に関するスクリプト
-    // 左JoyStickによる相手の重心値の変化入力とUI変化を行う関数
-    private void SetEnemyGravity(float rightPosi, float frontPosi)
+    // 左JoyStickによる重心値の変化入力とUI変化を行う関数
+    private void SetEnemyGraInput(float rightPosi, float frontPosi)
     {
         angleY = this.transform.eulerAngles.y;
         enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
@@ -731,7 +741,7 @@ public class Rikishi2Manager : MonoBehaviour
 
             if(isFBPush && isLRPush)
             {
-                enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+                SetEnemyGravity(1, graChaELRNum, graChaEFBNum);
             }
             else if(!isFBPush && !isLRPush)
             {
@@ -739,13 +749,13 @@ public class Rikishi2Manager : MonoBehaviour
             }
             else
             {
-                enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+                SetEnemyGravity(1, graChaELRNum, graChaEFBNum);
                 SetOwnGravity(1, graChaMLRNum, graChaMFBNum);
             }
         }
         else
         {
-            enemy.SetGraChangeNum(playerNum, graChaELRNum, graChaEFBNum);
+            SetEnemyGravity(1, graChaELRNum, graChaEFBNum);;
             SetOwnGravity(1, graChaMLRNum, graChaMFBNum);
         }
         
@@ -786,29 +796,15 @@ public class Rikishi2Manager : MonoBehaviour
         #endregion
     }
 
-    // 自身の重心値の変化入力を行う関数
-    private void SetOwnGravity(int _lrNum, float rightPosi, float frontPosi)
-    {
-        switch(_lrNum)
-        {
-            case 1:
-                leftRight = rightPosi;
-                leftFront = frontPosi;
-                break;
-            case 2:
-                rightRight = rightPosi;
-                rightFront = frontPosi;
-                break;
-        }
-        
-        SetGraChangeNum(playerNum, leftRight + rightRight, leftFront + rightFront);
-    }
-
     // 左足の入力値の変化を行う関数
     public void SetLeftFootNum(float rightPosi, float frontPosi)
     {
         angleY = this.transform.eulerAngles.y;
         enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
+        float myLFLRGra = 0;
+        float myLFFBGra = 0;
+        float myLFLRPos = 0;
+        float myLFFBPos = 0;
         float lFLRGra = 0;
         float lFFBGra = 0;
         float lFLRPos = 0;
@@ -818,14 +814,14 @@ public class Rikishi2Manager : MonoBehaviour
 
         if((rightPosi < 0f && -footMax < lFLRNum) || (rightPosi > 0f && lFLRNum < clossMax))
         {
+            lFLRInput = true;
             rFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
             lFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
-            lFLRInput = true;
+            myLFLRPos += rightPosi;
             if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
             {
-                SetGraChangeNum(playerNum, -rightPosi, 0);
+                myLFLRGra += -rightPosi;
             }
-            SetPlayerPos(rightPosi, 0);
             if(angDifAbs <= 120f)
             {
                 lFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
@@ -841,14 +837,14 @@ public class Rikishi2Manager : MonoBehaviour
 
         if((frontPosi < 0f && -footMax < lFFBNum) || (frontPosi > 0f && lFFBNum < footMax))
         {
+            lFFBInput = true;
             rFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
             lFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
-            lFFBInput = true;
+            myLFFBPos += frontPosi;
             if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
             {
-                SetGraChangeNum(playerNum, 0, -frontPosi);
+                myLFFBGra += -frontPosi;
             }
-            SetPlayerPos(0, frontPosi);
             if(angDifAbs <= 60f || 
                 (60f <= angDifAbs && angDifAbs <= 120f && frontPosi > 0f) ||
                 (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
@@ -868,13 +864,17 @@ public class Rikishi2Manager : MonoBehaviour
         if(!lFLRInput && !lFFBInput)
         {
             lFOpeInput = false;
+            SetEnemyGravity(2, 0, 0);
+            SetOwnGravity(3, 0, 0);
         }
         else
         {
             lFOpeInput = true;
-            enemy.SetGraChangeNum(playerNum, lFLRGra, lFFBGra);
-            enemy.SetPlayerPos(lFLRPos, lFFBPos);
+            SetOwnGravity(3, myLFLRGra, myLFFBGra);
+            SetPlayerPos(myLFLRPos, myLFFBPos);
             SetFootPlace();
+            SetEnemyGravity(2, lFLRGra, lFFBGra);
+            enemy.SetPlayerPos(lFLRPos, lFFBPos);
         }
     }
 
@@ -883,6 +883,10 @@ public class Rikishi2Manager : MonoBehaviour
     {
         angleY = this.transform.eulerAngles.y;
         enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
+        float myRFLRGra = 0;
+        float myRFFBGra = 0;
+        float myRFLRPos = 0;
+        float myRFFBPos = 0;
         float rFLRGra = 0;
         float rFFBGra = 0;
         float rFLRPos = 0;
@@ -895,11 +899,11 @@ public class Rikishi2Manager : MonoBehaviour
             rFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
             lFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
             rFLRInput = true;
+            myRFLRPos += rightPosi;
             if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
             {
-                SetGraChangeNum(playerNum, -rightPosi, 0);
+                myRFLRGra += -rightPosi;
             }
-            SetPlayerPos(rightPosi, 0);
             if(angDifAbs <= 120f)
             {
                 rFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
@@ -918,11 +922,11 @@ public class Rikishi2Manager : MonoBehaviour
             rFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
             lFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
             rFFBInput = true;
+            myRFFBPos += frontPosi;
             if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
             {
-                SetGraChangeNum(playerNum, 0, -frontPosi);
+                myRFFBGra += -frontPosi;
             }
-            SetPlayerPos(0, frontPosi);
             if(angDifAbs <= 60f || 
                 (60f <= angDifAbs && angDifAbs <= 120f && frontPosi > 0f) ||
                 (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
@@ -942,13 +946,17 @@ public class Rikishi2Manager : MonoBehaviour
         if(!rFLRInput && !rFFBInput)
         {
             rFOpeInput = false;
+            SetEnemyGravity(3, 0, 0);
+            SetOwnGravity(4, 0, 0);
         }
         else
         {
             rFOpeInput = true;
-            enemy.SetGraChangeNum(playerNum, rFLRGra, rFFBGra);
-            enemy.SetPlayerPos(rFLRPos, rFFBPos);
+            SetOwnGravity(4, myRFLRGra, myRFFBGra);
+            SetPlayerPos(myRFLRPos, myRFFBPos);
             SetFootPlace();
+            SetEnemyGravity(3, rFLRGra, rFFBGra);
+            enemy.SetPlayerPos(rFLRPos, rFFBPos);
         }    
     }
 
@@ -974,6 +982,62 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     
     #region 重心に関するスクリプト
+    // 相手の重心値の変化入力値の合計を行う関数
+    private void SetEnemyGravity(int _lrNum, float rightPosi, float frontPosi)
+    {
+        switch(_lrNum)
+        {
+            case 1:
+                attackLLR = rightPosi;
+                attackLFB = frontPosi;
+                break;
+            case 2:
+                attackMoveLLR = rightPosi;
+                attackMoveLFB = frontPosi;
+                break;
+            case 3:
+                attackMoveRLR = rightPosi;
+                attackMoveRFB = frontPosi;
+                break;
+        }
+        
+        enemy.SetGraChangeNum(
+            playerNum,
+            attackLLR + attackMoveLLR + attackMoveRLR,
+            attackLFB + attackMoveLFB + attackMoveRFB
+            );
+    }
+
+    // 自身の重心値の変化入力値の合計を行う関数
+    private void SetOwnGravity(int _lrNum, float rightPosi, float frontPosi)
+    {
+        switch(_lrNum)
+        {
+            case 1:
+                leftLR = rightPosi;
+                leftFB = frontPosi;
+                break;
+            case 2:
+                rightLR = rightPosi;
+                rightFB = frontPosi;
+                break;
+            case 3:
+                moveLFLR = rightPosi;
+                moveLFFB = frontPosi;
+                break;
+            case 4:
+                moveRFLR = rightPosi;
+                moveRFFB = frontPosi;
+                break;
+        }
+        
+        SetGraChangeNum(
+            playerNum,
+            leftLR + rightLR + moveLFLR + moveRFLR,
+            leftFB + rightFB + moveLFFB + moveRFFB
+            );
+    }
+
     // 重心値の変化量の計算を行う関数
     public void SetGraChangeNum(int _playerNum, float rightPosi, float frontPosi)
     {
@@ -995,8 +1059,10 @@ public class Rikishi2Manager : MonoBehaviour
     // 重心値の変化を行う関数
     public void SetGravityNum(float rightPosi, float frontPosi)
     {
-        graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * powerMagNum;
-        graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * powerMagNum;
+        // graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * powerMagNum;
+        // graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * powerMagNum;
+        graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
+        graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
         SetMoveGraMagNum();
     }
 

@@ -250,5 +250,6 @@ public class Rikishi2UIManager : MonoBehaviour
         SetArrowActive(1, false);
         SetArrowActive(2, false);
         SetArrowActive(3, false);
+        SetFootOpeActive(false, false);
     }
 }
