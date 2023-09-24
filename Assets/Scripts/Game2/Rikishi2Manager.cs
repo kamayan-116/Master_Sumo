@@ -18,14 +18,6 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject lfObj;  // 左足のオブジェクト
     [SerializeField] private GameObject rfObj;  // 右足のオブジェクト
     [SerializeField] private GameObject viewObj;  // 視線ベクトルオブジェクト
-    [Header("足や座標などの情報")]
-    [SerializeField] private Vector3 lf;  // 左足のワールド座標
-    [SerializeField] private Vector3 rf;  // 右足のワールド座標
-    [SerializeField] private Vector2 footInidis;  // 左右の足の初期距離(xが横方向、yが縦方向)
-    [SerializeField] private Vector2 footDis;  // 左右の足の距離(xが横方向、yが縦方向)
-    [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
-    [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
-    private float dohyoRadius = 4.85f;  // 土俵の半径
     [Header("基本情報")]
     public int playerNum;  // プレイヤーナンバー
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
@@ -34,7 +26,24 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
+    [Header("足や座標などの情報")]
+    [SerializeField] private Vector3 lf;  // 左足のワールド座標
+    [SerializeField] private Vector3 rf;  // 右足のワールド座標
+    [SerializeField] private Vector2 footInidis;  // 左右の足の初期距離(xが横方向、yが縦方向)
+    [SerializeField] private Vector2 footDis;  // 左右の足の距離(xが横方向、yが縦方向)
+    [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
+    [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
+    private float dohyoRadius = 4.85f;  // 土俵の半径
+    [Header("立会い")]
     [SerializeField] private float startPushTime = 0f;  // 立会いのボタンを押す時間
+    [SerializeField] private int penaltyNum = 0;  // 立会いの反則回数
+    [SerializeField] private float pushTimeLag = 0f;  // 立会いのボタンを押した時間差
+    private float pushMaxLag = 6f;  // 立会いの最大時間差
+    [SerializeField] private Vector3 startPos;  // プレイヤーの立会いによる開始座標
+    private float startPosXSlope = 0.5f;  // 立会い開始X座標の傾き
+    private float startPosXIntercept = 0.75f;  // 立会い開始X座標の切片
+    private float tachiaiSpeedMag = 2.5f;  // 立会いのスピード倍率
+    [Header("抵抗")]
     [SerializeField] private float dragNum = 0f;  // 倒れる際の抵抗値
     [SerializeField] private float maxAngle;  // 倒れている時の最大角度
     private float angleMagNum = 20f;  // 角度による抵抗値減速係数
@@ -88,8 +97,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
     [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
     [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
-    [SerializeField] private float angularDif;  // 相手の方向と自身の向きの角度差
-    [SerializeField] private float angDifAbs;  // 相手方向と自身の向きの角度差の絶対値
+    [SerializeField] private float angularDif = 0;  // 相手の方向と自身の向きの角度差
+    [SerializeField] private float angDifAbs = 0;  // 相手方向と自身の向きの角度差の絶対値
 
     [Header("bool判定")]
     [SerializeField] private bool gameStart = false;  // 操作方法の決定ボタンを押したか否か
@@ -98,6 +107,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
     [SerializeField] private bool isStartPush = false;  // 立会いのスタートを押したか否か
+    [SerializeField] private bool isTachiaiMove = false;  // 立会いの開始位置への移動可能か否か
+    [SerializeField] private bool isTachiaiEnd = false;  // 立会いが終わったか否か
     [SerializeField] private bool isLRPush = false;  // 左スティックで相手の重心を左右に操作しているか
     [SerializeField] private bool isFBPush = false;  // 左スティックで相手の重心を前後に操作しているか
     [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
@@ -105,7 +116,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool  isCollision = false;  // 相手と当たっているか否か
     [SerializeField] private bool  isEnd = false;  // 勝敗決着しているか否か
     [SerializeField] private bool  isResult;  // 勝敗結果の表示（true:勝ち,false:負け）
-    public bool isReplay = false;  // Replayボタンを押せるか否か
+    [SerializeField] bool isReplay = false;  // Replayボタンを押せるか否か
     [Header("自動移動計算")]
     [SerializeField] private Vector3 target;  // 相手の胸元方向へのベクトル
     [SerializeField] private Vector2 moveDir;  // 相手の胸元方向への単位ベクトル
@@ -214,7 +225,7 @@ public class Rikishi2Manager : MonoBehaviour
                                     }
                                     if(Input.GetButtonDown("Decide1"))
                                     {
-                                        rikishiUI.DecidePushDown();
+                                        rikishiUI.SetWeightInput();
                                     }
                                     break;
                                 case 2:
@@ -234,7 +245,25 @@ public class Rikishi2Manager : MonoBehaviour
                                     }
                                     if(Input.GetButtonDown("Decide2"))
                                     {
-                                        rikishiUI.DecidePushDown();
+                                        rikishiUI.SetWeightInput();
+                                    }
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch(playerNum)
+                            {
+                                case 1:
+                                    if(Input.GetButtonDown("Decide1"))
+                                    {
+                                        SetPenalty();
+                                    }
+                                    break;
+                                case 2:
+                                    if(Input.GetButtonDown("Decide2"))
+                                    {
+                                        SetPenalty();
                                     }
                                     break;
                             }
@@ -244,181 +273,190 @@ public class Rikishi2Manager : MonoBehaviour
                 #endregion
                 break;
             case Game2Manager.GameState.Play:
-                switch(playerNum)
+                if(!isTachiaiEnd)
                 {
-                    case 1:
-                        if(Input.GetButtonDown("Decide1"))
-                        {
-                            isStartPush = true;
-                        }
-                        break;
-                    case 2:
-                        if(Input.GetButtonDown("Decide2"))
-                        {
-                            isStartPush = true;
-                        }
-                        break;
+                    switch(playerNum)
+                    {
+                        case 1:
+                            if(Input.GetButtonDown("Decide1"))
+                            {
+                                TachiaiInput();
+                                rikishiUI.SetTachiaiInput();
+                            }
+                            break;
+                        case 2:
+                            if(Input.GetButtonDown("Decide2"))
+                            {
+                                TachiaiInput();
+                                rikishiUI.SetTachiaiInput();
+                            }
+                            break;
+                    }
+                    SetTimeMeasure();
+                    SetTachiaiMove();
                 }
-                SetTimeMeasure();
-                SetEnemyTransform();
-                SetEnemyAngle();
-                SetFootInput();
-                rikishiUI.SetMoveGraOkUI(angDifAbs);
-                SetGravityPlace();
-                rikishiUI.SetGravityUI(graLRNum, graFBNum);
-                SetGraPanelNum();
-                // SetVibration();
-                SetSpineAngle();
-                SetInDohyo();
-                maxAngle = SetMaxAngle();
-                SetDragNum(0, maxAngle);
-
-                switch(playerNum)
+                else
                 {
-                    #region プレイヤー1の入力
-                    case 1:
-                        if(Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f)
-                        {
-                            SetEnemyGravity(Input.GetAxis("LeftHorizontal1"), Input.GetAxis("LeftVertical1"));
-                        }
+                    SetEnemyTransform();
+                    SetEnemyAngle();
+                    SetFootInput();
+                    rikishiUI.SetArrowImage(angDifAbs);
+                    SetGravityPlace();
+                    rikishiUI.SetGravityUI(graLRNum, graFBNum);
+                    SetGraPanelNum();
+                    // SetVibration();
+                    SetSpineAngle();
+                    SetInDohyo();
+                    maxAngle = SetMaxAngle();
+                    SetDragNum(0, maxAngle);
 
-                        if((Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && 
-                            Input.GetAxis("MoveFoot1") == 0f
-                            )
-                        {
-                            SetOwnGravity(2, Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
-                        }
+                    switch(playerNum)
+                    {
+                        #region プレイヤー1の入力
+                        case 1:
+                            if(Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f)
+                            {
+                                SetEnemyGravity(Input.GetAxis("LeftHorizontal1"), Input.GetAxis("LeftVertical1"));
+                            }
 
-                        if(Input.GetAxis("MoveFoot1") < 0f &&
-                            (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
-                            )
-                        {
-                            SetLeftFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
-                        }
+                            if((Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && 
+                                Input.GetAxis("MoveFoot1") == 0f
+                                )
+                            {
+                                SetOwnGravity(2, Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
+                            }
 
-                        if(Input.GetAxis("MoveFoot1") > 0f &&
-                            (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
-                            )
-                        {
-                            SetRightFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
-                        }
+                            if(Input.GetAxis("MoveFoot1") < 0f &&
+                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
+                                )
+                            {
+                                SetLeftFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
+                            }
 
-                        if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f)
-                        {
-                            SetLeftFootNum(0, 0);
-                            SetRightFootNum(0, 0);
-                        }
+                            if(Input.GetAxis("MoveFoot1") > 0f &&
+                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
+                                )
+                            {
+                                SetRightFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
+                            }
 
-                        if(Input.GetAxis("Rotation1") != 0f)
-                        {
-                            SetWholeAngle(enemy.gameObject, -Input.GetAxis("Rotation1"));
-                        }
+                            if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f)
+                            {
+                                SetLeftFootNum(0, 0);
+                                SetRightFootNum(0, 0);
+                            }
 
-                        if(Input.GetAxis("MyRotation1") != 0f)
-                        {
-                            SetWholeAngle(this.gameObject, Input.GetAxis("MyRotation1"));
-                        }
+                            if(Input.GetAxis("Rotation1") != 0f)
+                            {
+                                SetWholeAngle(enemy.gameObject, -Input.GetAxis("Rotation1"));
+                            }
 
-                        if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
-                        {
-                            SetEnemyGravity(0, 0);
-                        }
+                            if(Input.GetAxis("MyRotation1") != 0f)
+                            {
+                                SetWholeAngle(this.gameObject, Input.GetAxis("MyRotation1"));
+                            }
 
-                        if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("MoveFoot1") == 0f ||
-                            (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && Input.GetAxis("MoveFoot1") != 0f
-                            )
-                        {
-                            SetOwnGravity(2, 0 ,0);
-                        }
+                            if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
+                            {
+                                SetEnemyGravity(0, 0);
+                            }
 
-                        if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f &&
-                            Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f &&
-                            Input.GetAxis("Rotation1") == 0f &&
-                            !isCollision && !isEnd
-                            )
-                        {
-                            moveDir = FindTransform();
-                            // SetCollisionMove(moveDir.x, moveDir.y);
-                        }
+                            if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("MoveFoot1") == 0f ||
+                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && Input.GetAxis("MoveFoot1") != 0f
+                                )
+                            {
+                                SetOwnGravity(2, 0 ,0);
+                            }
 
-                        if(Input.GetButtonDown("Decide1"))
-                        {
-                            SetDragNum(1f, 0);
-                        }
-                        break;
-                    #endregion
-                    #region プレイヤー2の入力
-                    case 2:
-                        if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
-                        {
-                            SetEnemyGravity(Input.GetAxis("LeftHorizontal2"), Input.GetAxis("LeftVertical2"));
-                        }
+                            if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f &&
+                                Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f &&
+                                Input.GetAxis("Rotation1") == 0f &&
+                                !isCollision && !isEnd
+                                )
+                            {
+                                moveDir = FindTransform();
+                                // SetCollisionMove(moveDir.x, moveDir.y);
+                            }
 
-                        if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
-                            Input.GetAxis("MoveFoot2") == 0f
-                            )
-                        {
-                            SetOwnGravity(2, Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
-                        }
+                            if(Input.GetButtonDown("Decide1"))
+                            {
+                                SetDragNum(1f, 0);
+                            }
+                            break;
+                        #endregion
+                        #region プレイヤー2の入力
+                        case 2:
+                            if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
+                            {
+                                SetEnemyGravity(Input.GetAxis("LeftHorizontal2"), Input.GetAxis("LeftVertical2"));
+                            }
 
-                        if(Input.GetAxis("MoveFoot2") < 0f &&
-                            (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                            )
-                        {
-                            SetLeftFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
-                        }
+                            if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
+                                Input.GetAxis("MoveFoot2") == 0f
+                                )
+                            {
+                                SetOwnGravity(2, Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
+                            }
 
-                        if(Input.GetAxis("MoveFoot2") > 0f &&
-                            (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                            )
-                        {
-                            SetRightFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
-                        }
+                            if(Input.GetAxis("MoveFoot2") < 0f &&
+                                (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
+                                )
+                            {
+                                SetLeftFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
+                            }
 
-                        if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
-                        {
-                            SetLeftFootNum(0, 0);
-                            SetRightFootNum(0, 0);
-                        }
+                            if(Input.GetAxis("MoveFoot2") > 0f &&
+                                (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
+                                )
+                            {
+                                SetRightFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
+                            }
 
-                        if(Input.GetAxis("Rotation2") != 0f)
-                        {
-                            SetWholeAngle(enemy.gameObject, -Input.GetAxis("Rotation2"));
-                        }
+                            if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
+                            {
+                                SetLeftFootNum(0, 0);
+                                SetRightFootNum(0, 0);
+                            }
 
-                        if(Input.GetAxis("MyRotation2") != 0f)
-                        {
-                            SetWholeAngle(this.gameObject, Input.GetAxis("MyRotation2"));
-                        }
+                            if(Input.GetAxis("Rotation2") != 0f)
+                            {
+                                SetWholeAngle(enemy.gameObject, -Input.GetAxis("Rotation2"));
+                            }
 
-                        if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
-                        {
-                            SetEnemyGravity(0, 0);
-                        }
+                            if(Input.GetAxis("MyRotation2") != 0f)
+                            {
+                                SetWholeAngle(this.gameObject, Input.GetAxis("MyRotation2"));
+                            }
 
-                        if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
-                            (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
-                            )
-                        {
-                            SetOwnGravity(2, 0 ,0);
-                        }
+                            if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
+                            {
+                                SetEnemyGravity(0, 0);
+                            }
 
-                        if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f &&
-                            Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f &&
-                            Input.GetAxis("Rotation2") == 0f &&
-                            !isCollision && !isEnd
-                            )
-                        {
-                            moveDir = FindTransform();
-                            // SetCollisionMove(moveDir.x, moveDir.y);
-                        }
+                            if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
+                                (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
+                                )
+                            {
+                                SetOwnGravity(2, 0 ,0);
+                            }
 
-                        if(Input.GetButtonDown("Decide2"))
-                        {
-                            SetDragNum(1f, 0);
-                        }
-                        break;
-                    #endregion
+                            if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f &&
+                                Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f &&
+                                Input.GetAxis("Rotation2") == 0f &&
+                                !isCollision && !isEnd
+                                )
+                            {
+                                moveDir = FindTransform();
+                                // SetCollisionMove(moveDir.x, moveDir.y);
+                            }
+
+                            if(Input.GetButtonDown("Decide2"))
+                            {
+                                SetDragNum(1f, 0);
+                            }
+                            break;
+                        #endregion
+                    }
                 }
                 break;
             case Game2Manager.GameState.End:
@@ -448,15 +486,6 @@ public class Rikishi2Manager : MonoBehaviour
         footLengNum = lfObj.transform.position.y;
         wholeY = wholeObj.transform.position.y;
         center = new Vector3(0f, wholeY, -0.03f);
-    }
-
-    // 立会いの入力時間の計測
-    private void SetTimeMeasure()
-    {
-        if(!isStartPush)
-        {
-            startPushTime += Time.deltaTime;
-        }
     }
 
     #region 体重に関するスクリプト
@@ -574,6 +603,88 @@ public class Rikishi2Manager : MonoBehaviour
         
         moveFBGraMagNum = graFBMagSlope * localScaleNum + graFBMagIntercept;
         moveLRGraMagNum = graLRMagSlope * localScaleNum + graLRMagIntercept;
+    }
+    #endregion
+
+    #region 立会いに関するスクリプト
+    // 立会いのペナルティ回数
+    private void SetPenalty()
+    {
+        penaltyNum++;
+        startPushTime += 0.5f;
+        rikishiUI.SetPenaltyText(penaltyNum);
+    }
+
+    // 立会いの入力時間の計測
+    private void SetTimeMeasure()
+    {
+        if(!isStartPush)
+        {
+            startPushTime += Time.deltaTime;
+        }
+    }
+
+    // 立会いの入力
+    private void TachiaiInput()
+    {
+        isStartPush = true;
+        Game2Manager.Instance.TachiaiStart(playerNum, startPushTime);
+    }
+
+    // 立会いの入力時間差の入力と開始位置の決定
+    public void SetLagStartPos(int _playerNumMag, float _lag)
+    {
+        if(pushMaxLag < Mathf.Abs(_lag))
+        {
+            if(_lag > 0)
+            {
+                _lag = pushMaxLag;
+            }
+            else
+            {
+                _lag = -pushMaxLag;
+            }
+        }
+        pushTimeLag = _lag;
+        startPos = 
+            new Vector3
+            (
+                (startPosXSlope * pushTimeLag + startPosXIntercept) * _playerNumMag,
+                0,
+                0
+            );
+        isTachiaiMove = true;
+    }
+
+    // 立会いの開始位置に移動する関数
+    private void SetTachiaiMove()
+    {
+        if(isTachiaiMove)
+        {
+            if(pushTimeLag < 1.5f)
+            {
+                this.transform.position = Vector3.MoveTowards(this.transform.position, startPos, Time.deltaTime * tachiaiSpeedMag);
+            }
+            else
+            {
+                if(isCollision)
+                {
+                    this.transform.position = Vector3.MoveTowards(this.transform.position, startPos, Time.deltaTime * tachiaiSpeedMag);
+                }
+            }
+            if(this.transform.position == startPos)
+            {
+                isTachiaiMove = false;
+                Game2Manager.Instance.TachiaiEnd(playerNum);
+            }
+        }
+    }
+
+    // 立会いの終了を示す関数
+    public void SetTachiaiEnd()
+    {
+        isTachiaiEnd = true;
+        rikishiUI.SetPlayImage(1);
     }
     #endregion
 
@@ -722,7 +833,6 @@ public class Rikishi2Manager : MonoBehaviour
                 lFLRPos += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 lFFBPos += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
             }
-            // GamePad.SetVibration(0, 1, 1);
         }
         else
         {
@@ -749,7 +859,6 @@ public class Rikishi2Manager : MonoBehaviour
                 lFLRPos += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
                 lFFBPos += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
             }
-            // GamePad.SetVibration(0, 1, 1);
         }
         else
         {
@@ -798,7 +907,6 @@ public class Rikishi2Manager : MonoBehaviour
                 rFLRPos += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 rFFBPos += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
             }
-            // GamePad.SetVibration(0, 1, 1);
         }
         else
         {
@@ -825,7 +933,6 @@ public class Rikishi2Manager : MonoBehaviour
                 rFLRPos += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
                 rFFBPos += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
             }
-            // GamePad.SetVibration(0, 1, 1);
         }
         else
         {
@@ -1141,6 +1248,12 @@ public class Rikishi2Manager : MonoBehaviour
     }
     #endregion
 
+    // Resetを可能にする関数
+    public void SetResetOK()
+    {
+        isReplay = true;
+    }
+
     // 再度遊ぶ際に状態をResetする関数
     public void SetReset()
     {
@@ -1149,6 +1262,8 @@ public class Rikishi2Manager : MonoBehaviour
         levelModeDecide = false;
         weightInput = false;
         isStartPush = false;
+        isTachiaiMove = false;
+        isTachiaiEnd = false;
         isEnd = false;
         isReplay = false;
         this.transform.position = thisInitialPos;
@@ -1157,12 +1272,15 @@ public class Rikishi2Manager : MonoBehaviour
         playerObj.transform.localRotation = playerInitialRot;
         playerObj.transform.localScale = playerInitialScale;
         startPushTime = 0;
+        penaltyNum = 0;
+        pushTimeLag = 0;
         lFFBNum = 0;
         lFLRNum = 0;
         rFFBNum = 0;
         rFLRNum = 0;
         graFBNum = 0;
         graLRNum = 0;
+        rikishiUI.SetGravityUI(graLRNum, graFBNum);
         dragNum = 0;
         maxAngle = 0;
         SetFootPlace();

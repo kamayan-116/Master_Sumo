@@ -13,6 +13,10 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Slider weightSlider;  // 体重スライダー
     [SerializeField] private Button decideButton;  // 体重決定ボタン
     [SerializeField] private float weightInitialNum;  // プレイヤー全体の初期座標
+    [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
+    [SerializeField] private Image playImage; // プレイ状態のUI画像
+    [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が相撲）
+    [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
     [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
     [SerializeField] private Image gravityImage; // 重心座標のUI画像
     private float graUIMoveMagNum = 10.87f;  // 重心UIの移動倍率数値
@@ -93,8 +97,8 @@ public class Rikishi2UIManager : MonoBehaviour
         weightText.text = "Weight：" + _weightNum.ToString("f0") + "Kg";
     }
 
-    // 決定ボタンを押した
-    public void DecidePushDown()
+    // 決定ボタンを押して体重の入力を行った
+    public void SetWeightInput()
     {   
         decideButton.interactable = false;
         weightSlider.interactable = false;
@@ -104,6 +108,24 @@ public class Rikishi2UIManager : MonoBehaviour
     #endregion
 
     #region プレイ中のUI
+    // 立会いの入力を行った
+    public void SetTachiaiInput()
+    {   
+        tachiaiPanel.color = new Color32(0, 0, 0, 200);
+    }
+
+    // ペナルティ回数の数値をテキストに表示する関数
+    public void SetPenaltyText(int _penaltyNum)
+    {
+        penaltyText.text = "✖：" + _penaltyNum + "回";
+    }
+
+    // プレイ中の画像を変更する関数
+    public void SetPlayImage(int _playNum)
+    {
+        playImage.sprite = playSprite[_playNum];
+    }
+
     // 操作中の足の色を変更する関数
     public void SetFootOperateColor(int _operateNum)
     {
@@ -155,8 +177,8 @@ public class Rikishi2UIManager : MonoBehaviour
             );
     }
 
-    // 重心移動プレイヤーのUI画像を変更する関数
-    public void SetMoveGraOkUI(float _angDifAbs)
+    // 重心移動プレイヤーの矢印画像を変更する関数
+    public void SetArrowImage(float _angDifAbs)
     {
         if(_angDifAbs <= 60)
         {
@@ -217,5 +239,16 @@ public class Rikishi2UIManager : MonoBehaviour
         weightPanel.color = new Color32(0, 0, 0, 0);
         weightSlider.value = weightInitialNum;
         SetWeightText(weightSlider.value);
+        tachiaiPanel.color = new Color32(0, 0, 0, 0);
+        SetPlayImage(0);
+        SetPenaltyText(0);
+        graMoveUpArrow.sprite = arrowSprite[0];
+        graMoveDownArrow.sprite = arrowSprite[0];
+        graMoveLeftArrow.sprite = arrowSprite[0];
+        graMoveRightArrow.sprite = arrowSprite[0];
+        SetArrowActive(0, false);
+        SetArrowActive(1, false);
+        SetArrowActive(2, false);
+        SetArrowActive(3, false);
     }
 }

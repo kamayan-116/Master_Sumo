@@ -59,6 +59,9 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Vector3 p1Gravity;  // プレイヤー1の重心座標
     [SerializeField] private Vector2 p1Place;  // プレイヤー1の位置座標
     [SerializeField] private bool p1WeightInput = false;  // プレイヤー1の体重入力
+    [SerializeField] private bool p1TachiaiInput = false;  // プレイヤー1の立会い入力
+    [SerializeField] private float p1TachiaiTime = 0;  // プレイヤー1の立会い入力時間
+    [SerializeField] private bool p1MoveEnd = false;  // プレイヤー1の立会い移動
     
     [Header("プレイヤー2")]
     [SerializeField] private Rikishi2Manager p2Ctrl;  // プレイヤー2のスクリプト
@@ -67,6 +70,9 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Vector3 p2Gravity;  // プレイヤー2の重心座標
     [SerializeField] private Vector2 p2Place;  // プレイヤー2の位置座標
     [SerializeField] private bool p2WeightInput = false;  // プレイヤー2の体重入力
+    [SerializeField] private bool p2TachiaiInput = false;  // プレイヤー2の立会い入力
+    [SerializeField] private float p2TachiaiTime = 0;  // プレイヤー2の立会い入力時間
+    [SerializeField] private bool p2MoveEnd = false;  // プレイヤー2の立会い移動
 
     [Header("サウンド")]
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
@@ -228,7 +234,7 @@ public class Game2Manager : MonoBehaviour
     // 行司の掛け声のテキストを消すコルーチン関数
     private IEnumerator UIFalse()
     {
-        float shoutTime = shoutSound.length + waitTime;
+        float shoutTime = shoutSound.length + waitTime * 2;
         yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
         seAudioSource.PlayOneShot(startSound);
@@ -241,6 +247,48 @@ public class Game2Manager : MonoBehaviour
     #endregion
 
     #region ゲーム中に関するスクリプト
+    // プレイヤーの立会い入力の確認を行う関数
+    public void TachiaiStart(int _playerNum, float _pushTime)
+    {
+        switch(_playerNum)
+        {
+            case 1:
+                p1TachiaiInput = true;
+                p1TachiaiTime = _pushTime;
+                break;
+            case 2:
+                p2TachiaiInput = true;
+                p2TachiaiTime = _pushTime;
+                break;
+        }
+
+        if(p1TachiaiInput && p2TachiaiInput)
+        {
+            p1Ctrl.SetLagStartPos(-1, p1TachiaiTime - p2TachiaiTime);
+            p2Ctrl.SetLagStartPos(1, p2TachiaiTime - p1TachiaiTime);
+        }
+    }
+
+    // プレイヤーの立会い移動完了の確認を行う関数
+    public void TachiaiEnd(int _playerNum)
+    {
+        switch(_playerNum)
+        {
+            case 1:
+                p1MoveEnd = true;
+                break;
+            case 2:
+                p2MoveEnd = true;
+                break;
+        }
+
+        if(p1MoveEnd && p2MoveEnd)
+        {
+            p1Ctrl.SetTachiaiEnd();
+            p2Ctrl.SetTachiaiEnd();
+        }
+    }
+
     // 中心重心座標の計算を行う関数
     private void SetCenterGravityPlace()
     {
@@ -364,8 +412,8 @@ public class Game2Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         replayButton.gameObject.SetActive(true);
-        p1Ctrl.isReplay = true;
-        p2Ctrl.isReplay = true;
+        p1Ctrl.SetResetOK();
+        p2Ctrl.SetResetOK();
     }
     #endregion
 
@@ -376,10 +424,15 @@ public class Game2Manager : MonoBehaviour
         gameResultUI.SetActive(false);
         resultText.text = "";
         replayButton.gameObject.SetActive(false);
-        SetGameState(GameState.BeforePlay);
         isSelect = false;
         p1WeightInput = false;
         p2WeightInput = false;
+        p1TachiaiInput = false;
+        p2TachiaiInput = false;
+        p1TachiaiTime = 0;
+        p2TachiaiTime = 0;
+        p1MoveEnd = false;
+        p2MoveEnd = false;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
         easyButton.image.color = new Color32(255, 255, 255, 255);
@@ -396,6 +449,8 @@ public class Game2Manager : MonoBehaviour
         p2Ctrl.SetReset();
         p1UICtrl.SetResetUI();
         p2UICtrl.SetResetUI();
+        yield return new WaitForSeconds(0.2f);
+        SetGameState(GameState.BeforePlay);
     }
     #endregion
 

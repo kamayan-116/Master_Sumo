@@ -226,6 +226,10 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: playSprite.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 769dab20fc247aa499eeb6477ed0e065, type: 3}
+    - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: arrowSprite.Array.data[0]
       value: 
       objectReference: {fileID: 21300000, guid: 7c9bb165806faa54d8d3eacd788555e1, type: 3}
@@ -233,6 +237,10 @@ PrefabInstance:
       propertyPath: arrowSprite.Array.data[1]
       value: 
       objectReference: {fileID: 21300000, guid: 79e01d12095e70748ade5cb98180de03, type: 3}
+    - target: {fileID: 1877138817541807871, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -62.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2061619350969948283, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -243,7 +251,7 @@ PrefabInstance:
       objectReference: {fileID: 512957225}
     - target: {fileID: 2215909169530130123, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 300
+      value: 280
       objectReference: {fileID: 0}
     - target: {fileID: 2583336578617008060, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -281,6 +289,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3435270741831414679, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 280
+      objectReference: {fileID: 0}
     - target: {fileID: 3627811573610610426, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Name
       value: sumouObj2
@@ -303,7 +315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.75
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.y
@@ -311,7 +323,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalRotation.w
@@ -357,6 +369,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 461104cde209e7f43a7800787f055027, type: 3}
+    - target: {fileID: 5116820348472208390, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5278282270716622301, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -405,6 +421,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: rikishi2UI
       objectReference: {fileID: 0}
+    - target: {fileID: 7749468303460049447, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 769dab20fc247aa499eeb6477ed0e065, type: 3}
     - target: {fileID: 7938998735298334565, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_NormalizedViewPortRect.x
       value: 0.5
@@ -512,7 +532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.75
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.y
@@ -520,7 +540,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalRotation.w
@@ -722,12 +742,18 @@ MonoBehaviour:
   p1Gravity: {x: 0, y: 0, z: 0}
   p1Place: {x: 0, y: 0}
   p1WeightInput: 0
+  p1TachiaiInput: 0
+  p1TachiaiTime: 0
+  p1MoveEnd: 0
   p2Ctrl: {fileID: 502546569}
   p2UICtrl: {fileID: 502546568}
   p2Obj: {fileID: 502546570}
   p2Gravity: {x: 0, y: 0, z: 0}
   p2Place: {x: 0, y: 0}
   p2WeightInput: 0
+  p2TachiaiInput: 0
+  p2TachiaiTime: 0
+  p2MoveEnd: 0
   shoutSound: {fileID: 8300000, guid: 178cad069f24f044fbd9b19bba6bbe06, type: 3}
   startSound: {fileID: 8300000, guid: 65f72643e5d7042469a599df7c25f196, type: 3}
   playSound: {fileID: 8300000, guid: 75f87a112ba105042a88e649c4dbc9fd, type: 3}
