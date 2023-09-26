@@ -68,12 +68,12 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float moveLRGraMagNum;  // 重心左右移動の倍率数値
     private float graFBMagSlope;  // 重心前後移動の倍率の傾き
     private float graFBMagIntercept;  // 重心前後移動の倍率の切片
-    private float graLRMagSlope = 0.02f;  // 重心左右移動の倍率の傾き
+    private float graLRMagSlope;  // 重心左右移動の倍率の傾き
     private float graLRMagIntercept = 0f;  // 重心左右移動の倍率の切片
     private float moveSpeedMagNum = 5f;  // 移動スピードの倍率数値
     [Header("重心")]
-    [SerializeField] private float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:10）
-    [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:10）
+    [SerializeField] private float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
+    [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
     private Vector3 center;  // プレイヤーの重心初期座標
     [SerializeField] private Vector3 gravityPlace;  // プレイヤーの重心初期座標
     public Vector3 gravityWorldPos;  // プレイヤーの重心ワールド座標
@@ -153,6 +153,7 @@ public class Rikishi2Manager : MonoBehaviour
     void Start()
     {
         rikishiUI.SetWeightMaxMin(weightMax, weightMin);
+        rikishiUI.SetGraUIMoveMagNum(footMax * 3f);
         rb = playerObj.GetComponent<Rigidbody>();
         SetInitialNum();
     }
@@ -316,6 +317,7 @@ public class Rikishi2Manager : MonoBehaviour
                     SetEnemyTransform();
                     SetEnemyAngle();
                     SetFootInput();
+                    SetGravityNum(right1 + right2, front1 + front2);
                     SetGravityPlace();
                     rikishiUI.SetGravityUI(graLRNum, graFBNum);
                     SetGraPanelNum();
@@ -587,30 +589,31 @@ public class Rikishi2Manager : MonoBehaviour
             case Game2Manager.GameMode.Easy:
                 break;
             case Game2Manager.GameMode.Normal:
+                graLRMagSlope = 0.2f / (footMax * 3);
                 if(localScaleNum < 1.5f)
                 {
                     if(graFBNum < 0f)
                     {
-                        graFBMagSlope = 0.022f;
-                        graFBMagIntercept = -0.015f;
+                        graFBMagSlope = 0.22f / (footMax * 3);
+                        graFBMagIntercept = -0.15f / (footMax * 3);
                     }
                     else
                     {
-                        graFBMagSlope = 0.019f;
-                        graFBMagIntercept = -0.011f;
+                        graFBMagSlope = 0.19f / (footMax * 3);
+                        graFBMagIntercept = -0.11f / (footMax * 3);
                     }
                 }
                 else
                 {
                     if(graFBNum < 0f)
                     {
-                        graFBMagSlope = 0.014f;
-                        graFBMagIntercept = -0.003f;
+                        graFBMagSlope = 0.14f / (footMax * 3);
+                        graFBMagIntercept = -0.03f / (footMax * 3);
                     }
                     else
                     {
-                        graFBMagSlope = 0.01f;
-                        graFBMagIntercept = 0.0025f;
+                        graFBMagSlope = 0.1f / (footMax * 3);
+                        graFBMagIntercept = 0.025f / (footMax * 3);
                     }
                 }
                 break;
@@ -1082,17 +1085,13 @@ public class Rikishi2Manager : MonoBehaviour
                 front2 = frontPosi;
                 break;
         }
-        
-        SetGravityNum(right1 + right2, front1 + front2);
     }
 
     // 重心値の変化を行う関数
-    public void SetGravityNum(float rightPosi, float frontPosi)
+    private void SetGravityNum(float rightPosi, float frontPosi)
     {
-        // graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * powerMagNum;
-        // graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * powerMagNum;
-        graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
-        graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
+        graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * powerMagNum;
+        graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * powerMagNum;
         SetMoveGraMagNum();
     }
 

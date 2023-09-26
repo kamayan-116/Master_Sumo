@@ -19,7 +19,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
     [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
     [SerializeField] private Image gravityImage; // 重心座標のUI画像
-    private float graUIMoveMagNum = 10.87f;  // 重心UIの移動倍率数値
+    private float graUIMoveMagNum;  // 重心UIの移動倍率数値
     [SerializeField] private Image graMoveUpArrow; // 上方向重心移動可能画像
     [SerializeField] private Image graMoveDownArrow; // 下方向重心移動可能画像
     [SerializeField] private Image graMoveLeftArrow; // 左方向重心移動可能画像
@@ -44,6 +44,12 @@ public class Rikishi2UIManager : MonoBehaviour
     void Update()
     {
         rikishiManager.SetWeightNum(weightSlider.value);
+    }
+
+    // 重心値のUIの移動値を計算する関数
+    public void SetGraUIMoveMagNum(float _graMax)
+    {
+        graUIMoveMagNum = 140f / _graMax;
     }
 
     // プレイヤー人数に対するUIの配置
@@ -212,10 +218,10 @@ public class Rikishi2UIManager : MonoBehaviour
         resultText.gameObject.SetActive(false);
         decideButton.interactable = true;
         weightSlider.interactable = true;
-        weightPanel.color = new Color32(0, 0, 0, 0);
+        weightPanel.color = new Color32(255, 255, 255, 100);
         weightSlider.value = weightInitialNum;
         SetWeightText(weightSlider.value);
-        tachiaiPanel.color = new Color32(0, 0, 0, 0);
+        tachiaiPanel.color = new Color32(255, 255, 255, 100);
         SetPlayImage(0);
         SetPenaltyText(0);
         SetArrowActive(0, false);
