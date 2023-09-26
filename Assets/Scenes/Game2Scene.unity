@@ -490,6 +490,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 1607067902445344839, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2206704258233908635, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
       value: 

@@ -96,6 +96,12 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float right2 = 0f;  // プレイヤー２からの左右の重心移動値の合計
     [SerializeField] private float front2 = 0f;  // プレイヤー２からの前後の重心移動値の合計
     private float  inputMin = 0.1f;  // 入力値の最小値
+    [SerializeField] private float inputLLR = 0f;  // 左スティックからの左右の重心移動入力値
+    [SerializeField] private float inputLFB = 0f;  // 左スティックからの前後の重心移動入力値
+    [SerializeField] private float inputMoveLLR = 0f;  // 左足移動時からの左右の重心移動入力値
+    [SerializeField] private float inputMoveLFB = 0f;  // 左足移動時からの前後の重心移動入力値
+    [SerializeField] private float inputMoveRLR = 0f;  // 右足移動時からの左右の重心移動入力値
+    [SerializeField] private float inputMoveRFB = 0f;  // 右足移動時からの前後の重心移動入力値
     [Header("角度計算")]
     [SerializeField] private Vector3 spineAngle;  // 上半身の角度
     private float spineFBSlope = 4.5f;  // 上半身の前後の角度の傾き
@@ -310,7 +316,6 @@ public class Rikishi2Manager : MonoBehaviour
                     SetEnemyTransform();
                     SetEnemyAngle();
                     SetFootInput();
-                    rikishiUI.SetArrowImage(angDifAbs);
                     SetGravityPlace();
                     rikishiUI.SetGravityUI(graLRNum, graFBNum);
                     SetGraPanelNum();
@@ -699,7 +704,7 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region プレイヤーの入力に関するスクリプト
-    // 左JoyStickによる重心値の変化入力とUI変化を行う関数
+    // 左JoyStickによる重心値の変化入力を行う関数
     private void SetEnemyGraInput(float rightPosi, float frontPosi)
     {
         angleY = this.transform.eulerAngles.y;
@@ -709,7 +714,6 @@ public class Rikishi2Manager : MonoBehaviour
         float graChaMLRNum = 0;
         float graChaMFBNum = 0;
 
-        #region 左スティックの入力による重心値の変化量の計算
         if(rightPosi != 0 || frontPosi != 0)
         {
             if(angDifAbs <= 120f)
@@ -755,45 +759,11 @@ public class Rikishi2Manager : MonoBehaviour
         }
         else
         {
-            SetEnemyGravity(1, graChaELRNum, graChaEFBNum);;
-            SetOwnGravity(1, graChaMLRNum, graChaMFBNum);
-        }
-        
-        #endregion
-
-        #region 左スティックの入力による矢印UIの変更
-        if(frontPosi > 0)
-        {
-            rikishiUI.SetArrowActive(0, true);
-            rikishiUI.SetArrowActive(1, false);
-        }
-        else if(frontPosi == 0)
-        {
-            rikishiUI.SetArrowActive(0, false);
-            rikishiUI.SetArrowActive(1, false);
-        }
-        else
-        {
-            rikishiUI.SetArrowActive(0, false);
-            rikishiUI.SetArrowActive(1, true);
+            SetEnemyGravity(1, 0, 0);;
+            SetOwnGravity(1, 0, 0);
         }
 
-        if(rightPosi > 0)
-        {
-            rikishiUI.SetArrowActive(2, false);
-            rikishiUI.SetArrowActive(3, true);
-        }
-        else if(rightPosi == 0)
-        {
-            rikishiUI.SetArrowActive(2, false);
-            rikishiUI.SetArrowActive(3, false);
-        }
-        else
-        {
-            rikishiUI.SetArrowActive(2, true);
-            rikishiUI.SetArrowActive(3, false);
-        }
-        #endregion
+        SetEnemyArrow(1, rightPosi, frontPosi);
     }
 
     // 左足の入力値の変化を行う関数
@@ -876,6 +846,7 @@ public class Rikishi2Manager : MonoBehaviour
             SetEnemyGravity(2, lFLRGra, lFFBGra);
             enemy.SetPlayerPos(lFLRPos, lFFBPos);
         }
+        SetEnemyArrow(2, rightPosi, frontPosi);
     }
 
     // 右足の入力値の変化を行う関数
@@ -957,7 +928,8 @@ public class Rikishi2Manager : MonoBehaviour
             SetFootPlace();
             SetEnemyGravity(3, rFLRGra, rFFBGra);
             enemy.SetPlayerPos(rFLRPos, rFFBPos);
-        }    
+        }
+        SetEnemyArrow(3, rightPosi, frontPosi);
     }
 
     // 各足の入力状態の確認を行う関数
@@ -982,7 +954,7 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     
     #region 重心に関するスクリプト
-    // 相手の重心値の変化入力値の合計を行う関数
+    // 相手の重心値の変化入力値の合計と矢印変化を行う関数
     private void SetEnemyGravity(int _lrNum, float rightPosi, float frontPosi)
     {
         switch(_lrNum)
@@ -1006,6 +978,64 @@ public class Rikishi2Manager : MonoBehaviour
             attackLLR + attackMoveLLR + attackMoveRLR,
             attackLFB + attackMoveLFB + attackMoveRFB
             );
+    }
+
+    // 相手の重心値の変化入力における矢印変化を行う関数
+    private void SetEnemyArrow(int inputNum, float rightPosi, float frontPosi)
+    {
+        float inputSumLR = 0;
+        float inputSumFB = 0;
+
+        switch(inputNum)
+        {
+            case 1:
+                inputLLR = rightPosi;
+                inputLFB = frontPosi;
+                break;
+            case 2:
+                inputMoveLLR = rightPosi;
+                inputMoveLFB = frontPosi;
+                break;
+            case 3:
+                inputMoveRLR = rightPosi;
+                inputMoveRFB = frontPosi;
+                break;
+        }
+
+        inputSumLR = inputLLR + inputMoveLLR + inputMoveRLR;
+        inputSumFB = inputLFB + inputMoveLFB + inputMoveRFB;
+
+        if(inputSumFB < -inputMin && (angDifAbs < 60f || 120f < angDifAbs))
+        {
+            rikishiUI.SetArrowActive(0, false);
+            rikishiUI.SetArrowActive(1, true);
+        }
+        else if(inputMin < inputSumFB && angDifAbs < 120f)
+        {
+            rikishiUI.SetArrowActive(0, true);
+            rikishiUI.SetArrowActive(1, false);
+        }
+        else
+        {
+            rikishiUI.SetArrowActive(0, false);
+            rikishiUI.SetArrowActive(1, false);
+        }
+
+        if(inputSumLR < -inputMin && angDifAbs < 120f)
+        {
+            rikishiUI.SetArrowActive(2, true);
+            rikishiUI.SetArrowActive(3, false);
+        }
+        else if(inputMin < inputSumLR && angDifAbs < 120f)
+        {
+            rikishiUI.SetArrowActive(2, false);
+            rikishiUI.SetArrowActive(3, true);
+        }
+        else
+        {
+            rikishiUI.SetArrowActive(2, false);
+            rikishiUI.SetArrowActive(3, false);
+        }
     }
 
     // 自身の重心値の変化入力値の合計を行う関数

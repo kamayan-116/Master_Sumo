@@ -24,7 +24,6 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveDownArrow; // 下方向重心移動可能画像
     [SerializeField] private Image graMoveLeftArrow; // 左方向重心移動可能画像
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
-    [SerializeField] private Sprite[] arrowSprite; // 矢印の画像配列（0が相手、1が自身）
     [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
     [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
@@ -177,29 +176,6 @@ public class Rikishi2UIManager : MonoBehaviour
             );
     }
 
-    // 重心移動プレイヤーの矢印画像を変更する関数
-    public void SetArrowImage(float _angDifAbs)
-    {
-        if(_angDifAbs <= 60)
-        {
-            graMoveDownArrow.sprite = arrowSprite[0];
-        }
-        else if(_angDifAbs <= 120)
-        {
-            graMoveUpArrow.sprite = arrowSprite[0];
-            graMoveDownArrow.sprite = arrowSprite[1];
-            graMoveLeftArrow.sprite = arrowSprite[0];
-            graMoveRightArrow.sprite = arrowSprite[0];
-        }
-        else
-        {
-            graMoveUpArrow.sprite = arrowSprite[1];
-            graMoveDownArrow.sprite = arrowSprite[0];
-            graMoveLeftArrow.sprite = arrowSprite[1];
-            graMoveRightArrow.sprite = arrowSprite[1];
-        }
-    }
-
     // 重心移動方向のUIを表示する関数
     public void SetArrowActive(int _arrowDir, bool _isActive)
     {
@@ -242,14 +218,11 @@ public class Rikishi2UIManager : MonoBehaviour
         tachiaiPanel.color = new Color32(0, 0, 0, 0);
         SetPlayImage(0);
         SetPenaltyText(0);
-        graMoveUpArrow.sprite = arrowSprite[0];
-        graMoveDownArrow.sprite = arrowSprite[0];
-        graMoveLeftArrow.sprite = arrowSprite[0];
-        graMoveRightArrow.sprite = arrowSprite[0];
         SetArrowActive(0, false);
         SetArrowActive(1, false);
         SetArrowActive(2, false);
         SetArrowActive(3, false);
+        SetFootOperateColor(0);
         SetFootOpeActive(false, false);
     }
 }
