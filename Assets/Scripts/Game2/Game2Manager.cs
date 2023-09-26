@@ -345,7 +345,7 @@ public class Game2Manager : MonoBehaviour
     // 決まり手の決定
     private int SetWinReason()
     {
-        int reasonNum = 8;
+        int reasonNum = 6;
         return reasonNum;
     }
 
@@ -404,13 +404,14 @@ public class Game2Manager : MonoBehaviour
         float winWaitTime = kimariteSound[_kimarite].length + waitTime;
         yield return new WaitForSeconds(winWaitTime);
         seAudioSource.PlayOneShot(winnerSound[_winner]);
-        StartCoroutine("SetReplayButton");
+        float replayWaitTime = winnerSound[_winner].length + waitTime;
+        StartCoroutine("SetReplayButton", replayWaitTime);
     }
 
     // replayボタンを遅れて登場させるコルーチン関数
-    private IEnumerator SetReplayButton()
+    private IEnumerator SetReplayButton(float _replayWaitTime)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(_replayWaitTime);
         replayButton.gameObject.SetActive(true);
         p1Ctrl.SetResetOK();
         p2Ctrl.SetResetOK();
