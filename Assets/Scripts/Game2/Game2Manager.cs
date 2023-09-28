@@ -62,6 +62,14 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private bool p1TachiaiInput = false;  // プレイヤー1の立会い入力
     [SerializeField] private float p1TachiaiTime = 0;  // プレイヤー1の立会い入力時間
     [SerializeField] private bool p1MoveEnd = false;  // プレイヤー1の立会い移動
+    [SerializeField] private bool p1ResultInput = false;  // プレイヤー1の勝敗結果データの入力
+    [SerializeField] private bool p1Result = false;  // プレイヤー1の勝敗結果
+    [SerializeField] private float p1GraFBNum = 0;  // プレイヤー1の最終前後重心値
+    [SerializeField] private float p1GraLRNum = 0;  // プレイヤー1の最終左右重心値
+    [SerializeField] private bool p1FallDown = false;  // プレイヤー1は倒れたか否か
+    [SerializeField] private bool p1OutDohyo = false;  // プレイヤー1は土俵から出たか否か
+    [SerializeField] private int p1AttackNum = 0;  // プレイヤー1の攻撃状態
+    [SerializeField] private float p1AngDifAbs = 0;  // プレイヤー1の相手方向との角度差の絶対値
     
     [Header("プレイヤー2")]
     [SerializeField] private Rikishi2Manager p2Ctrl;  // プレイヤー2のスクリプト
@@ -73,6 +81,14 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private bool p2TachiaiInput = false;  // プレイヤー2の立会い入力
     [SerializeField] private float p2TachiaiTime = 0;  // プレイヤー2の立会い入力時間
     [SerializeField] private bool p2MoveEnd = false;  // プレイヤー2の立会い移動
+    [SerializeField] private bool p2ResultInput = false;  // プレイヤー2の勝敗結果データの入力
+    [SerializeField] private bool p2Result = false;  // プレイヤー2の勝敗結果
+    [SerializeField] private float p2GraFBNum = 0;  // プレイヤー2の最終前後重心値
+    [SerializeField] private float p2GraLRNum = 0;  // プレイヤー2の最終左右重心値
+    [SerializeField] private bool p2FallDown = false;  // プレイヤー2は倒れたか否か
+    [SerializeField] private bool p2OutDohyo = false;  // プレイヤー2は土俵から出たか否か
+    [SerializeField] private int p2AttackNum = 0;  // プレイヤー2の攻撃状態
+    [SerializeField] private float p2AngDifAbs = 0;  // プレイヤー2の相手方向との角度差の絶対値
 
     [Header("サウンド")]
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
@@ -321,31 +337,208 @@ public class Game2Manager : MonoBehaviour
 
     #region ゲーム結果に関するスクリプト
     // ゲーム結果の決定
-    public void SetGameResult(int _winnerNum)
+    public void SetGameResult(int _playerNum, bool _isResult, float _graFBNum, float _graLRNum, bool _isFallDown, bool _isOutDohyo, int _attackNum, float _angDifAbs)
     {
-        playAudioSource.Stop();
-        SetGameState(GameState.End);
-        seAudioSource.PlayOneShot(resultSound);
-        kimariteNum = SetWinReason();
-        StartCoroutine(SetKimarite(kimariteNum, _winnerNum-1));
-        
-        switch(_winnerNum)
+        switch(_playerNum)
         {
             case 1:
-                p1UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
-                p2UICtrl.GameResult("L o s e !", new Color32(0, 0, 255, 255));
+                p1ResultInput = true;
+                p1Result = _isResult;
+                p1GraFBNum = _graFBNum;
+                p1GraLRNum = _graLRNum;
+                p1FallDown = _isFallDown;
+                p1OutDohyo = _isOutDohyo;
+                p1AttackNum = _attackNum;
+                p1AngDifAbs = _angDifAbs;
                 break;
             case 2:
-                p1UICtrl.GameResult("L o s e !", new Color32(0, 0, 255, 255));
-                p2UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
+                p2ResultInput = true;
+                p2Result = _isResult;
+                p2GraFBNum = _graFBNum;
+                p2GraLRNum = _graLRNum;
+                p2FallDown = _isFallDown;
+                p2OutDohyo = _isOutDohyo;
+                p2AttackNum = _attackNum;
+                p2AngDifAbs = _angDifAbs;
                 break;
+        }
+
+        if(p1ResultInput && p2ResultInput)
+        {
+            SetResultAction();
+        }
+    }
+
+    // ゲーム結果の演出を行う関数
+    private void SetResultAction()
+    {
+        int winnerNum = 0;
+        playAudioSource.Stop();
+        SetGameState(GameState.End);
+        SetResultText();
+        if(p1Result)
+        {
+            winnerNum = 1;
+        }
+        if(p2Result)
+        {
+            winnerNum = 2;
+        }
+        seAudioSource.PlayOneShot(resultSound);
+        kimariteNum = SetWinReason();
+        StartCoroutine(SetKimarite(kimariteNum, winnerNum-1));
+    }
+
+    // 勝敗結果のテキストの表示
+    private void SetResultText()
+    {
+        if(p1Result)
+        {
+            p1UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
+            p2UICtrl.GameResult("L o s e !", new Color32(0, 0, 255, 255));
+        }
+        if(p2Result)
+        {
+            p1UICtrl.GameResult("L o s e !", new Color32(0, 0, 255, 255));
+            p2UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
         }
     }
 
     // 決まり手の決定
     private int SetWinReason()
     {
-        int reasonNum = 6;
+        int reasonNum = 0;
+        if(p1Result)
+        {
+            if(p2OutDohyo)
+            {
+                if(p1AttackNum == 3)
+                {
+                    reasonNum = 2;
+                }
+                else if(p1AttackNum == 1 || p1AttackNum == 2)
+                {
+                    reasonNum = 0;
+                }
+            }
+            if(p2FallDown)
+            {
+                if(p1Ctrl.graMax < Mathf.Abs(p1GraFBNum) || p1Ctrl.graMax < Mathf.Abs(p1GraLRNum))
+                {
+                    reasonNum = 4;
+                }
+                else
+                {
+                    switch(p1AttackNum)
+                    {
+                        case 1:
+                        case 2:
+                            if(p1AngDifAbs > 120f)
+                            {
+                                reasonNum = 12;
+                            }
+                            else
+                            {
+                                if(Mathf.Abs(p2GraFBNum) >  Mathf.Abs(p2GraLRNum) && p2GraFBNum < 0)
+                                {
+                                    reasonNum = 1;
+                                }
+                                else
+                                {
+                                    if(p1AttackNum == 1)
+                                    {
+                                        reasonNum = 5;
+                                    }
+                                    if(p1AttackNum == 2)
+                                    {
+                                        reasonNum = 6;
+                                    }
+                                }
+                            }
+                            break;
+                        case 3:
+                            reasonNum = 3;
+                            break;
+                        case 4:
+                            if(p2AngDifAbs < 60f)
+                            {
+                                reasonNum = 7;
+                            }
+                            else
+                            {
+                                reasonNum = 8;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        if(p2Result)
+        {
+            if(p1OutDohyo)
+            {
+                if(p2AttackNum == 3)
+                {
+                    reasonNum = 2;
+                }
+                else if(p2AttackNum == 1 || p2AttackNum == 2)
+                {
+                    reasonNum = 0;
+                }
+            }
+            if(p1FallDown)
+            {
+                if(p2Ctrl.graMax < Mathf.Abs(p2GraFBNum) || p2Ctrl.graMax < Mathf.Abs(p2GraLRNum))
+                {
+                    reasonNum = 4;
+                }
+                else
+                {
+                    switch(p2AttackNum)
+                    {
+                        case 1:
+                        case 2:
+                            if(p2AngDifAbs > 120f)
+                            {
+                                reasonNum = 12;
+                            }
+                            else
+                            {
+                                if(Mathf.Abs(p1GraFBNum) >  Mathf.Abs(p1GraLRNum) && p1GraFBNum < 0)
+                                {
+                                    reasonNum = 1;
+                                }
+                                else
+                                {
+                                    if(p2AttackNum == 1)
+                                    {
+                                        reasonNum = 5;
+                                    }
+                                    if(p2AttackNum == 2)
+                                    {
+                                        reasonNum = 6;
+                                    }
+                                }
+                            }
+                            break;
+                        case 3:
+                            reasonNum = 3;
+                            break;
+                        case 4:
+                            if(p1AngDifAbs < 60f)
+                            {
+                                reasonNum = 7;
+                            }
+                            else
+                            {
+                                reasonNum = 8;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
         return reasonNum;
     }
 
@@ -434,6 +627,22 @@ public class Game2Manager : MonoBehaviour
         p2TachiaiTime = 0;
         p1MoveEnd = false;
         p2MoveEnd = false;
+        p1ResultInput = false;
+        p2ResultInput = false;
+        p1Result = false;
+        p2Result = false;
+        p1GraFBNum = 0;
+        p2GraFBNum = 0;
+        p1GraLRNum = 0;
+        p2GraLRNum = 0;
+        p1FallDown = false;
+        p2FallDown = false;
+        p1OutDohyo = false;
+        p2OutDohyo = false;
+        p1AttackNum = 0;
+        p2AttackNum = 0;
+        p1AngDifAbs = 0;
+        p2AngDifAbs = 0;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
         easyButton.image.color = new Color32(255, 255, 255, 255);

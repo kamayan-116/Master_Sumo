@@ -87,6 +87,7 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("重心")]
     [SerializeField] private float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
     [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
+    public float graMax = 15f;  // 重心耐久の最大値
     private Vector3 center;  // プレイヤーの重心初期座標
     [SerializeField] private Vector3 gravityPlace;  // プレイヤーの重心初期座標
     public Vector3 gravityWorldPos;  // プレイヤーの重心ワールド座標
@@ -146,6 +147,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool isHataki = false;  // はたきができるか否か
     [SerializeField] private bool  isEnd = false;  // 勝敗決着しているか否か
     [SerializeField] private bool  isResult;  // 勝敗結果の表示（true:勝ち,false:負け）
+    [SerializeField] private bool  isFallDown = false;  // 土俵に倒れたか否か
+    [SerializeField] private bool  isOutDohyo = false;  // 土俵から出たか否か
     [SerializeField] bool isReplay = false;  // Replayボタンを押せるか否か
     [Header("自動移動計算")]
     [SerializeField] private Vector3 target;  // 相手の胸元方向へのベクトル
@@ -169,7 +172,7 @@ public class Rikishi2Manager : MonoBehaviour
     void Start()
     {
         rikishiUI.SetWeightMaxMin(weightMax, weightMin);
-        rikishiUI.SetGraUIMoveMagNum(footMax * 3f);
+        rikishiUI.SetGraUIMoveMagNum(graMax);
         rb = playerObj.GetComponent<Rigidbody>();
         SetInitialNum();
         SetPlayStyle(PlayStyle.Yothu);
@@ -645,31 +648,31 @@ public class Rikishi2Manager : MonoBehaviour
             case Game2Manager.GameMode.Easy:
                 break;
             case Game2Manager.GameMode.Normal:
-                graLRMagSlope = 0.2f / (footMax * 3);
+                graLRMagSlope = 0.2f / graMax;
                 if(localScaleNum < 1.5f)
                 {
                     if(graFBNum < 0f)
                     {
-                        graFBMagSlope = 0.22f / (footMax * 3);
-                        graFBMagIntercept = -0.15f / (footMax * 3);
+                        graFBMagSlope = 0.22f / graMax;
+                        graFBMagIntercept = -0.15f / graMax;
                     }
                     else
                     {
-                        graFBMagSlope = 0.19f / (footMax * 3);
-                        graFBMagIntercept = -0.11f / (footMax * 3);
+                        graFBMagSlope = 0.19f / graMax;
+                        graFBMagIntercept = -0.11f / graMax;
                     }
                 }
                 else
                 {
                     if(graFBNum < 0f)
                     {
-                        graFBMagSlope = 0.14f / (footMax * 3);
-                        graFBMagIntercept = -0.03f / (footMax * 3);
+                        graFBMagSlope = 0.14f / graMax;
+                        graFBMagIntercept = -0.03f / graMax;
                     }
                     else
                     {
-                        graFBMagSlope = 0.1f / (footMax * 3);
-                        graFBMagIntercept = 0.025f / (footMax * 3);
+                        graFBMagSlope = 0.1f / graMax;
+                        graFBMagIntercept = 0.025f / graMax;
                     }
                 }
                 break;
@@ -1594,22 +1597,21 @@ public class Rikishi2Manager : MonoBehaviour
         float maxDis = Mathf.Max(dohyoLDis, dohyoRDis);
         if(maxDis > dohyoRadius)
         {
-            SetResult(true, false);
-            enemy.SetResult(true, true);
+            SetResult(true, false, false, true);
+            enemy.SetResult(true, true, false, false);
         }
     }
 
     // 勝敗の決着時に呼ばれる関数
-    public void SetResult(bool _isEnd, bool _isResult)
+    public void SetResult(bool _isEnd, bool _isResult, bool _isfallDown, bool _isOutDohyo)
     {
         if(!isEnd)
         {
             isEnd =  _isEnd;
             isResult = _isResult;
-            if(isResult)
-            {
-                Game2Manager.Instance.SetGameResult(playerNum);
-            }
+            isFallDown = _isfallDown;
+            isOutDohyo = _isOutDohyo;
+            Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angDifAbs);
         }
     }
     #endregion
@@ -1689,6 +1691,8 @@ public class Rikishi2Manager : MonoBehaviour
         isTachiaiMove = false;
         isTachiaiEnd = false;
         isEnd = false;
+        isFallDown = false;
+        isOutDohyo = false;
         isReplay = false;
         this.transform.position = thisInitialPos;
         this.transform.rotation = thisInitialRot;

@@ -11,8 +11,8 @@ public class Spine2JudgeCtrll : MonoBehaviour
     {
         if(other.gameObject.tag == "Dohyo")
         {
-            me.SetResult(true, false);
-            enemy.SetResult(true, true);
+            me.SetResult(true, false, true, false);
+            enemy.SetResult(true, true, false, false);
         }
     }
 }
