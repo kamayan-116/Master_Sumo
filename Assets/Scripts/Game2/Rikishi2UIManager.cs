@@ -15,7 +15,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private float weightInitialNum;  // プレイヤー全体の初期座標
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
     [SerializeField] private Image playImage; // プレイ状態のUI画像
-    [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が相撲）
+    [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が四つ、2がまわし、3が押し、4がはたき）
     [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
     [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
     [SerializeField] private Image gravityImage; // 重心座標のUI画像

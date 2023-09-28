@@ -6,6 +6,15 @@ using XInputDotNetPure;
 public class Rikishi2Manager : MonoBehaviour
 {
     #region 変数宣言
+    private enum PlayStyle
+    {
+        Yothu = 1,
+        Mawashi = 2,
+        Oshi = 3,
+        Hataki = 4
+    };
+    private PlayStyle playStyle;  // 現在の攻撃状態
+
     [Header("各オブジェクト")]
     [SerializeField] private Rikishi2UIManager rikishiUI;  // プレイヤーのUIを表示するプログラム
     [SerializeField] private Rikishi2Manager enemy;  // 相手のスクリプト
@@ -15,6 +24,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject playerObj;  // プレイヤーオブジェクト
     [SerializeField] private GameObject wholeObj;  //   全身のオブジェクト
     [SerializeField] private GameObject spineObj;  // 上半身のオブジェクト
+    [SerializeField] private GameObject lsObj;  // 左肩のオブジェクト
+    [SerializeField] private GameObject rsObj;  // 右肩のオブジェクト
     [SerializeField] private GameObject lfObj;  // 左足のオブジェクト
     [SerializeField] private GameObject rfObj;  // 右足のオブジェクト
     [SerializeField] private GameObject viewObj;  // 視線ベクトルオブジェクト
@@ -26,11 +37,13 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
-    [Header("足や座標などの情報")]
+    [Header("足や座標の情報")]
     [SerializeField] private Vector3 lf;  // 左足のワールド座標
     [SerializeField] private Vector3 rf;  // 右足のワールド座標
     [SerializeField] private Vector2 footInidis;  // 左右の足の初期距離(xが横方向、yが縦方向)
     [SerializeField] private Vector2 footDis;  // 左右の足の距離(xが横方向、yが縦方向)
+    [SerializeField] private float enemyDis;  // 敵プレイヤーの左足との距離
+    private float hatakiMax = 2.5f;  // はたきができる最大距離
     [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
     [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
     private float dohyoRadius = 4.85f;  // 土俵の半径
@@ -130,6 +143,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
     [SerializeField] private bool rFOpeInput = false;  // 右足の操作をしているか否か
     [SerializeField] private bool  isCollision = false;  // 相手と当たっているか否か
+    [SerializeField] private bool isHataki = false;  // はたきができるか否か
     [SerializeField] private bool  isEnd = false;  // 勝敗決着しているか否か
     [SerializeField] private bool  isResult;  // 勝敗結果の表示（true:勝ち,false:負け）
     [SerializeField] bool isReplay = false;  // Replayボタンを押せるか否か
@@ -144,6 +158,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Quaternion thisInitialRot;  // プレイヤー全体の初期角度
     [SerializeField] private Vector3 playerInitialPos;  // プレイヤーオブジェクトの初期座標
     [SerializeField] private Quaternion playerInitialRot;  // プレイヤーオブジェクトの初期角度
+    [SerializeField] private Quaternion lsInitialRot;  // 左肩オブジェクトの初期角度
+    [SerializeField] private Quaternion rsInitialRot;  // 右肩オブジェクトの初期角度
     [SerializeField] private Vector3 lfInitialPos;  // 左足の初期ローカル座標
     [SerializeField] private Vector3 rfInitialPos;  // 右足の初期ローカル座標
     [SerializeField] private Vector3 playerInitialScale;  // プレイヤーオブジェクトの初期スケール
@@ -156,6 +172,7 @@ public class Rikishi2Manager : MonoBehaviour
         rikishiUI.SetGraUIMoveMagNum(footMax * 3f);
         rb = playerObj.GetComponent<Rigidbody>();
         SetInitialNum();
+        SetPlayStyle(PlayStyle.Yothu);
     }
 
     // Update is called once per frame
@@ -290,6 +307,7 @@ public class Rikishi2Manager : MonoBehaviour
                 #endregion
                 break;
             case Game2Manager.GameState.Play:
+                #region 立会い入力
                 if(!isTachiaiEnd)
                 {
                     switch(playerNum)
@@ -312,11 +330,16 @@ public class Rikishi2Manager : MonoBehaviour
                     SetTimeMeasure();
                     SetTachiaiMove();
                 }
+                #endregion
+                #region 重心移動対戦中
                 else
                 {
+                    
                     SetEnemyTransform();
                     SetEnemyAngle();
                     SetFootInput();
+                    SetShoulderRot();
+                    SetEnemyDis();
                     SetGravityNum(right1 + right2, front1 + front2);
                     SetGravityPlace();
                     rikishiUI.SetGravityUI(graLRNum, graFBNum);
@@ -399,6 +422,21 @@ public class Rikishi2Manager : MonoBehaviour
                             {
                                 SetDragNum(1f, 0);
                             }
+
+                            if(Input.GetButtonDown("Mawashi1"))
+                            {
+                                SetPlayStyle(PlayStyle.Mawashi);
+                            }
+
+                            if(Input.GetButtonDown("Oshi1"))
+                            {
+                                SetPlayStyle(PlayStyle.Oshi);
+                            }
+
+                            if(Input.GetButtonDown("Hataki1"))
+                            {
+                                SetPlayStyle(PlayStyle.Hataki);
+                            }
                             break;
                         #endregion
                         #region プレイヤー2の入力
@@ -471,10 +509,26 @@ public class Rikishi2Manager : MonoBehaviour
                             {
                                 SetDragNum(1f, 0);
                             }
+
+                            if(Input.GetButtonDown("Mawashi2"))
+                            {
+                                SetPlayStyle(PlayStyle.Mawashi);
+                            }
+
+                            if(Input.GetButtonDown("Oshi2"))
+                            {
+                                SetPlayStyle(PlayStyle.Oshi);
+                            }
+
+                            if(Input.GetButtonDown("Hataki2"))
+                            {
+                                SetPlayStyle(PlayStyle.Hataki);
+                            }
                             break;
                         #endregion
                     }
                 }
+                #endregion
                 break;
             case Game2Manager.GameState.End:
                 if(Input.GetButtonDown("Decide1") && isReplay)
@@ -497,6 +551,8 @@ public class Rikishi2Manager : MonoBehaviour
         thisInitialRot = this.transform.rotation;
         playerInitialPos = playerObj.transform.localPosition;
         playerInitialRot = playerObj.transform.localRotation;
+        lsInitialRot = lsObj.transform.localRotation;
+        rsInitialRot = rsObj.transform.localRotation;
         lfInitialPos = lfObj.transform.localPosition;
         rfInitialPos = rfObj.transform.localPosition;
         scaleYNum = playerObj.transform.localScale.y;
@@ -707,6 +763,20 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region プレイヤーの入力に関するスクリプト
+    // プレイ状態の変化入力を行う関数
+    private void SetPlayStyle(PlayStyle _playStyle)
+    {
+        if(playStyle != _playStyle)
+        {
+            playStyle = _playStyle;
+        }
+        else
+        {
+            playStyle = PlayStyle.Yothu;
+        }
+        rikishiUI.SetPlayImage((int)playStyle);
+    }
+
     // 左JoyStickによる重心値の変化入力を行う関数
     private void SetEnemyGraInput(float rightPosi, float frontPosi)
     {
@@ -721,13 +791,10 @@ public class Rikishi2Manager : MonoBehaviour
         {
             if(angDifAbs <= 120f)
             {
-                graChaELRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                graChaEFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 isLRPush = true;
             }
             else
             {
-                graChaMLRNum += rightPosi;
                 isLRPush = false;
             }
 
@@ -736,14 +803,65 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
                 )
             {
-                graChaELRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                graChaEFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 isFBPush = true;
             }
             else
             {
-                graChaMFBNum += frontPosi;
                 isFBPush = false;
+            }
+
+            if(playStyle == PlayStyle.Oshi)
+            {
+                if(angDifAbs <= 60f)
+                {
+                    rightPosi = 0;
+                    if(frontPosi <= 0)
+                    {
+                        frontPosi = 0;
+                    }
+                }
+                else
+                {
+                    rightPosi = 0;
+                    frontPosi = 0;
+                }
+            }
+
+            if(playStyle == PlayStyle.Hataki)
+            {
+                if(angDifAbs <= 60f)
+                {
+                    rightPosi = 0;
+                    if(frontPosi >= 0)
+                    {
+                        frontPosi = 0;
+                    }
+                }
+                else
+                {
+                    rightPosi = 0;
+                    frontPosi = 0;
+                }
+            }
+
+            if(isLRPush)
+            {
+                graChaELRNum += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                graChaEFBNum += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            }
+            else
+            {
+                graChaMLRNum += rightPosi;
+            }
+
+            if(isFBPush)
+            {
+                graChaELRNum += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                graChaEFBNum += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            }
+            else
+            {
+                graChaMFBNum += frontPosi;
             }
 
             if(isFBPush && isLRPush)
@@ -785,6 +903,40 @@ public class Rikishi2Manager : MonoBehaviour
         bool lFLRInput = false;
         bool lFFBInput = false; 
 
+        if(playStyle == PlayStyle.Oshi)
+        {
+            if(angDifAbs <= 60f)
+            {
+                rightPosi = 0;
+                if(frontPosi <= 0)
+                {
+                    frontPosi = 0;
+                }
+            }
+            else
+            {
+                rightPosi = 0;
+                frontPosi = 0;
+            }
+        }
+
+        if(playStyle == PlayStyle.Hataki)
+        {
+            if(angDifAbs <= 60f)
+            {
+                rightPosi = 0;
+                if(frontPosi >= 0)
+                {
+                    frontPosi = 0;
+                }
+            }
+            else
+            {
+                rightPosi = 0;
+                frontPosi = 0;
+            }
+        }
+
         if((rightPosi < 0f && -footMax < lFLRNum) || (rightPosi > 0f && lFLRNum < clossMax))
         {
             lFLRInput = true;
@@ -797,10 +949,21 @@ public class Rikishi2Manager : MonoBehaviour
             }
             if(angDifAbs <= 120f)
             {
-                lFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                lFFBGra += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                lFLRPos += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                lFFBPos += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                if(playStyle == PlayStyle.Hataki && isHataki)
+                {
+                    lFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    lFFBGra += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                }
+                else
+                {
+                    if(isCollision)
+                    {
+                        lFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        lFFBGra += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        lFLRPos += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        lFFBPos += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    }
+                }
             }
         }
         else
@@ -823,10 +986,21 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
                 )
             {
-                lFLRGra += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                lFFBGra += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                lFLRPos += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                lFFBPos += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                if(playStyle == PlayStyle.Hataki && isHataki)
+                {
+                    lFLRGra += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                    lFFBGra += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                }
+                else
+                {
+                    if(isCollision)
+                    {
+                        lFLRGra += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                        lFFBGra += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        lFLRPos += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                        lFFBPos += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    }
+                }
             }
         }
         else
@@ -868,6 +1042,40 @@ public class Rikishi2Manager : MonoBehaviour
         bool rFLRInput = false;
         bool rFFBInput = false;
 
+        if(playStyle == PlayStyle.Oshi)
+        {
+            if(angDifAbs <= 60f)
+            {
+                rightPosi = 0;
+                if(frontPosi <= 0)
+                {
+                    frontPosi = 0;
+                }
+            }
+            else
+            {
+                rightPosi = 0;
+                frontPosi = 0;
+            }
+        }
+
+        if(playStyle == PlayStyle.Hataki)
+        {
+            if(angDifAbs <= 60f)
+            {
+                rightPosi = 0;
+                if(frontPosi >= 0)
+                {
+                    frontPosi = 0;
+                }
+            }
+            else
+            {
+                rightPosi = 0;
+                frontPosi = 0;
+            }
+        }
+
         if((rightPosi < 0f && -clossMax < rFLRNum) || (rightPosi > 0f && rFLRNum < footMax))
         {
             rFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
@@ -880,10 +1088,21 @@ public class Rikishi2Manager : MonoBehaviour
             }
             if(angDifAbs <= 120f)
             {
-                rFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                rFFBGra += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                rFLRPos += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                rFFBPos += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                if(playStyle == PlayStyle.Hataki && isHataki)
+                {
+                    rFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    rFFBGra += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                }
+                else
+                {
+                    if(isCollision)
+                    {
+                        rFLRGra += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        rFFBGra += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        rFLRPos += rightPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        rFFBPos += rightPosi * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    }
+                }
             }
         }
         else
@@ -906,10 +1125,21 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && frontPosi < 0f)
                 )
             {
-                rFLRGra += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                rFFBGra += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                rFLRPos += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                rFFBPos += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                if(playStyle == PlayStyle.Hataki && isHataki)
+                {
+                    rFLRGra += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                    rFFBGra += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                }
+                else
+                {
+                    if(isCollision)
+                    {
+                        rFLRGra += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                        rFFBGra += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                        rFLRPos += frontPosi * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                        rFFBPos += frontPosi * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    }
+                }
             }
         }
         else
@@ -1167,6 +1397,22 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region オブジェクトの座標に関するスクリプト
+    // 敵との距離を測る関数
+    public void SetEnemyDis()
+    {
+        Vector2 playerPlace =  new Vector2(this.transform.position.x, this.transform.position.z);
+        Vector2 enemyPlace =  new Vector2(enemy.gameObject.transform.position.x, enemy.gameObject.transform.position.z);
+        enemyDis = Vector2.Distance(playerPlace, enemyPlace);
+        if(enemyDis < hatakiMax)
+        {
+            isHataki = true;
+        }
+        else
+        {
+            isHataki = false;
+        }
+    }
+
     // 全身の位置の変更を行う関数
     private void SetPlayerPos(float rightPosi, float frontPosi)
     {
@@ -1227,6 +1473,88 @@ public class Rikishi2Manager : MonoBehaviour
             Vector3.up,
             Time.deltaTime * rotateSpeed * moveSpeedMagNum * moveSpeedMagNum * speedMagNum
         );
+    }
+
+    // プレイスタイルに応じて肩の角度を変更する関数
+    private void SetShoulderRot()
+    {
+        switch(playStyle)
+        {
+            case PlayStyle.Yothu:
+                if(angDifAbs <= 60)
+                {
+                    lsObj.transform.localRotation = lsInitialRot;
+                    rsObj.transform.localRotation = rsInitialRot;
+                }
+                else if(angDifAbs <= 120)
+                {
+                    if(angularDif > 0)
+                    {
+                        lsObj.transform.localEulerAngles = new Vector3(-320.629f, 148.527f, 125.262f);
+                        rsObj.transform.localEulerAngles = new Vector3(-233.385f, 130.717f, -8.995f);
+                    }
+                    else
+                    {
+                        lsObj.transform.localEulerAngles = new Vector3(-233.385f, 130.717f, -8.995f);
+                        rsObj.transform.localEulerAngles = new Vector3(-320.629f, 148.527f, -234.738f);
+                    }
+                }
+                else
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-112.308f, 298.164f, -30.504f);
+                    rsObj.transform.localEulerAngles = new Vector3(-67.692f, 118.164f, -210.504f);
+                }
+                break;
+            case PlayStyle.Mawashi:
+                if(angDifAbs <= 60)
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
+                    rsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
+                }
+                else if(angDifAbs <= 120)
+                {
+                    if(angularDif > 0)
+                    {
+                        lsObj.transform.localEulerAngles = new Vector3(-208.801f, 308.66f, -79.346f);
+                        rsObj.transform.localEulerAngles = new Vector3(43.183f, 250.925f, -259.626f);
+                    }
+                    else
+                    {
+                        lsObj.transform.localEulerAngles = new Vector3(43.183f, 250.925f, -259.626f);
+                        rsObj.transform.localEulerAngles = new Vector3(-208.801f, 308.66f, -79.346f);
+                    }
+                }
+                else
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-126.877f, 26.653f, -116.695f);
+                    rsObj.transform.localEulerAngles = new Vector3(-53.123f, 206.653f, -296.695f);
+                }
+                break;
+            case PlayStyle.Oshi:
+                if(angDifAbs <= 60)
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-201.884f, 100.532f, -3.473f);
+                    rsObj.transform.localEulerAngles = new Vector3(-338.116f, -79.468f, -183.473f);
+                }
+                else
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-178.919f, 10.02f, -91.011f);
+                    rsObj.transform.localEulerAngles = new Vector3(-361.081f, -190.02f, -271.01f);
+                }
+                break;
+            case PlayStyle.Hataki:
+                if(angDifAbs <= 60)
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-219.3f, 112.495f, 30.527f);
+                    rsObj.transform.localEulerAngles = new Vector3(39.3f, -67.505f, -149.473f);
+                }
+                else
+                {
+                    lsObj.transform.localEulerAngles = new Vector3(-178.919f, 10.02f, -91.011f);
+                    rsObj.transform.localEulerAngles = new Vector3(-361.081f, -190.02f, -271.01f);
+                }
+                break;
+        }
     }
     #endregion
 
@@ -1343,6 +1671,7 @@ public class Rikishi2Manager : MonoBehaviour
     }
     #endregion
 
+    #region Resetに関するスクリプト
     // Resetを可能にする関数
     public void SetResetOK()
     {
@@ -1366,6 +1695,8 @@ public class Rikishi2Manager : MonoBehaviour
         playerObj.transform.localPosition = playerInitialPos;
         playerObj.transform.localRotation = playerInitialRot;
         playerObj.transform.localScale = playerInitialScale;
+        lsObj.transform.localRotation = lsInitialRot;
+        rsObj.transform.localRotation = rsInitialRot;
         startPushTime = 0;
         penaltyNum = 0;
         pushTimeLag = 0;
@@ -1381,7 +1712,9 @@ public class Rikishi2Manager : MonoBehaviour
         SetFootPlace();
         SetGravityPlace();
         SetSpineAngle();
+        SetPlayStyle(PlayStyle.Yothu);
     }
+    #endregion
 
     // 重心値の表示を行う関数
     private void OnDrawGizmos()

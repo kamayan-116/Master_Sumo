@@ -1344,7 +1344,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1890036921129510910}
-  m_LocalRotation: {x: 0.9195198, y: 0.3548012, z: -0.10004818, w: -0.13634454}
+  m_LocalRotation: {x: 0.58837193, y: 0.5308531, z: -0.5306848, w: 0.30064464}
   m_LocalPosition: {x: 0.13792062, y: 0.025880741, z: -0.012650334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1352,7 +1352,7 @@ Transform:
   - {fileID: 4072732353908434275}
   m_Father: {fileID: 1249772256867644446}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -293.478, y: 129.979, z: -230.088}
 --- !u!1 &1932574527944469905
 GameObject:
   m_ObjectHideFlags: 0
@@ -2688,6 +2688,8 @@ MonoBehaviour:
   playerObj: {fileID: 3627811573610610426}
   wholeObj: {fileID: 9036896005512686497}
   spineObj: {fileID: 37116772543339840}
+  lsObj: {fileID: 4113516720087993832}
+  rsObj: {fileID: 1890036921129510910}
   lfObj: {fileID: 1208671319712286530}
   rfObj: {fileID: 4285389662383411524}
   viewObj: {fileID: 6870032065119884812}
@@ -2782,6 +2784,8 @@ MonoBehaviour:
   thisInitialRot: {x: 0, y: 0, z: 0, w: 0}
   playerInitialPos: {x: 0, y: 0, z: 0}
   playerInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  lsInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rsInitialRot: {x: 0, y: 0, z: 0, w: 0}
   lfInitialPos: {x: 0, y: 0, z: 0}
   rfInitialPos: {x: 0, y: 0, z: 0}
   playerInitialScale: {x: 0, y: 0, z: 0}
@@ -2844,7 +2848,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4113516720087993832}
-  m_LocalRotation: {x: 0.9195198, y: 0.3548012, z: -0.10004818, w: -0.13634454}
+  m_LocalRotation: {x: -0.58837205, y: -0.53085303, z: 0.53068477, w: -0.30064458}
   m_LocalPosition: {x: -0.13791987, y: -0.025879871, z: 0.012650215}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2852,7 +2856,7 @@ Transform:
   - {fileID: 4165976870850905051}
   m_Father: {fileID: 7088203693198930538}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -246.522, y: 50.021, z: -50.088}
 --- !u!1 &4197368443244177008
 GameObject:
   m_ObjectHideFlags: 0
@@ -4737,7 +4741,10 @@ MonoBehaviour:
   playImage: {fileID: 7749468303460049447}
   playSprite:
   - {fileID: 21300000, guid: 6a445c8684be0ad4f9f625ec7c18d349, type: 3}
+  - {fileID: 21300000, guid: 6b433aa4b4d717240b806c63ca24898b, type: 3}
   - {fileID: 21300000, guid: f49ab0ed0d8c48843894b73921597161, type: 3}
+  - {fileID: 21300000, guid: df29ae17ee4e109489b9d4799914136c, type: 3}
+  - {fileID: 21300000, guid: e6e20b5796e7dcb4cb98817901a927b1, type: 3}
   penaltyText: {fileID: 5116820348472208390}
   gravityPanel: {fileID: 3474483471094034941}
   gravityImage: {fileID: 6302589910126078427}
