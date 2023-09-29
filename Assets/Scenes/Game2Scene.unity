@@ -238,8 +238,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 79e01d12095e70748ade5cb98180de03, type: 3}
     - target: {fileID: 1877138817541807871, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877138817541807871, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -62.5
+      value: -75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877138817541807871, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2061619350969948283, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
@@ -369,6 +377,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 7c9bb165806faa54d8d3eacd788555e1, type: 3}
+    - target: {fileID: 4734622352094639006, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 4860507762371965799, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -582,6 +594,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4734622352094639006, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -765,10 +781,12 @@ MonoBehaviour:
   p1Result: 0
   p1GraFBNum: 0
   p1GraLRNum: 0
+  p1AttackFBNum: 0
+  p1AttackLRNum: 0
   p1FallDown: 0
   p1OutDohyo: 0
   p1AttackNum: 0
-  p1AngDifAbs: 0
+  p1AngDif: 0
   p2Ctrl: {fileID: 502546569}
   p2UICtrl: {fileID: 502546568}
   p2Obj: {fileID: 502546570}
@@ -782,10 +800,12 @@ MonoBehaviour:
   p2Result: 0
   p2GraFBNum: 0
   p2GraLRNum: 0
+  p2AttackFBNum: 0
+  p2AttackLRNum: 0
   p2FallDown: 0
   p2OutDohyo: 0
   p2AttackNum: 0
-  p2AngDifAbs: 0
+  p2AngDif: 0
   shoutSound: {fileID: 8300000, guid: 178cad069f24f044fbd9b19bba6bbe06, type: 3}
   startSound: {fileID: 8300000, guid: 65f72643e5d7042469a599df7c25f196, type: 3}
   playSound: {fileID: 8300000, guid: 75f87a112ba105042a88e649c4dbc9fd, type: 3}

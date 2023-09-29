@@ -705,6 +705,7 @@ public class Rikishi2Manager : MonoBehaviour
     private void TachiaiInput()
     {
         isStartPush = true;
+        rikishiUI.SetTachiaiBActive(false);
         Game2Manager.Instance.TachiaiStart(playerNum, startPushTime);
     }
 
@@ -1611,7 +1612,7 @@ public class Rikishi2Manager : MonoBehaviour
             isResult = _isResult;
             isFallDown = _isfallDown;
             isOutDohyo = _isOutDohyo;
-            Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angDifAbs);
+            Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif);
         }
     }
     #endregion

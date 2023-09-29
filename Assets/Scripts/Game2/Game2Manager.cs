@@ -66,10 +66,12 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private bool p1Result = false;  // プレイヤー1の勝敗結果
     [SerializeField] private float p1GraFBNum = 0;  // プレイヤー1の最終前後重心値
     [SerializeField] private float p1GraLRNum = 0;  // プレイヤー1の最終左右重心値
+    [SerializeField] private float p1AttackFBNum = 0;  // プレイヤー1の前後攻撃値
+    [SerializeField] private float p1AttackLRNum = 0;  // プレイヤー1の左右攻撃値
     [SerializeField] private bool p1FallDown = false;  // プレイヤー1は倒れたか否か
     [SerializeField] private bool p1OutDohyo = false;  // プレイヤー1は土俵から出たか否か
     [SerializeField] private int p1AttackNum = 0;  // プレイヤー1の攻撃状態
-    [SerializeField] private float p1AngDifAbs = 0;  // プレイヤー1の相手方向との角度差の絶対値
+    [SerializeField] private float p1AngDif = 0;  // プレイヤー1の相手方向との角度差
     
     [Header("プレイヤー2")]
     [SerializeField] private Rikishi2Manager p2Ctrl;  // プレイヤー2のスクリプト
@@ -85,10 +87,12 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private bool p2Result = false;  // プレイヤー2の勝敗結果
     [SerializeField] private float p2GraFBNum = 0;  // プレイヤー2の最終前後重心値
     [SerializeField] private float p2GraLRNum = 0;  // プレイヤー2の最終左右重心値
+    [SerializeField] private float p2AttackFBNum = 0;  // プレイヤー2の前後攻撃値
+    [SerializeField] private float p2AttackLRNum = 0;  // プレイヤー2の左右攻撃値
     [SerializeField] private bool p2FallDown = false;  // プレイヤー2は倒れたか否か
     [SerializeField] private bool p2OutDohyo = false;  // プレイヤー2は土俵から出たか否か
     [SerializeField] private int p2AttackNum = 0;  // プレイヤー2の攻撃状態
-    [SerializeField] private float p2AngDifAbs = 0;  // プレイヤー2の相手方向との角度差の絶対値
+    [SerializeField] private float p2AngDif = 0;  // プレイヤー2の相手方向との角度差
 
     [Header("サウンド")]
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
@@ -253,6 +257,8 @@ public class Game2Manager : MonoBehaviour
         float shoutTime = shoutSound.length + waitTime * 2;
         yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
+        p1UICtrl.SetTachiaiBActive(true);
+        p2UICtrl.SetTachiaiBActive(true);
         seAudioSource.PlayOneShot(startSound);
         SetGameState(GameState.Play);
         float startWaitTime = startSound.length + waitTime;
@@ -337,7 +343,7 @@ public class Game2Manager : MonoBehaviour
 
     #region ゲーム結果に関するスクリプト
     // ゲーム結果の決定
-    public void SetGameResult(int _playerNum, bool _isResult, float _graFBNum, float _graLRNum, bool _isFallDown, bool _isOutDohyo, int _attackNum, float _angDifAbs)
+    public void SetGameResult(int _playerNum, bool _isResult, float _graFBNum, float _graLRNum, bool _isFallDown, bool _isOutDohyo, int _attackNum, float _angularDif)
     {
         switch(_playerNum)
         {
@@ -349,7 +355,7 @@ public class Game2Manager : MonoBehaviour
                 p1FallDown = _isFallDown;
                 p1OutDohyo = _isOutDohyo;
                 p1AttackNum = _attackNum;
-                p1AngDifAbs = _angDifAbs;
+                p1AngDif = _angularDif;
                 break;
             case 2:
                 p2ResultInput = true;
@@ -359,12 +365,16 @@ public class Game2Manager : MonoBehaviour
                 p2FallDown = _isFallDown;
                 p2OutDohyo = _isOutDohyo;
                 p2AttackNum = _attackNum;
-                p2AngDifAbs = _angDifAbs;
+                p2AngDif = _angularDif;
                 break;
         }
 
         if(p1ResultInput && p2ResultInput)
         {
+            p1AttackFBNum = p2GraFBNum * Mathf.Cos(p2AngDif * Mathf.Deg2Rad) + p2GraLRNum * Mathf.Sin(-p2AngDif * Mathf.Deg2Rad);
+            p1AttackLRNum = p2GraFBNum * Mathf.Sin(p2AngDif * Mathf.Deg2Rad) + p2GraLRNum * Mathf.Cos(p2AngDif * Mathf.Deg2Rad);
+            p2AttackFBNum = p1GraFBNum * Mathf.Cos(p1AngDif * Mathf.Deg2Rad) + p1GraLRNum * Mathf.Sin(-p1AngDif * Mathf.Deg2Rad);
+            p2AttackLRNum = p1GraFBNum * Mathf.Sin(p1AngDif * Mathf.Deg2Rad) + p1GraLRNum * Mathf.Cos(p1AngDif * Mathf.Deg2Rad);
             SetResultAction();
         }
     }
@@ -433,13 +443,13 @@ public class Game2Manager : MonoBehaviour
                     {
                         case 1:
                         case 2:
-                            if(p1AngDifAbs > 120f)
+                            if(Mathf.Abs(p1AngDif) > 120f)
                             {
                                 reasonNum = 12;
                             }
                             else
                             {
-                                if(Mathf.Abs(p2GraFBNum) >  Mathf.Abs(p2GraLRNum) && p2GraFBNum < 0)
+                                if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum) && p1AttackFBNum < 0)
                                 {
                                     reasonNum = 1;
                                 }
@@ -460,7 +470,7 @@ public class Game2Manager : MonoBehaviour
                             reasonNum = 3;
                             break;
                         case 4:
-                            if(p2AngDifAbs < 60f)
+                            if(Mathf.Abs(p2AngDif) < 60f)
                             {
                                 reasonNum = 7;
                             }
@@ -499,13 +509,13 @@ public class Game2Manager : MonoBehaviour
                     {
                         case 1:
                         case 2:
-                            if(p2AngDifAbs > 120f)
+                            if(Mathf.Abs(p2AngDif) > 120f)
                             {
                                 reasonNum = 12;
                             }
                             else
                             {
-                                if(Mathf.Abs(p1GraFBNum) >  Mathf.Abs(p1GraLRNum) && p1GraFBNum < 0)
+                                if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum) && p2AttackFBNum < 0)
                                 {
                                     reasonNum = 1;
                                 }
@@ -526,7 +536,7 @@ public class Game2Manager : MonoBehaviour
                             reasonNum = 3;
                             break;
                         case 4:
-                            if(p1AngDifAbs < 60f)
+                            if(Mathf.Abs(p1AngDif) < 60f)
                             {
                                 reasonNum = 7;
                             }
@@ -635,14 +645,18 @@ public class Game2Manager : MonoBehaviour
         p2GraFBNum = 0;
         p1GraLRNum = 0;
         p2GraLRNum = 0;
+        p1AttackFBNum = 0;
+        p1AttackLRNum = 0;
+        p2AttackFBNum = 0;
+        p2AttackLRNum = 0;
         p1FallDown = false;
         p2FallDown = false;
         p1OutDohyo = false;
         p2OutDohyo = false;
         p1AttackNum = 0;
         p2AttackNum = 0;
-        p1AngDifAbs = 0;
-        p2AngDifAbs = 0;
+        p1AngDif = 0;
+        p2AngDif = 0;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
         easyButton.image.color = new Color32(255, 255, 255, 255);

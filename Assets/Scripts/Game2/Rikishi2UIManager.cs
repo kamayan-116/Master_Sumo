@@ -14,6 +14,10 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Button decideButton;  // 体重決定ボタン
     [SerializeField] private float weightInitialNum;  // プレイヤー全体の初期座標
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
+    [SerializeField] private Image tachiaiBImage; // 立合いにBボタンを押すように促す画像
+    private float blinkingSpeed = 0.2f;  // B画像の点滅スピード
+    private Color32 startColor = new Color32(255, 255, 255, 255);  // ループ開始時の色
+    private Color32 endColor = new Color32(255, 255, 255, 128);  // ループ終了時の色
     [SerializeField] private Image playImage; // プレイ状態のUI画像
     [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が四つ、2がまわし、3が押し、4がはたき）
     [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
@@ -44,6 +48,7 @@ public class Rikishi2UIManager : MonoBehaviour
     void Update()
     {
         rikishiManager.SetWeightNum(weightSlider.value);
+        SetBlink();
     }
 
     // 重心値のUIの移動値を計算する関数
@@ -113,6 +118,18 @@ public class Rikishi2UIManager : MonoBehaviour
     #endregion
 
     #region プレイ中のUI
+    // 立会いのBボタンの画像の表示状態に関する関数
+    public void SetTachiaiBActive(bool _isActive)
+    {   
+        tachiaiBImage.gameObject.SetActive(_isActive);
+    }
+
+    // 立会いのBボタンの点滅を行う関数
+    public void SetBlink()
+    {
+        tachiaiBImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
+    }
+
     // 立会いの入力を行った
     public void SetTachiaiInput()
     {   
@@ -203,7 +220,8 @@ public class Rikishi2UIManager : MonoBehaviour
     }
 
     #endregion
-
+    
+    #region ゲーム終了後のUI
     // ゲーム結果の表示
     public void GameResult(string _result, Color32 _color)
     {
@@ -231,4 +249,5 @@ public class Rikishi2UIManager : MonoBehaviour
         SetFootOperateColor(0);
         SetFootOpeActive(false, false);
     }
+    #endregion
 }
