@@ -41,6 +41,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
     [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
     [SerializeField] private Text resultText;  // 決まり手のテキスト
+    [SerializeField] private Image resultImage; // 決まり手のUI画像
+    [SerializeField] private Sprite[] resultSprite; // 決まり手の画像配列
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
 
     [Header("カメラ")]
@@ -97,7 +99,6 @@ public class Game2Manager : MonoBehaviour
     [Header("サウンド")]
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
     [SerializeField] private AudioClip startSound;  // のこったのサウンド
-    [SerializeField] private AudioClip playSound;  // 試合中のサウンド
     [SerializeField] private AudioClip resultSound;  // 勝負ありのサウンド
     [SerializeField] private AudioClip announceSound;  // ただいまの決まり手はのサウンド
     [SerializeField] private AudioClip[] kimariteSound;  // 決まり手のサウンド
@@ -257,10 +258,10 @@ public class Game2Manager : MonoBehaviour
         float shoutTime = shoutSound.length + waitTime * 2;
         yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
-        p1UICtrl.SetTachiaiBActive(true);
-        p2UICtrl.SetTachiaiBActive(true);
         seAudioSource.PlayOneShot(startSound);
         SetGameState(GameState.Play);
+        p1UICtrl.SetTachiaiBActive(true);
+        p2UICtrl.SetTachiaiBActive(true);
         float startWaitTime = startSound.length + waitTime;
         yield return new WaitForSeconds(startWaitTime);
         playAudioSource.Play();
@@ -604,6 +605,7 @@ public class Game2Manager : MonoBehaviour
         }
         gameResultUI.SetActive(true);
         seAudioSource.PlayOneShot(kimariteSound[_kimarite]);
+        resultImage.sprite = resultSprite[_kimarite];
         float winWaitTime = kimariteSound[_kimarite].length + waitTime;
         yield return new WaitForSeconds(winWaitTime);
         seAudioSource.PlayOneShot(winnerSound[_winner]);

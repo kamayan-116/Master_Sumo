@@ -1688,7 +1688,7 @@ GameObject:
   - component: {fileID: 833171528378501536}
   - component: {fileID: 6819782614144925998}
   m_Layer: 5
-  m_Name: TachiaiBImage
+  m_Name: TachiaiInputImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1742,7 +1742,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2efe6e982a746604bbe3858dc96312fd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f2a58bae74116584f866cab9cee6e071, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3671,7 +3671,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -50}
+  m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 900, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7531614384535926008
@@ -4820,7 +4820,10 @@ MonoBehaviour:
   decideButton: {fileID: 7725140910132508645}
   weightInitialNum: 0
   tachiaiPanel: {fileID: 8674496898244046760}
-  tachiaiBImage: {fileID: 6819782614144925998}
+  tachiaiInputImage: {fileID: 6819782614144925998}
+  tachiaiInputSprite:
+  - {fileID: 21300000, guid: f2a58bae74116584f866cab9cee6e071, type: 3}
+  - {fileID: 21300000, guid: 2efe6e982a746604bbe3858dc96312fd, type: 3}
   playImage: {fileID: 7749468303460049447}
   playSprite:
   - {fileID: 21300000, guid: 6a445c8684be0ad4f9f625ec7c18d349, type: 3}

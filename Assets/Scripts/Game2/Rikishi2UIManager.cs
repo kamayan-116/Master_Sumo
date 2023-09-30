@@ -14,7 +14,8 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Button decideButton;  // 体重決定ボタン
     [SerializeField] private float weightInitialNum;  // プレイヤー全体の初期座標
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
-    [SerializeField] private Image tachiaiBImage; // 立合いにBボタンを押すように促す画像
+    [SerializeField] private Image tachiaiInputImage; // 立合いの入力に応じた画像
+    [SerializeField] private Sprite[] tachiaiInputSprite; // 立合いの入力に応じた画像配列（0が開始前、1が立会い時）
     private float blinkingSpeed = 0.2f;  // B画像の点滅スピード
     private Color32 startColor = new Color32(255, 255, 255, 255);  // ループ開始時の色
     private Color32 endColor = new Color32(255, 255, 255, 128);  // ループ終了時の色
@@ -48,7 +49,10 @@ public class Rikishi2UIManager : MonoBehaviour
     void Update()
     {
         rikishiManager.SetWeightNum(weightSlider.value);
-        SetBlink();
+        if(tachiaiInputImage.gameObject.activeSelf && Game2Manager.Instance.gameState == Game2Manager.GameState.Play)
+        {
+            SetBlink();
+        }
     }
 
     // 重心値のUIの移動値を計算する関数
@@ -121,13 +125,28 @@ public class Rikishi2UIManager : MonoBehaviour
     // 立会いのBボタンの画像の表示状態に関する関数
     public void SetTachiaiBActive(bool _isActive)
     {   
-        tachiaiBImage.gameObject.SetActive(_isActive);
+        tachiaiInputImage.gameObject.SetActive(_isActive);
+        if(Game2Manager.Instance.gameState == Game2Manager.GameState.Play)
+        {
+            tachiaiInputImage.sprite = tachiaiInputSprite[1];
+        }
+        if(tachiaiInputImage.gameObject.activeSelf && Game2Manager.Instance.gameState == Game2Manager.GameState.BeforePlay)
+        {
+            StartCoroutine("SetTachiaiDelete");
+        }
+    }
+
+    // 立会いの入力画像をすぐに消させるコルーチン関数
+    private IEnumerator SetTachiaiDelete()
+    {
+        yield return new WaitForSeconds(0.2f);
+        SetTachiaiBActive(false);
     }
 
     // 立会いのBボタンの点滅を行う関数
     public void SetBlink()
     {
-        tachiaiBImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
+        tachiaiInputImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
     }
 
     // 立会いの入力を行った
@@ -240,6 +259,7 @@ public class Rikishi2UIManager : MonoBehaviour
         weightSlider.value = weightInitialNum;
         SetWeightText(weightSlider.value);
         tachiaiPanel.color = new Color32(255, 255, 255, 100);
+        tachiaiInputImage.sprite = tachiaiInputSprite[0];
         SetPlayImage(0);
         SetPenaltyText(0);
         SetArrowActive(0, false);

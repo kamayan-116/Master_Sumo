@@ -295,12 +295,14 @@ public class Rikishi2Manager : MonoBehaviour
                                     if(Input.GetButtonDown("Decide1"))
                                     {
                                         SetPenalty();
+                                        rikishiUI.SetTachiaiBActive(true);
                                     }
                                     break;
                                 case 2:
                                     if(Input.GetButtonDown("Decide2"))
                                     {
                                         SetPenalty();
+                                        rikishiUI.SetTachiaiBActive(true);
                                     }
                                     break;
                             }
