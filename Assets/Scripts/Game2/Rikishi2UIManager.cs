@@ -16,7 +16,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
     [SerializeField] private Image tachiaiInputImage; // 立合いの入力に応じた画像
     [SerializeField] private Sprite[] tachiaiInputSprite; // 立合いの入力に応じた画像配列（0が開始前、1が立会い時）
-    private float blinkingSpeed = 0.2f;  // B画像の点滅スピード
+    private float blinkingSpeed = 0.2f;  // 点滅スピード
     private Color32 startColor = new Color32(255, 255, 255, 255);  // ループ開始時の色
     private Color32 endColor = new Color32(255, 255, 255, 128);  // ループ終了時の色
     [SerializeField] private Image playImage; // プレイ状態のUI画像
@@ -51,7 +51,7 @@ public class Rikishi2UIManager : MonoBehaviour
         rikishiManager.SetWeightNum(weightSlider.value);
         if(tachiaiInputImage.gameObject.activeSelf && Game2Manager.Instance.gameState == Game2Manager.GameState.Play)
         {
-            SetBlink();
+            SetBlinkTachiai();
         }
     }
 
@@ -144,7 +144,7 @@ public class Rikishi2UIManager : MonoBehaviour
     }
 
     // 立会いのBボタンの点滅を行う関数
-    public void SetBlink()
+    public void SetBlinkTachiai()
     {
         tachiaiInputImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
     }
@@ -165,6 +165,18 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetPlayImage(int _playNum)
     {
         playImage.sprite = playSprite[_playNum];
+    }
+
+    // プレイ中の画像の点滅を行う関数
+    public void SetBlinkPlay()
+    {
+        playImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
+    }
+
+    // プレイ中の画像の透明度を戻す関数
+    public void SetBlinkPlayEnd()
+    {
+        playImage.color = startColor;
     }
 
     // 操作中の足の色を変更する関数

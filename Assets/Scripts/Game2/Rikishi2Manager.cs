@@ -552,44 +552,6 @@ public class Rikishi2Manager : MonoBehaviour
         footDis = new Vector2(Mathf.Abs(lf.x - rf.x), Mathf.Abs(lf.z - rf.z));
     }
 
-    // 初期状態の記録
-    private void SetInitialNum()
-    {
-        playerInitialScale = playerObj.transform.localScale;
-        thisInitialPos = this.transform.position;
-        thisInitialRot = this.transform.rotation;
-        playerInitialPos = playerObj.transform.localPosition;
-        playerInitialRot = playerObj.transform.localRotation;
-        lsInitialRot = lsObj.transform.localRotation;
-        rsInitialRot = rsObj.transform.localRotation;
-        lfInitialPos = lfObj.transform.localPosition;
-        rfInitialPos = rfObj.transform.localPosition;
-        scaleYNum = playerObj.transform.localScale.y;
-        footLengNum = lfObj.transform.position.y;
-        wholeY = wholeObj.transform.position.y;
-        center = new Vector3(0f, wholeY, -0.03f);
-    }
-
-    #region 体重に関するスクリプト
-    // 体重の数値の入力
-    public void SetWeightNum(float _weightNum)
-    {
-        weightNum = _weightNum;
-    }
-
-    // 体重の決定
-    public void WeightInput()
-    {
-        weightInput = true;
-        Game2Manager.Instance.GameStart(playerNum);
-        localScaleNum = (weightNum + weightMax - 2 * weightMin) / (weightMax - weightMin);
-        powerMagNum = localScaleNum;
-        speedMagNum = 3f - localScaleNum;
-        rb.mass = powerMagNum;
-        SetBodyScale();
-    }
-    #endregion
-
     #region ゲーム設定に関するスクリプト
     // プレイヤー人数におけるカメラ設定
     private void SetCameraPlace()
@@ -686,6 +648,44 @@ public class Rikishi2Manager : MonoBehaviour
         
         moveFBGraMagNum = graFBMagSlope * localScaleNum + graFBMagIntercept;
         moveLRGraMagNum = graLRMagSlope * localScaleNum + graLRMagIntercept;
+    }
+
+    // 初期状態の記録
+    private void SetInitialNum()
+    {
+        playerInitialScale = playerObj.transform.localScale;
+        thisInitialPos = this.transform.position;
+        thisInitialRot = this.transform.rotation;
+        playerInitialPos = playerObj.transform.localPosition;
+        playerInitialRot = playerObj.transform.localRotation;
+        lsInitialRot = lsObj.transform.localRotation;
+        rsInitialRot = rsObj.transform.localRotation;
+        lfInitialPos = lfObj.transform.localPosition;
+        rfInitialPos = rfObj.transform.localPosition;
+        scaleYNum = playerObj.transform.localScale.y;
+        footLengNum = lfObj.transform.position.y;
+        wholeY = wholeObj.transform.position.y;
+        center = new Vector3(0f, wholeY, -0.03f);
+    }
+    #endregion
+
+    #region 体重に関するスクリプト
+    // 体重の数値の入力
+    public void SetWeightNum(float _weightNum)
+    {
+        weightNum = _weightNum;
+    }
+
+    // 体重の決定
+    public void WeightInput()
+    {
+        weightInput = true;
+        Game2Manager.Instance.GameStart(playerNum);
+        localScaleNum = (weightNum + weightMax - 2 * weightMin) / (weightMax - weightMin);
+        powerMagNum = localScaleNum;
+        speedMagNum = 3f - localScaleNum;
+        rb.mass = powerMagNum;
+        SetBodyScale();
     }
     #endregion
 
@@ -919,9 +919,15 @@ public class Rikishi2Manager : MonoBehaviour
         bool lFLRInput = false;
         bool lFFBInput = false; 
 
+        if((playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi) && !isAttack)
+        {
+            enemyRight = 0;
+            enemyFront = 0;
+        }
+
         if(playStyle == PlayStyle.Oshi)
         {
-            if(angDifAbs <= 60f)
+            if(angDifAbs <= 60f && isAttack)
             {
                 if(enemyFront <= 0)
                 {
@@ -937,7 +943,7 @@ public class Rikishi2Manager : MonoBehaviour
 
         if(playStyle == PlayStyle.Hataki)
         {
-            if(angDifAbs <= 60f)
+            if(angDifAbs <= 60f && isHataki)
             {
                 if(enemyFront >= 0)
                 {
@@ -963,20 +969,17 @@ public class Rikishi2Manager : MonoBehaviour
             }
             if(angDifAbs <= 120f)
             {
-                if(playStyle == PlayStyle.Hataki && isHataki)
+                if(playStyle == PlayStyle.Hataki)
                 {
                     lFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                     lFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
                 else
                 {
-                    if(isAttack)
-                    {
-                        lFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        lFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        lFLRPos += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        lFFBPos += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                    }
+                    lFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    lFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    lFLRPos += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    lFFBPos += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
             }
         }
@@ -1000,20 +1003,17 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && enemyFront < 0f)
                 )
             {
-                if(playStyle == PlayStyle.Hataki && isHataki)
+                if(playStyle == PlayStyle.Hataki)
                 {
                     lFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
                     lFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
                 else
                 {
-                    if(isAttack)
-                    {
-                        lFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                        lFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        lFLRPos += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                        lFFBPos += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                    }
+                    lFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                    lFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    lFLRPos += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                    lFFBPos += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
             }
         }
@@ -1037,7 +1037,7 @@ public class Rikishi2Manager : MonoBehaviour
             SetEnemyGravity(2, lFLRGra, lFFBGra);
             enemy.SetPlayerPos(lFLRPos, lFFBPos);
         }
-        SetEnemyArrow(2, rightPosi, frontPosi);
+        SetEnemyArrow(2, enemyRight, enemyFront);
     }
 
     // 右足の入力値の変化を行う関数
@@ -1058,9 +1058,15 @@ public class Rikishi2Manager : MonoBehaviour
         bool rFLRInput = false;
         bool rFFBInput = false;
 
+        if((playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi) && !isAttack)
+        {
+            enemyRight = 0;
+            enemyFront = 0;
+        }
+
         if(playStyle == PlayStyle.Oshi)
         {
-            if(angDifAbs <= 60f)
+            if(angDifAbs <= 60f && isAttack)
             {
                 if(enemyFront <= 0)
                 {
@@ -1076,7 +1082,7 @@ public class Rikishi2Manager : MonoBehaviour
 
         if(playStyle == PlayStyle.Hataki)
         {
-            if(angDifAbs <= 60f)
+            if(angDifAbs <= 60f && isHataki)
             {
                 if(enemyFront >= 0)
                 {
@@ -1102,20 +1108,17 @@ public class Rikishi2Manager : MonoBehaviour
             }
             if(angDifAbs <= 120f)
             {
-                if(playStyle == PlayStyle.Hataki && isHataki)
+                if(playStyle == PlayStyle.Hataki)
                 {
                     rFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                     rFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
                 else
                 {
-                    if(isAttack)
-                    {
-                        rFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        rFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        rFLRPos += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        rFFBPos += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                    }
+                    rFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    rFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    rFLRPos += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    rFFBPos += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
             }
         }
@@ -1139,20 +1142,17 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && enemyFront < 0f)
                 )
             {
-                if(playStyle == PlayStyle.Hataki && isHataki)
+                if(playStyle == PlayStyle.Hataki)
                 {
                     rFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
                     rFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
                 else
                 {
-                    if(isAttack)
-                    {
-                        rFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                        rFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                        rFLRPos += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
-                        rFFBPos += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
-                    }
+                    rFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                    rFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                    rFLRPos += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                    rFFBPos += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                 }
             }
         }
@@ -1176,7 +1176,7 @@ public class Rikishi2Manager : MonoBehaviour
             SetEnemyGravity(3, rFLRGra, rFFBGra);
             enemy.SetPlayerPos(rFLRPos, rFFBPos);
         }
-        SetEnemyArrow(3, rightPosi, frontPosi);
+        SetEnemyArrow(3, enemyRight, enemyFront);
     }
 
     // 各足の入力状態の確認を行う関数
@@ -1427,18 +1427,34 @@ public class Rikishi2Manager : MonoBehaviour
         if(enemyDis < attackMax)
         {
             isAttack = true;
+            if(playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi || playStyle == PlayStyle.Oshi)
+            {
+                rikishiUI.SetBlinkPlayEnd();
+            }
         }
         else
         {
             isAttack = false;
+            if(playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi || playStyle == PlayStyle.Oshi)
+            {
+                rikishiUI.SetBlinkPlay();
+            }
         }
         if(enemyDis < hatakiMax)
         {
             isHataki = true;
+            if(playStyle == PlayStyle.Hataki)
+            {
+                rikishiUI.SetBlinkPlayEnd();
+            }
         }
         else
         {
             isHataki = false;
+            if(playStyle == PlayStyle.Hataki)
+            {
+                rikishiUI.SetBlinkPlay();
+            }
         }
     }
 
