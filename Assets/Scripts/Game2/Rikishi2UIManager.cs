@@ -29,6 +29,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveDownArrow; // 下方向重心移動可能画像
     [SerializeField] private Image graMoveLeftArrow; // 左方向重心移動可能画像
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
+    [SerializeField] private Sprite[] graMoveSprite; // 重心移動画像
     [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
     [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
@@ -230,6 +231,70 @@ public class Rikishi2UIManager : MonoBehaviour
             );
     }
 
+    // 重心移動矢印のSpriteを管理する関数
+    public void SetArrowSprite(int _playState, float _angDifAbs, bool _isAttack, bool _isHataki)
+    {
+        switch(_playState)
+        {
+            case 1:
+            case 2:
+                if(_angDifAbs < 120f && _isAttack)
+                {
+                    graMoveUpArrow.sprite = graMoveSprite[0];
+                    graMoveLeftArrow.sprite = graMoveSprite[0];
+                    graMoveRightArrow.sprite = graMoveSprite[0];
+                }
+                else
+                {
+                    graMoveUpArrow.sprite = graMoveSprite[1];
+                    graMoveLeftArrow.sprite = graMoveSprite[1];
+                    graMoveRightArrow.sprite = graMoveSprite[1];
+                }
+
+                if((_angDifAbs < 60f || 120f < _angDifAbs) && _isAttack)
+                {
+                    graMoveDownArrow.sprite = graMoveSprite[0];
+                }
+                else
+                {
+                    graMoveDownArrow.sprite = graMoveSprite[1];
+                }
+                break;
+            case 3:
+                graMoveDownArrow.sprite = graMoveSprite[1];
+
+                if(_angDifAbs < 60f && _isAttack)
+                {
+                    graMoveUpArrow.sprite = graMoveSprite[0];
+                    graMoveLeftArrow.sprite = graMoveSprite[0];
+                    graMoveRightArrow.sprite = graMoveSprite[0];
+                }
+                else
+                {
+                    graMoveUpArrow.sprite = graMoveSprite[1];
+                    graMoveLeftArrow.sprite = graMoveSprite[1];
+                    graMoveRightArrow.sprite = graMoveSprite[1];
+                }
+                break;
+            case 4:
+                graMoveUpArrow.sprite = graMoveSprite[1];
+                
+                if(_angDifAbs < 60f && _isHataki)
+                {
+                    graMoveDownArrow.sprite = graMoveSprite[0];
+                    graMoveLeftArrow.sprite = graMoveSprite[0];
+                    graMoveRightArrow.sprite = graMoveSprite[0];
+                }
+                else
+                {
+                    graMoveDownArrow.sprite = graMoveSprite[1];
+                    graMoveLeftArrow.sprite = graMoveSprite[1];
+                    graMoveRightArrow.sprite = graMoveSprite[1];
+                }
+                break;
+        }
+    }
+
     // 重心移動方向のUIを表示する関数
     public void SetArrowActive(int _arrowDir, bool _isActive)
     {
@@ -249,7 +314,6 @@ public class Rikishi2UIManager : MonoBehaviour
                 break;
         }
     }
-
     #endregion
     
     #region ゲーム終了後のUI

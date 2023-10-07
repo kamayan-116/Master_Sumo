@@ -18,7 +18,6 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("各オブジェクト")]
     [SerializeField] private Rikishi2UIManager rikishiUI;  // プレイヤーのUIを表示するプログラム
     [SerializeField] private Rikishi2Manager enemy;  // 相手のスクリプト
-    [SerializeField] private Rikishi2UIManager enemyUI;  // 相手のUIを表示するプログラム
     [SerializeField] private GameObject dohyoObj;  // 土俵オブジェクト
     [SerializeField] private Camera playerCamera;  // プレイヤーカメラオブジェクト
     [SerializeField] private GameObject playerObj;  // プレイヤーオブジェクト
@@ -29,6 +28,14 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject lfObj;  // 左足のオブジェクト
     [SerializeField] private GameObject rfObj;  // 右足のオブジェクト
     [SerializeField] private GameObject viewObj;  // 視線ベクトルオブジェクト
+    [SerializeField] private GameObject lOFObj;  // 左足外前座標オブジェクト
+    [SerializeField] private GameObject lOBObj;  // 左足外後座標オブジェクト
+    [SerializeField] private GameObject lIFObj;  // 左足内前座標オブジェクト
+    [SerializeField] private GameObject lIBObj;  // 左足内後座標オブジェクト
+    [SerializeField] private GameObject rOFObj;  // 右足外前座標オブジェクト
+    [SerializeField] private GameObject rOBObj;  // 右足外後座標オブジェクト
+    [SerializeField] private GameObject rIFObj;  // 右足内前座標オブジェクト
+    [SerializeField] private GameObject rIBObj;  // 右足内後座標オブジェクト
     [Header("基本情報")]
     public int playerNum;  // プレイヤーナンバー
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
@@ -350,6 +357,7 @@ public class Rikishi2Manager : MonoBehaviour
                     SetGravityNum(right1 + right2, front1 + front2);
                     SetGravityPlace();
                     rikishiUI.SetGravityUI(graLRNum, graFBNum);
+                    rikishiUI.SetArrowSprite((int)playStyle, angDifAbs, isAttack, isHataki);
                     SetGraPanelNum();
                     // SetVibration();
                     SetSpineAngle();
@@ -797,6 +805,7 @@ public class Rikishi2Manager : MonoBehaviour
         float graChaMLRNum = 0;
         float graChaMFBNum = 0;
 
+        SetEnemyArrow(1, rightPosi, frontPosi);
         if(rightPosi != 0 || frontPosi != 0)
         {
             if(angDifAbs <= 120f)
@@ -897,8 +906,6 @@ public class Rikishi2Manager : MonoBehaviour
             SetEnemyGravity(1, 0, 0);;
             SetOwnGravity(1, 0, 0);
         }
-
-        SetEnemyArrow(1, rightPosi, frontPosi);
     }
 
     // 左足の入力値の変化を行う関数
@@ -919,6 +926,7 @@ public class Rikishi2Manager : MonoBehaviour
         bool lFLRInput = false;
         bool lFFBInput = false; 
 
+        SetEnemyArrow(2, enemyRight, enemyFront);
         if((playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi) && !isAttack)
         {
             enemyRight = 0;
@@ -1037,7 +1045,6 @@ public class Rikishi2Manager : MonoBehaviour
             SetEnemyGravity(2, lFLRGra, lFFBGra);
             enemy.SetPlayerPos(lFLRPos, lFFBPos);
         }
-        SetEnemyArrow(2, enemyRight, enemyFront);
     }
 
     // 右足の入力値の変化を行う関数
@@ -1058,6 +1065,7 @@ public class Rikishi2Manager : MonoBehaviour
         bool rFLRInput = false;
         bool rFFBInput = false;
 
+        SetEnemyArrow(3, enemyRight, enemyFront);
         if((playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi) && !isAttack)
         {
             enemyRight = 0;
@@ -1176,7 +1184,6 @@ public class Rikishi2Manager : MonoBehaviour
             SetEnemyGravity(3, rFLRGra, rFFBGra);
             enemy.SetPlayerPos(rFLRPos, rFFBPos);
         }
-        SetEnemyArrow(3, enemyRight, enemyFront);
     }
 
     // 各足の入力状態の確認を行う関数
@@ -1202,7 +1209,13 @@ public class Rikishi2Manager : MonoBehaviour
     // 互いの足の当たり判定を行う関数
     private void SetRayCast()
     {
-        Ray ray = new Ray(lfObj.transform.position, new Vector3(lfObj.transform.position.x + 1f, 0, 0));
+        Vector3 origin = playerObj.transform.position;
+        Vector3 direction = new Vector3(
+            viewObj.transform.localPosition.x - playerObj.transform.position.x,
+            viewObj.transform.localPosition.y - playerObj.transform.position.y,
+            viewObj.transform.localPosition.z - playerObj.transform.position.z
+            );
+        Ray ray = new Ray(origin, viewDir);
         Debug.DrawRay(ray.origin, ray.direction, Color.red);
     }
     #endregion
@@ -1259,12 +1272,12 @@ public class Rikishi2Manager : MonoBehaviour
         inputSumLR = inputLLR + inputMoveLLR + inputMoveRLR;
         inputSumFB = inputLFB + inputMoveLFB + inputMoveRFB;
 
-        if(inputSumFB < -inputMin && (angDifAbs < 60f || 120f < angDifAbs))
+        if(inputSumFB < -inputMin)
         {
             rikishiUI.SetArrowActive(0, false);
             rikishiUI.SetArrowActive(1, true);
         }
-        else if(inputMin < inputSumFB && angDifAbs < 120f)
+        else if(inputMin < inputSumFB)
         {
             rikishiUI.SetArrowActive(0, true);
             rikishiUI.SetArrowActive(1, false);
@@ -1275,12 +1288,12 @@ public class Rikishi2Manager : MonoBehaviour
             rikishiUI.SetArrowActive(1, false);
         }
 
-        if(inputSumLR < -inputMin && angDifAbs < 120f)
+        if(inputSumLR < -inputMin)
         {
             rikishiUI.SetArrowActive(2, true);
             rikishiUI.SetArrowActive(3, false);
         }
-        else if(inputMin < inputSumLR && angDifAbs < 120f)
+        else if(inputMin < inputSumLR)
         {
             rikishiUI.SetArrowActive(2, false);
             rikishiUI.SetArrowActive(3, true);
@@ -1705,7 +1718,6 @@ public class Rikishi2Manager : MonoBehaviour
     // 非接触時相手の胸元方向に移動する関数
     private void SetCollisionMove(float rightDir, float frontDir)
     {
-        Debug.Log("okok");
         this.transform.Translate(
             Time.deltaTime * rightDir * moveSpeedMagNum * moveLRDisMagNum * speedMagNum,
             0f, 

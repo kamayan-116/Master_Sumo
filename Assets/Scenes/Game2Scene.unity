@@ -432,6 +432,14 @@ PrefabInstance:
       propertyPath: arrowSprite.Array.data[1]
       value: 
       objectReference: {fileID: 21300000, guid: 79e01d12095e70748ade5cb98180de03, type: 3}
+    - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: graMoveSprite.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 7c9bb165806faa54d8d3eacd788555e1, type: 3}
+    - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: graMoveSprite.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: a1d5811100947304893006009611151e, type: 3}
     - target: {fileID: 1877138817541807871, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0
