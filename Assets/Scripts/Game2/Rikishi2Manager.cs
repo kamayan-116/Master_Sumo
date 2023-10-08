@@ -152,6 +152,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
     [SerializeField] private bool rFOpeInput = false;  // 右足の操作をしているか否か
     [SerializeField] private bool  isCollision = false;  // 相手と当たっているか否か
+    [SerializeField] private bool  isInColl = false;  // 足の内側が当たっているか否か
+    [SerializeField] private bool  isOutColl = false;  // 足の外側が当たっているか否か
     [SerializeField] private bool isAttack = false;  // はたき以外の攻撃ができるか否か
     [SerializeField] private bool isHataki = false;  // はたきができるか否か
     [SerializeField] private bool  isEnd = false;  // 勝敗決着しているか否か
@@ -365,7 +367,7 @@ public class Rikishi2Manager : MonoBehaviour
                     maxAngle = SetMaxAngle();
                     SetDragNum(0, maxAngle);
 
-                    // SetRayCast();
+                    SetRayCast();
 
                     switch(playerNum)
                     {
@@ -1209,14 +1211,203 @@ public class Rikishi2Manager : MonoBehaviour
     // 互いの足の当たり判定を行う関数
     private void SetRayCast()
     {
-        Vector3 origin = playerObj.transform.position;
-        Vector3 direction = new Vector3(
-            viewObj.transform.localPosition.x - playerObj.transform.position.x,
-            viewObj.transform.localPosition.y - playerObj.transform.position.y,
-            viewObj.transform.localPosition.z - playerObj.transform.position.z
+        #region 左足外側の判定
+        Vector3 loOrigin = lOBObj.transform.position;
+        Vector3 loDirection = new Vector3(
+            lOFObj.transform.position.x - lOBObj.transform.position.x,
+            lOFObj.transform.position.y - lOBObj.transform.position.y,
+            lOFObj.transform.position.z - lOBObj.transform.position.z
             );
-        Ray ray = new Ray(origin, viewDir);
-        Debug.DrawRay(ray.origin, ray.direction, Color.red);
+        Ray loRay = new Ray(loOrigin, loDirection);
+        // Debug.DrawRay(loRay.origin, loRay.direction * 0.53f, Color.red);
+
+        RaycastHit lohit;
+        bool loCol = false;
+
+        if(Physics.Raycast(loRay, out lohit, 0.53f))
+        {
+            switch(playerNum)
+            {
+                case 1:
+                    if(lohit.collider.CompareTag("Rikishi2"))
+                    {
+                        loCol = true;
+                    }
+                    else
+                    {
+                        loCol = false;
+                    }
+                    break;
+                case 2:
+                    if(lohit.collider.CompareTag("Rikishi1"))
+                    {
+                        loCol = true;
+                    }
+                    else
+                    {
+                        loCol = false;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            loCol = false;
+        }
+        #endregion
+
+        #region 左足内側の判定
+        Vector3 liOrigin = lIBObj.transform.position;
+        Vector3 liDirection = new Vector3(
+            lIFObj.transform.position.x - lIBObj.transform.position.x,
+            lIFObj.transform.position.y - lIBObj.transform.position.y,
+            lIFObj.transform.position.z - lIBObj.transform.position.z
+            );
+        Ray liRay = new Ray(liOrigin, liDirection);
+        // Debug.DrawRay(liRay.origin, liRay.direction * 0.53f, Color.blue);
+
+        RaycastHit lihit;
+        bool liCol = false;
+
+        if(Physics.Raycast(liRay, out lihit, 0.53f))
+        {
+            switch(playerNum)
+            {
+                case 1:
+                    if(lihit.collider.CompareTag("Rikishi2"))
+                    {
+                        liCol = true;
+                    }
+                    else
+                    {
+                        liCol = false;
+                    }
+                    break;
+                case 2:
+                    if(lihit.collider.CompareTag("Rikishi1"))
+                    {
+                        liCol = true;
+                    }
+                    else
+                    {
+                        liCol = false;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            liCol = false;
+        }
+        #endregion
+
+        #region 右足外側の判定
+        Vector3 roOrigin = rOBObj.transform.position;
+        Vector3 roDirection = new Vector3(
+            rOFObj.transform.position.x - rOBObj.transform.position.x,
+            rOFObj.transform.position.y - rOBObj.transform.position.y,
+            rOFObj.transform.position.z - rOBObj.transform.position.z
+            );
+        Ray roRay = new Ray(roOrigin, roDirection);
+        // Debug.DrawRay(roRay.origin, roRay.direction * 0.53f, Color.green);
+
+        RaycastHit rohit;
+        bool roCol = false;
+
+        if(Physics.Raycast(roRay, out rohit, 0.53f))
+        {
+            switch(playerNum)
+            {
+                case 1:
+                    if(rohit.collider.CompareTag("Rikishi2"))
+                    {
+                        roCol = true;
+                    }
+                    else
+                    {
+                        roCol = false;
+                    }
+                    break;
+                case 2:
+                    if(rohit.collider.CompareTag("Rikishi1"))
+                    {
+                        roCol = true;
+                    }
+                    else
+                    {
+                        roCol = false;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            roCol = false;
+        }
+        #endregion
+
+        #region 右足内側の判定
+        Vector3 riOrigin = rIBObj.transform.position;
+        Vector3 riDirection = new Vector3(
+            rIFObj.transform.position.x - rIBObj.transform.position.x,
+            rIFObj.transform.position.y - rIBObj.transform.position.y,
+            rIFObj.transform.position.z - rIBObj.transform.position.z
+            );
+        Ray riRay = new Ray(riOrigin, riDirection);
+        // Debug.DrawRay(riRay.origin, riRay.direction * 0.53f, Color.yellow);
+
+        RaycastHit rihit;
+        bool riCol = false;
+
+        if(Physics.Raycast(riRay, out rihit, 0.53f))
+        {
+            switch(playerNum)
+            {
+                case 1:
+                    if(rihit.collider.CompareTag("Rikishi2"))
+                    {
+                        riCol = true;
+                    }
+                    else
+                    {
+                        riCol = false;
+                    }
+                    break;
+                case 2:
+                    if(rihit.collider.CompareTag("Rikishi1"))
+                    {
+                        riCol = true;
+                    }
+                    else
+                    {
+                        riCol = false;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            riCol = false;
+        }
+        #endregion
+
+        if(liCol || riCol)
+        {
+            isInColl = true;
+        }
+        else
+        {
+            isInColl = false;
+        }
+
+        if(loCol || roCol)
+        {
+            isOutColl = true;
+        }
+        else
+        {
+            isOutColl = false;
+        }
     }
     #endregion
     
@@ -1666,7 +1857,7 @@ public class Rikishi2Manager : MonoBehaviour
             isResult = _isResult;
             isFallDown = _isfallDown;
             isOutDohyo = _isOutDohyo;
-            Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif);
+            Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif, isInColl, isOutColl);
         }
     }
     #endregion

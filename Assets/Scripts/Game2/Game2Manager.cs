@@ -74,6 +74,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private bool p1OutDohyo = false;  // プレイヤー1は土俵から出たか否か
     [SerializeField] private int p1AttackNum = 0;  // プレイヤー1の攻撃状態
     [SerializeField] private float p1AngDif = 0;  // プレイヤー1の相手方向との角度差
+    [SerializeField] private bool p1InColl = false;  // プレイヤー1は内側の足が当たっているか
+    [SerializeField] private bool p1OutColl = false;  // プレイヤー1は外側の足が当たっているか
     
     [Header("プレイヤー2")]
     [SerializeField] private Rikishi2Manager p2Ctrl;  // プレイヤー2のスクリプト
@@ -95,6 +97,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private bool p2OutDohyo = false;  // プレイヤー2は土俵から出たか否か
     [SerializeField] private int p2AttackNum = 0;  // プレイヤー2の攻撃状態
     [SerializeField] private float p2AngDif = 0;  // プレイヤー2の相手方向との角度差
+    [SerializeField] private bool p2InColl = false;  // プレイヤー2は内側の足が当たっているか
+    [SerializeField] private bool p2OutColl = false;  // プレイヤー2は外側の足が当たっているか
 
     [Header("サウンド")]
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
@@ -344,7 +348,7 @@ public class Game2Manager : MonoBehaviour
 
     #region ゲーム結果に関するスクリプト
     // ゲーム結果の決定
-    public void SetGameResult(int _playerNum, bool _isResult, float _graFBNum, float _graLRNum, bool _isFallDown, bool _isOutDohyo, int _attackNum, float _angularDif)
+    public void SetGameResult(int _playerNum, bool _isResult, float _graFBNum, float _graLRNum, bool _isFallDown, bool _isOutDohyo, int _attackNum, float _angularDif, bool _isInColl, bool _isOutColl)
     {
         switch(_playerNum)
         {
@@ -357,6 +361,8 @@ public class Game2Manager : MonoBehaviour
                 p1OutDohyo = _isOutDohyo;
                 p1AttackNum = _attackNum;
                 p1AngDif = _angularDif;
+                p1InColl = _isInColl;
+                p1OutColl = _isOutColl;
                 break;
             case 2:
                 p2ResultInput = true;
@@ -367,6 +373,8 @@ public class Game2Manager : MonoBehaviour
                 p2OutDohyo = _isOutDohyo;
                 p2AttackNum = _attackNum;
                 p2AngDif = _angularDif;
+                p2InColl = _isInColl;
+                p2OutColl = _isOutColl;
                 break;
         }
 
@@ -421,65 +429,86 @@ public class Game2Manager : MonoBehaviour
         int reasonNum = 0;
         if(p1Result)
         {
-            if(p2OutDohyo)
+            if(p2InColl || p2OutColl)
             {
-                if(p1AttackNum == 3)
+                if(p1AttackLRNum > p1AttackFBNum)
                 {
-                    reasonNum = 2;
-                }
-                else if(p1AttackNum == 1 || p1AttackNum == 2)
-                {
-                    reasonNum = 0;
-                }
-            }
-            if(p2FallDown)
-            {
-                if(p1Ctrl.graMax < Mathf.Abs(p1GraFBNum) || p1Ctrl.graMax < Mathf.Abs(p1GraLRNum))
-                {
-                    reasonNum = 4;
+                    reasonNum = 11;
                 }
                 else
                 {
-                    switch(p1AttackNum)
+                    if(p2OutColl)
                     {
-                        case 1:
-                        case 2:
-                            if(Mathf.Abs(p1AngDif) > 120f)
-                            {
-                                reasonNum = 12;
-                            }
-                            else
-                            {
-                                if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum) && p1AttackFBNum < 0)
+                        reasonNum = 9;
+                    }
+                    if(p2InColl)
+                    {
+                        reasonNum = 10;
+                    }
+                }
+            }
+            else
+            {
+                if(p2OutDohyo)
+                {
+                    if(p1AttackNum == 3)
+                    {
+                        reasonNum = 2;
+                    }
+                    else if(p1AttackNum == 1 || p1AttackNum == 2)
+                    {
+                        reasonNum = 0;
+                    }
+                }
+                if(p2FallDown)
+                {
+                    if(p1Ctrl.graMax < Mathf.Abs(p1GraFBNum) || p1Ctrl.graMax < Mathf.Abs(p1GraLRNum))
+                    {
+                        reasonNum = 4;
+                    }
+                    else
+                    {
+                        switch(p1AttackNum)
+                        {
+                            case 1:
+                            case 2:
+                                if(Mathf.Abs(p1AngDif) > 120f)
                                 {
-                                    reasonNum = 1;
+                                    reasonNum = 12;
                                 }
                                 else
                                 {
-                                    if(p1AttackNum == 1)
+                                    if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum) && p1AttackFBNum < 0)
                                     {
-                                        reasonNum = 5;
+                                        reasonNum = 1;
                                     }
-                                    if(p1AttackNum == 2)
+                                    else
                                     {
-                                        reasonNum = 6;
+                                        if(p1AttackNum == 1)
+                                        {
+                                            reasonNum = 5;
+                                        }
+                                        if(p1AttackNum == 2)
+                                        {
+                                            reasonNum = 6;
+                                        }
                                     }
                                 }
-                            }
-                            break;
-                        case 3:
-                            reasonNum = 3;
-                            break;
-                        case 4:
-                            if(Mathf.Abs(p2AngDif) < 60f)
-                            {
-                                reasonNum = 7;
-                            }
-                            else
-                            {
-                                reasonNum = 8;
-                            }
-                            break;
+                                break;
+                            case 3:
+                                reasonNum = 3;
+                                break;
+                            case 4:
+                                if(Mathf.Abs(p2AngDif) < 60f)
+                                {
+                                    reasonNum = 7;
+                                }
+                                else
+                                {
+                                    reasonNum = 8;
+                                }
+                                break;
+                        }
                     }
                 }
             }
@@ -487,65 +516,86 @@ public class Game2Manager : MonoBehaviour
 
         if(p2Result)
         {
-            if(p1OutDohyo)
+            if(p1InColl || p1OutColl)
             {
-                if(p2AttackNum == 3)
+                if(p2AttackLRNum > p2AttackFBNum)
                 {
-                    reasonNum = 2;
-                }
-                else if(p2AttackNum == 1 || p2AttackNum == 2)
-                {
-                    reasonNum = 0;
-                }
-            }
-            if(p1FallDown)
-            {
-                if(p2Ctrl.graMax < Mathf.Abs(p2GraFBNum) || p2Ctrl.graMax < Mathf.Abs(p2GraLRNum))
-                {
-                    reasonNum = 4;
+                    reasonNum = 11;
                 }
                 else
                 {
-                    switch(p2AttackNum)
+                    if(p1OutColl)
                     {
-                        case 1:
-                        case 2:
-                            if(Mathf.Abs(p2AngDif) > 120f)
-                            {
-                                reasonNum = 12;
-                            }
-                            else
-                            {
-                                if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum) && p2AttackFBNum < 0)
+                        reasonNum = 9;
+                    }
+                    if(p1InColl)
+                    {
+                        reasonNum = 10;
+                    }
+                }
+            }
+            else
+            {
+                if(p1OutDohyo)
+                {
+                    if(p2AttackNum == 3)
+                    {
+                        reasonNum = 2;
+                    }
+                    else if(p2AttackNum == 1 || p2AttackNum == 2)
+                    {
+                        reasonNum = 0;
+                    }
+                }
+                if(p1FallDown)
+                {
+                    if(p2Ctrl.graMax < Mathf.Abs(p2GraFBNum) || p2Ctrl.graMax < Mathf.Abs(p2GraLRNum))
+                    {
+                        reasonNum = 4;
+                    }
+                    else
+                    {
+                        switch(p2AttackNum)
+                        {
+                            case 1:
+                            case 2:
+                                if(Mathf.Abs(p2AngDif) > 120f)
                                 {
-                                    reasonNum = 1;
+                                    reasonNum = 12;
                                 }
                                 else
                                 {
-                                    if(p2AttackNum == 1)
+                                    if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum) && p2AttackFBNum < 0)
                                     {
-                                        reasonNum = 5;
+                                        reasonNum = 1;
                                     }
-                                    if(p2AttackNum == 2)
+                                    else
                                     {
-                                        reasonNum = 6;
+                                        if(p2AttackNum == 1)
+                                        {
+                                            reasonNum = 5;
+                                        }
+                                        if(p2AttackNum == 2)
+                                        {
+                                            reasonNum = 6;
+                                        }
                                     }
                                 }
-                            }
-                            break;
-                        case 3:
-                            reasonNum = 3;
-                            break;
-                        case 4:
-                            if(Mathf.Abs(p1AngDif) < 60f)
-                            {
-                                reasonNum = 7;
-                            }
-                            else
-                            {
-                                reasonNum = 8;
-                            }
-                            break;
+                                break;
+                            case 3:
+                                reasonNum = 3;
+                                break;
+                            case 4:
+                                if(Mathf.Abs(p1AngDif) < 60f)
+                                {
+                                    reasonNum = 7;
+                                }
+                                else
+                                {
+                                    reasonNum = 8;
+                                }
+                                break;
+                        }
                     }
                 }
             }
@@ -659,6 +709,10 @@ public class Game2Manager : MonoBehaviour
         p2AttackNum = 0;
         p1AngDif = 0;
         p2AngDif = 0;
+        p1InColl = false;
+        p2InColl = false;
+        p1OutColl = false;
+        p2OutColl = false;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
         easyButton.image.color = new Color32(255, 255, 255, 255);
