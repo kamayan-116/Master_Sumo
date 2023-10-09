@@ -1053,7 +1053,7 @@ Transform:
   m_Children:
   - {fileID: 3479015229261549640}
   m_Father: {fileID: 7431333939951100096}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1542992634035668212
 GameObject:
@@ -1354,7 +1354,7 @@ Transform:
   m_Children:
   - {fileID: 1650864035295621476}
   m_Father: {fileID: 8034836297702766485}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1890036921129510910
 GameObject:
@@ -1817,7 +1817,7 @@ Transform:
   m_Children:
   - {fileID: 8342090610766203604}
   m_Father: {fileID: 7431333939951100096}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2796493222631562123
 GameObject:
@@ -1913,7 +1913,7 @@ Transform:
   m_Children:
   - {fileID: 6303853502217019903}
   m_Father: {fileID: 8034836297702766485}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2972913108436113615
 GameObject:
@@ -2829,6 +2829,18 @@ MonoBehaviour:
   rsObj: {fileID: 1890036921129510910}
   lfObj: {fileID: 1208671319712286530}
   rfObj: {fileID: 4285389662383411524}
+  lhObj: {fileID: 4071856268855778724}
+  rhObj: {fileID: 8401073083588060744}
+  lThumbObj: {fileID: 2143213611311403739}
+  rThumbObj: {fileID: 9124429236070581292}
+  lIndexObj: {fileID: 3233472097491120326}
+  rIndexObj: {fileID: 6563484006414587721}
+  lMiddleObj: {fileID: 3945581009548772480}
+  rMiddleObj: {fileID: 6159329038586411578}
+  lRingObj: {fileID: 2581495394614999005}
+  rRingObj: {fileID: 2915871582246615965}
+  lLittleObj: {fileID: 1503198231557407348}
+  rLittleObj: {fileID: 1881658256498700036}
   viewObj: {fileID: 6870032065119884812}
   lOFObj: {fileID: 5247675386980433468}
   lOBObj: {fileID: 6527330837025555370}
@@ -2941,6 +2953,18 @@ MonoBehaviour:
   rsInitialRot: {x: 0, y: 0, z: 0, w: 0}
   lfInitialPos: {x: 0, y: 0, z: 0}
   rfInitialPos: {x: 0, y: 0, z: 0}
+  lhInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rhInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  lThumbInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rThumbInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  lIndexInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rIndexInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  lMiddleInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rMiddleInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  lRingInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rRingInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  lLittleInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rLittleInitialRot: {x: 0, y: 0, z: 0, w: 0}
   playerInitialScale: {x: 0, y: 0, z: 0}
 --- !u!1 &4071856268855778724
 GameObject:
@@ -2972,8 +2996,8 @@ Transform:
   m_Children:
   - {fileID: 5109135820990247548}
   - {fileID: 7322191245654493771}
-  - {fileID: 364824155644659433}
   - {fileID: 5758801412180376775}
+  - {fileID: 364824155644659433}
   - {fileID: 3088754096629930459}
   m_Father: {fileID: 4165976870850905051}
   m_RootOrder: 0
@@ -5887,8 +5911,8 @@ Transform:
   m_Children:
   - {fileID: 8525083403024439825}
   - {fileID: 1896662312300752907}
-  - {fileID: 3105307200432559070}
   - {fileID: 4712845189993287090}
+  - {fileID: 3105307200432559070}
   - {fileID: 7216709537278489800}
   m_Father: {fileID: 4072732353908434275}
   m_RootOrder: 0

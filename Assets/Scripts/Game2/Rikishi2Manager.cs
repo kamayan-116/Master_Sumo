@@ -27,6 +27,19 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject rsObj;  // 右肩のオブジェクト
     [SerializeField] private GameObject lfObj;  // 左足のオブジェクト
     [SerializeField] private GameObject rfObj;  // 右足のオブジェクト
+    [SerializeField] private GameObject lhObj;  // 左手のオブジェクト
+    [SerializeField] private GameObject rhObj;  // 右手のオブジェクト
+    [SerializeField] private GameObject lThumbObj;  // 左親指のオブジェクト
+    [SerializeField] private GameObject rThumbObj;  // 右親指のオブジェクト
+    [SerializeField] private GameObject lIndexObj;  // 左人差し指のオブジェクト
+    [SerializeField] private GameObject rIndexObj;  // 右人差し指のオブジェクト
+    [SerializeField] private GameObject lMiddleObj;  // 左中指のオブジェクト
+    [SerializeField] private GameObject rMiddleObj;  // 右中指のオブジェクト
+    [SerializeField] private GameObject lRingObj;  // 左薬指のオブジェクト
+    [SerializeField] private GameObject rRingObj;  // 右薬指のオブジェクト
+    [SerializeField] private GameObject lLittleObj;  // 左小指のオブジェクト
+    [SerializeField] private GameObject rLittleObj;  // 右小指のオブジェクト
+
     [SerializeField] private GameObject viewObj;  // 視線ベクトルオブジェクト
     [SerializeField] private GameObject lOFObj;  // 左足外前座標オブジェクト
     [SerializeField] private GameObject lOBObj;  // 左足外後座標オブジェクト
@@ -176,6 +189,18 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Quaternion rsInitialRot;  // 右肩オブジェクトの初期角度
     [SerializeField] private Vector3 lfInitialPos;  // 左足の初期ローカル座標
     [SerializeField] private Vector3 rfInitialPos;  // 右足の初期ローカル座標
+    [SerializeField] private Quaternion lhInitialRot;  // 左手オブジェクトの初期角度
+    [SerializeField] private Quaternion rhInitialRot;  // 右手オブジェクトの初期角度
+    [SerializeField] private Quaternion lThumbInitialRot;  // 左親指オブジェクトの初期角度
+    [SerializeField] private Quaternion rThumbInitialRot;  // 右親指オブジェクトの初期角度
+    [SerializeField] private Quaternion lIndexInitialRot;  // 左人差し指オブジェクトの初期角度
+    [SerializeField] private Quaternion rIndexInitialRot;  // 右人差し指オブジェクトの初期角度
+    [SerializeField] private Quaternion lMiddleInitialRot;  // 左中指オブジェクトの初期角度
+    [SerializeField] private Quaternion rMiddleInitialRot;  // 右中指オブジェクトの初期角度
+    [SerializeField] private Quaternion lRingInitialRot;  // 左薬指オブジェクトの初期角度
+    [SerializeField] private Quaternion rRingInitialRot;  // 右薬指オブジェクトの初期角度
+    [SerializeField] private Quaternion lLittleInitialRot;  // 左小指オブジェクトの初期角度
+    [SerializeField] private Quaternion rLittleInitialRot;  // 右小指オブジェクトの初期角度
     [SerializeField] private Vector3 playerInitialScale;  // プレイヤーオブジェクトの初期スケール
     #endregion
 
@@ -672,6 +697,18 @@ public class Rikishi2Manager : MonoBehaviour
         rsInitialRot = rsObj.transform.localRotation;
         lfInitialPos = lfObj.transform.localPosition;
         rfInitialPos = rfObj.transform.localPosition;
+        lhInitialRot = lhObj.transform.localRotation;
+        rhInitialRot = rhObj.transform.localRotation;
+        lThumbInitialRot = lThumbObj.transform.localRotation;
+        rThumbInitialRot = rThumbObj.transform.localRotation;
+        lIndexInitialRot = lIndexObj.transform.localRotation;
+        rIndexInitialRot = rIndexObj.transform.localRotation;
+        lMiddleInitialRot = lMiddleObj.transform.localRotation;
+        rMiddleInitialRot = rMiddleObj.transform.localRotation;
+        lRingInitialRot = lRingObj.transform.localRotation;
+        rRingInitialRot = rRingObj.transform.localRotation;
+        lLittleInitialRot = lLittleObj.transform.localRotation;
+        rLittleInitialRot = rLittleObj.transform.localRotation;
         scaleYNum = playerObj.transform.localScale.y;
         footLengNum = lfObj.transform.position.y;
         wholeY = wholeObj.transform.position.y;
@@ -1730,6 +1767,7 @@ public class Rikishi2Manager : MonoBehaviour
         switch(playStyle)
         {
             case PlayStyle.Yothu:
+                SetHandRot();
                 if(angDifAbs <= 60)
                 {
                     lsObj.transform.localRotation = lsInitialRot;
@@ -1754,7 +1792,8 @@ public class Rikishi2Manager : MonoBehaviour
                     rsObj.transform.localEulerAngles = new Vector3(-67.692f, 118.164f, -210.504f);
                 }
                 break;
-            case PlayStyle.Mawashi:
+            case PlayStyle.Mawashi: 
+                SetHandRot();
                 if(angDifAbs <= 60)
                 {
                     lsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
@@ -1784,14 +1823,28 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     lsObj.transform.localEulerAngles = new Vector3(-201.884f, 100.532f, -3.473f);
                     rsObj.transform.localEulerAngles = new Vector3(-338.116f, -79.468f, -183.473f);
+                    lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                    rhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                    lThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
+                    rThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
+                    lIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
+                    rIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
+                    lMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
+                    rMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
+                    lRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
+                    rRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
+                    lLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                    rLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
                 }
                 else
                 {
                     lsObj.transform.localEulerAngles = new Vector3(-178.919f, 10.02f, -91.011f);
                     rsObj.transform.localEulerAngles = new Vector3(-361.081f, -190.02f, -271.01f);
+                    SetHandRot();
                 }
                 break;
             case PlayStyle.Hataki:
+                SetHandRot();
                 if(angDifAbs <= 60)
                 {
                     lsObj.transform.localEulerAngles = new Vector3(-219.3f, 112.495f, 30.527f);
@@ -1804,6 +1857,23 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    // 手の先の角度を初期に戻す関数
+    private void SetHandRot()
+    {
+        lhObj.transform.localRotation = lhInitialRot;
+        rhObj.transform.localRotation = rhInitialRot;
+        lThumbObj.transform.localRotation = lThumbInitialRot;
+        rThumbObj.transform.localRotation = rThumbInitialRot;
+        lIndexObj.transform.localRotation = lIndexInitialRot;
+        rIndexObj.transform.localRotation = rIndexInitialRot;
+        lMiddleObj.transform.localRotation = lMiddleInitialRot;
+        rMiddleObj.transform.localRotation = rMiddleInitialRot;
+        lRingObj.transform.localRotation = lRingInitialRot;
+        rRingObj.transform.localRotation = rRingInitialRot;
+        lLittleObj.transform.localRotation = lLittleInitialRot;
+        rLittleObj.transform.localRotation = rLittleInitialRot;
     }
     #endregion
 
@@ -1946,6 +2016,7 @@ public class Rikishi2Manager : MonoBehaviour
         playerObj.transform.localScale = playerInitialScale;
         lsObj.transform.localRotation = lsInitialRot;
         rsObj.transform.localRotation = rsInitialRot;
+        SetHandRot();
         startPushTime = 0;
         penaltyNum = 0;
         pushTimeLag = 0;
