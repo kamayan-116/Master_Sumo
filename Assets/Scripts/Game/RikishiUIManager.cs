@@ -13,9 +13,6 @@ public class RikishiUIManager : MonoBehaviour
     [SerializeField] private Slider weightSlider;  // 体重スライダー
     [SerializeField] private Button decideButton;  // 体重決定ボタン
     [SerializeField] private float weightInitialNum;  // プレイヤー全体の初期座標
-    [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
-    [SerializeField] private Image gravityImage; // 重心座標のUI画像
-    private float graUIMoveMagNum = 10.87f;  // 重心UIの移動倍率数値
     #endregion
 
     // Start is called before the first frame update
@@ -40,7 +37,6 @@ public class RikishiUIManager : MonoBehaviour
                 {
                     case 1:
                         weightPanel.rectTransform.localPosition = new Vector3(-755f, 450f, 0);
-                        gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
                         break;
                 }
                 break;
@@ -49,11 +45,9 @@ public class RikishiUIManager : MonoBehaviour
                 {
                     case 1:
                         weightPanel.rectTransform.localPosition = new Vector3(-280f, 450f, 0);
-                        gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
                         break;
                     case 2:
                         weightPanel.rectTransform.localPosition = new Vector3(280f, 450f, 0);
-                        gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
                         break;
                 }
                 break;
@@ -89,17 +83,6 @@ public class RikishiUIManager : MonoBehaviour
         rikishiManager.WeightInput();
     }
     #endregion
-
-    // 重心値のUIを表示する関数
-    public void SetGravityUI(float _graLRNum, float _graFBNum)
-    {
-        gravityImage.rectTransform.localPosition = 
-            new Vector3(
-                _graLRNum * graUIMoveMagNum,
-                _graFBNum * graUIMoveMagNum,
-                0
-            );
-    }
 
     // ゲーム結果の表示
     public void GameResult(string _result, Color32 _color)

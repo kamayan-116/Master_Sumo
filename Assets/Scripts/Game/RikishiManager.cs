@@ -31,10 +31,6 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
-    [SerializeField] private float dragNum = 0f;  // 倒れる際の抵抗値
-    [SerializeField] private float maxAngle;  // 倒れている時の最大角度
-    private float angleMagNum = 20f;  // 角度による抵抗値減速係数
-    [SerializeField] private float minusPerSecond;  // 抵抗値の減る秒速値
     [Header("体重")]
     [SerializeField] private float weightNum;  // 体重の数値
     [SerializeField] private float weightMin = 80f;  // 体重の最小値
@@ -268,11 +264,6 @@ public class RikishiManager : MonoBehaviour
                             moveDir = FindTransform();
                             // SetCollisionMove(moveDir.x, moveDir.y);
                         }
-
-                        if(Input.GetButtonDown("Decide1"))
-                        {
-                            SetDragNum(1f, 0);
-                        }
                         break;
                     #endregion
                     #region プレイヤー2の入力
@@ -320,21 +311,13 @@ public class RikishiManager : MonoBehaviour
                             moveDir = FindTransform();
                             // SetCollisionMove(moveDir.x, moveDir.y);
                         }
-
-                        if(Input.GetButtonDown("Decide2"))
-                        {
-                            SetDragNum(1f, 0);
-                        }
                         break;
                     #endregion
                 }
 
                 SetGravityPlace();
-                rikishiUI.SetGravityUI(graLRNum, graFBNum);
                 SetSpineAngle();
                 SetInDohyo();
-                maxAngle = SetMaxAngle();
-                SetDragNum(0, maxAngle);
                 break;
             case GameManager.GameState.End:
                 if(Input.GetButtonDown("Decide1") && isReplay)
@@ -350,7 +333,7 @@ public class RikishiManager : MonoBehaviour
     }
 
     // 初期状態の記録
-    public void SetInitialNum()
+    private void SetInitialNum()
     {
         playerInitialScale = playerObj.transform.localScale;
         thisInitialPos = this.transform.position;
@@ -664,29 +647,6 @@ public class RikishiManager : MonoBehaviour
     }
     #endregion
 
-    #region 抵抗に関するスクリプト
-    // プレイヤーの角度の最大値を計算する関数
-    private float SetMaxAngle()
-    {
-        float xAngle =  Mathf.Abs(Mathf.Repeat(playerObj.transform.localEulerAngles.x + 180, 360) - 180);
-        float zAngle =  Mathf.Abs(Mathf.Repeat(playerObj.transform.localEulerAngles.z + 180, 360) - 180);
-        float max = Mathf.Max(xAngle, zAngle);
-        return max;
-    }
-
-    // 抵抗値の計算と代入をする関数
-    private void SetDragNum(float _pushNum, float _maxAngle)
-    {
-        minusPerSecond = 1 + (_maxAngle / angleMagNum);
-        dragNum += _pushNum - Time.deltaTime * minusPerSecond;
-        if(dragNum <= 0f)
-        {
-            dragNum = 0f;
-        }
-        rb.drag = dragNum;
-    }
-    #endregion
-
     #region 勝敗に関するスクリプト
     // 土俵外に出ているかの判定
     public void SetInDohyo()
@@ -790,8 +750,6 @@ public class RikishiManager : MonoBehaviour
         rFLRNum = 0;
         graFBNum = 0;
         graLRNum = 0;
-        dragNum = 0;
-        maxAngle = 0;
         SetFootPlace();
         SetGravityPlace();
         SetSpineAngle();
