@@ -23,10 +23,12 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject playerObj;  // プレイヤーオブジェクト
     [SerializeField] private GameObject wholeObj;  //   全身のオブジェクト
     [SerializeField] private GameObject spineObj;  // 上半身のオブジェクト
-    [SerializeField] private GameObject lsObj;  // 左肩のオブジェクト
-    [SerializeField] private GameObject rsObj;  // 右肩のオブジェクト
     [SerializeField] private GameObject lfObj;  // 左足のオブジェクト
     [SerializeField] private GameObject rfObj;  // 右足のオブジェクト
+    [SerializeField] private GameObject lsObj;  // 左肩のオブジェクト
+    [SerializeField] private GameObject rsObj;  // 右肩のオブジェクト
+    [SerializeField] private GameObject leObj;  // 左肘のオブジェクト
+    [SerializeField] private GameObject reObj;  // 右肘のオブジェクト
     [SerializeField] private GameObject lhObj;  // 左手のオブジェクト
     [SerializeField] private GameObject rhObj;  // 右手のオブジェクト
     [SerializeField] private GameObject lThumbObj;  // 左親指のオブジェクト
@@ -139,9 +141,9 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float inputMoveRFB = 0f;  // 右足移動時からの前後の重心移動入力値
     [Header("角度計算")]
     [SerializeField] private Vector3 spineAngle;  // 上半身の角度
-    private float spineFBSlope = 4.5f;  // 上半身の前後の角度の傾き
+    private float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
     private float spineFBIntercept = 10f;  // 上半身の前後の角度の切片
-    private float spineLRSlope = -4.5f;  // 上半身の左右の角度の傾き
+    private float spineLRSlope = -3f;  // 上半身の左右の角度の傾き
     private float spineLRIntercept = 0f;  // 上半身の左右の角度の切片
     private float wholeY;  // 全身のワールドY座標
     [SerializeField] private float angleY;  // 全身のY方向角度
@@ -185,10 +187,12 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Quaternion thisInitialRot;  // プレイヤー全体の初期角度
     [SerializeField] private Vector3 playerInitialPos;  // プレイヤーオブジェクトの初期座標
     [SerializeField] private Quaternion playerInitialRot;  // プレイヤーオブジェクトの初期角度
-    [SerializeField] private Quaternion lsInitialRot;  // 左肩オブジェクトの初期角度
-    [SerializeField] private Quaternion rsInitialRot;  // 右肩オブジェクトの初期角度
     [SerializeField] private Vector3 lfInitialPos;  // 左足の初期ローカル座標
     [SerializeField] private Vector3 rfInitialPos;  // 右足の初期ローカル座標
+    [SerializeField] private Quaternion lsInitialRot;  // 左肩オブジェクトの初期角度
+    [SerializeField] private Quaternion rsInitialRot;  // 右肩オブジェクトの初期角度
+    [SerializeField] private Quaternion leInitialRot;  // 左肘オブジェクトの初期角度
+    [SerializeField] private Quaternion reInitialRot;  // 右肘オブジェクトの初期角度
     [SerializeField] private Quaternion lhInitialRot;  // 左手オブジェクトの初期角度
     [SerializeField] private Quaternion rhInitialRot;  // 右手オブジェクトの初期角度
     [SerializeField] private Quaternion lThumbInitialRot;  // 左親指オブジェクトの初期角度
@@ -693,10 +697,12 @@ public class Rikishi2Manager : MonoBehaviour
         thisInitialRot = this.transform.rotation;
         playerInitialPos = playerObj.transform.localPosition;
         playerInitialRot = playerObj.transform.localRotation;
-        lsInitialRot = lsObj.transform.localRotation;
-        rsInitialRot = rsObj.transform.localRotation;
         lfInitialPos = lfObj.transform.localPosition;
         rfInitialPos = rfObj.transform.localPosition;
+        lsInitialRot = lsObj.transform.localRotation;
+        rsInitialRot = rsObj.transform.localRotation;
+        leInitialRot = leObj.transform.localRotation;
+        reInitialRot = reObj.transform.localRotation;
         lhInitialRot = lhObj.transform.localRotation;
         rhInitialRot = rhObj.transform.localRotation;
         lThumbInitialRot = lThumbObj.transform.localRotation;
@@ -1016,7 +1022,7 @@ public class Rikishi2Manager : MonoBehaviour
             }
             if(angDifAbs <= 120f)
             {
-                if(playStyle == PlayStyle.Hataki)
+                if((playStyle == PlayStyle.Hataki) || (playStyle != PlayStyle.Hataki && isAttack && !isCollision))
                 {
                     lFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                     lFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
@@ -1050,7 +1056,7 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && enemyFront < 0f)
                 )
             {
-                if(playStyle == PlayStyle.Hataki)
+                if((playStyle == PlayStyle.Hataki) || (playStyle != PlayStyle.Hataki && isAttack && !isCollision))
                 {
                     lFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
                     lFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
@@ -1155,7 +1161,7 @@ public class Rikishi2Manager : MonoBehaviour
             }
             if(angDifAbs <= 120f)
             {
-                if(playStyle == PlayStyle.Hataki)
+                if((playStyle == PlayStyle.Hataki) || (playStyle != PlayStyle.Hataki && isAttack && !isCollision))
                 {
                     rFLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
                     rFFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
@@ -1189,7 +1195,7 @@ public class Rikishi2Manager : MonoBehaviour
                 (120f <= angDifAbs && angDifAbs <= 180f && enemyFront < 0f)
                 )
             {
-                if(playStyle == PlayStyle.Hataki)
+                if((playStyle == PlayStyle.Hataki) || (playStyle != PlayStyle.Hataki && isAttack && !isCollision))
                 {
                     rFLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
                     rFFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
@@ -1768,92 +1774,145 @@ public class Rikishi2Manager : MonoBehaviour
         {
             case PlayStyle.Yothu:
                 SetHandRot();
-                if(angDifAbs <= 60)
+                if(enemyDis < attackMax)
                 {
-                    lsObj.transform.localRotation = lsInitialRot;
-                    rsObj.transform.localRotation = rsInitialRot;
-                }
-                else if(angDifAbs <= 120)
-                {
-                    if(angularDif > 0)
+                    leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                    reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                    if(angDifAbs <= 60)
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(-320.629f, 148.527f, 125.262f);
-                        rsObj.transform.localEulerAngles = new Vector3(-233.385f, 130.717f, -8.995f);
+                        lsObj.transform.localEulerAngles = new Vector3(-246.522f, 50.021f, -50.088f);
+                        rsObj.transform.localEulerAngles = new Vector3(-293.478f, 230.021f, -230.088f);
+                    }
+                    else if(angDifAbs <= 120)
+                    {
+                        if(angularDif > 0)
+                        {
+                            lsObj.transform.localEulerAngles = new Vector3(-320.629f, 148.527f, 125.262f);
+                            rsObj.transform.localEulerAngles = new Vector3(-233.385f, 130.717f, -8.995f);
+                        }
+                        else
+                        {
+                            lsObj.transform.localEulerAngles = new Vector3(-233.385f, 130.717f, -8.995f);
+                            rsObj.transform.localEulerAngles = new Vector3(-320.629f, 148.527f, -234.738f);
+                        }
                     }
                     else
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(-233.385f, 130.717f, -8.995f);
-                        rsObj.transform.localEulerAngles = new Vector3(-320.629f, 148.527f, -234.738f);
+                        lsObj.transform.localEulerAngles = new Vector3(-112.308f, 298.164f, -30.504f);
+                        rsObj.transform.localEulerAngles = new Vector3(-67.692f, 118.164f, -210.504f);
                     }
                 }
                 else
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-112.308f, 298.164f, -30.504f);
-                    rsObj.transform.localEulerAngles = new Vector3(-67.692f, 118.164f, -210.504f);
+                    lsObj.transform.localRotation = lsInitialRot;
+                    rsObj.transform.localRotation = rsInitialRot;
+                    leObj.transform.localRotation = leInitialRot;
+                    reObj.transform.localRotation = reInitialRot;
                 }
                 break;
             case PlayStyle.Mawashi: 
                 SetHandRot();
-                if(angDifAbs <= 60)
+                if(enemyDis < attackMax)
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
-                    rsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
-                }
-                else if(angDifAbs <= 120)
-                {
-                    if(angularDif > 0)
+                    leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                    reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                    if(angDifAbs <= 60)
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(-208.801f, 308.66f, -79.346f);
-                        rsObj.transform.localEulerAngles = new Vector3(43.183f, 250.925f, -259.626f);
+                        lsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
+                        rsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
+                    }
+                    else if(angDifAbs <= 120)
+                    {
+                        if(angularDif > 0)
+                        {
+                            lsObj.transform.localEulerAngles = new Vector3(-208.801f, 308.66f, -79.346f);
+                            rsObj.transform.localEulerAngles = new Vector3(43.183f, 250.925f, -259.626f);
+                        }
+                        else
+                        {
+                            lsObj.transform.localEulerAngles = new Vector3(43.183f, 250.925f, -259.626f);
+                            rsObj.transform.localEulerAngles = new Vector3(-208.801f, 308.66f, -79.346f);
+                        }
                     }
                     else
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(43.183f, 250.925f, -259.626f);
-                        rsObj.transform.localEulerAngles = new Vector3(-208.801f, 308.66f, -79.346f);
+                        lsObj.transform.localEulerAngles = new Vector3(-126.877f, 26.653f, -116.695f);
+                        rsObj.transform.localEulerAngles = new Vector3(-53.123f, 206.653f, -296.695f);
                     }
                 }
                 else
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-126.877f, 26.653f, -116.695f);
-                    rsObj.transform.localEulerAngles = new Vector3(-53.123f, 206.653f, -296.695f);
+                    lsObj.transform.localRotation = lsInitialRot;
+                    rsObj.transform.localRotation = rsInitialRot;
+                    leObj.transform.localRotation = leInitialRot;
+                    reObj.transform.localRotation = reInitialRot;
                 }
                 break;
             case PlayStyle.Oshi:
-                if(angDifAbs <= 60)
+                if(enemyDis < attackMax)
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-201.884f, 100.532f, -3.473f);
-                    rsObj.transform.localEulerAngles = new Vector3(-338.116f, -79.468f, -183.473f);
-                    lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
-                    rhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
-                    lThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
-                    rThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
-                    lIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
-                    rIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
-                    lMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
-                    rMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
-                    lRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
-                    rRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
-                    lLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
-                    rLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                    if(angDifAbs <= 60)
+                    {
+                        lsObj.transform.localEulerAngles = new Vector3(-201.884f, 100.532f, -3.473f);
+                        rsObj.transform.localEulerAngles = new Vector3(-338.116f, -79.468f, -183.473f);
+                        leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                        reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                        lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                        rhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                        lThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
+                        rThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
+                        lIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
+                        rIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
+                        lMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
+                        rMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
+                        lRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
+                        rRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
+                        lLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                        rLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                    }
+                    else
+                    {
+                        lsObj.transform.localRotation = lsInitialRot;
+                        rsObj.transform.localRotation = rsInitialRot;
+                        leObj.transform.localRotation = leInitialRot;
+                        reObj.transform.localRotation = reInitialRot;
+                        SetHandRot();
+                    }
                 }
                 else
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-178.919f, 10.02f, -91.011f);
-                    rsObj.transform.localEulerAngles = new Vector3(-361.081f, -190.02f, -271.01f);
+                    lsObj.transform.localRotation = lsInitialRot;
+                    rsObj.transform.localRotation = rsInitialRot;
+                    leObj.transform.localRotation = leInitialRot;
+                    reObj.transform.localRotation = reInitialRot;
                     SetHandRot();
                 }
                 break;
             case PlayStyle.Hataki:
                 SetHandRot();
-                if(angDifAbs <= 60)
+                if(enemyDis < hatakiMax)
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-219.3f, 112.495f, 30.527f);
-                    rsObj.transform.localEulerAngles = new Vector3(39.3f, -67.505f, -149.473f);
+                    if(angDifAbs <= 60)
+                    {
+                        lsObj.transform.localEulerAngles = new Vector3(-219.3f, 112.495f, 30.527f);
+                        rsObj.transform.localEulerAngles = new Vector3(39.3f, -67.505f, -149.473f);
+                        leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                        reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                    }
+                    else
+                    {
+                        lsObj.transform.localRotation = lsInitialRot;
+                        rsObj.transform.localRotation = rsInitialRot;
+                        leObj.transform.localRotation = leInitialRot;
+                        reObj.transform.localRotation = reInitialRot;
+                    }
                 }
                 else
                 {
-                    lsObj.transform.localEulerAngles = new Vector3(-178.919f, 10.02f, -91.011f);
-                    rsObj.transform.localEulerAngles = new Vector3(-361.081f, -190.02f, -271.01f);
+                    lsObj.transform.localRotation = lsInitialRot;
+                    rsObj.transform.localRotation = rsInitialRot;
+                    leObj.transform.localRotation = leInitialRot;
+                    reObj.transform.localRotation = reInitialRot;
                 }
                 break;
         }

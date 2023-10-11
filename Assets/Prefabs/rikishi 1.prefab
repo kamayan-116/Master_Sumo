@@ -918,7 +918,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 993422169268174859}
-  m_LocalRotation: {x: -0.124238506, y: -0.11382868, z: 0.14483075, w: 0.97500354}
+  m_LocalRotation: {x: 0.13376465, y: 0.5695346, z: 0.19955936, w: -0.7860747}
   m_LocalPosition: {x: -0.27955714, y: -0.00000039615654, z: 0.00000037118448}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1379,7 +1379,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1890036921129510910}
-  m_LocalRotation: {x: 0.58837193, y: 0.5308531, z: -0.5306848, w: 0.30064464}
+  m_LocalRotation: {x: 0.7160644, y: 0.58648103, z: -0.34375393, w: 0.15850885}
   m_LocalPosition: {x: 0.13792062, y: 0.025880741, z: -0.012650334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1842,7 +1842,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2796493222631562123}
-  m_LocalRotation: {x: -0.124238506, y: -0.11382868, z: 0.14483075, w: 0.97500354}
+  m_LocalRotation: {x: 0.13376465, y: 0.5695346, z: 0.19955936, w: -0.7860747}
   m_LocalPosition: {x: 0.2795584, y: -0.0000019405632, z: 0.00000048213235}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2825,10 +2825,12 @@ MonoBehaviour:
   playerObj: {fileID: 3627811573610610426}
   wholeObj: {fileID: 9036896005512686497}
   spineObj: {fileID: 37116772543339840}
-  lsObj: {fileID: 4113516720087993832}
-  rsObj: {fileID: 1890036921129510910}
   lfObj: {fileID: 1208671319712286530}
   rfObj: {fileID: 4285389662383411524}
+  lsObj: {fileID: 4113516720087993832}
+  rsObj: {fileID: 1890036921129510910}
+  leObj: {fileID: 993422169268174859}
+  reObj: {fileID: 2796493222631562123}
   lhObj: {fileID: 4071856268855778724}
   rhObj: {fileID: 8401073083588060744}
   lThumbObj: {fileID: 2143213611311403739}
@@ -2949,10 +2951,12 @@ MonoBehaviour:
   thisInitialRot: {x: 0, y: 0, z: 0, w: 0}
   playerInitialPos: {x: 0, y: 0, z: 0}
   playerInitialRot: {x: 0, y: 0, z: 0, w: 0}
-  lsInitialRot: {x: 0, y: 0, z: 0, w: 0}
-  rsInitialRot: {x: 0, y: 0, z: 0, w: 0}
   lfInitialPos: {x: 0, y: 0, z: 0}
   rfInitialPos: {x: 0, y: 0, z: 0}
+  lsInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  rsInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  leInitialRot: {x: 0, y: 0, z: 0, w: 0}
+  reInitialRot: {x: 0, y: 0, z: 0, w: 0}
   lhInitialRot: {x: 0, y: 0, z: 0, w: 0}
   rhInitialRot: {x: 0, y: 0, z: 0, w: 0}
   lThumbInitialRot: {x: 0, y: 0, z: 0, w: 0}
@@ -3025,7 +3029,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4113516720087993832}
-  m_LocalRotation: {x: -0.58837205, y: -0.53085303, z: 0.53068477, w: -0.30064458}
+  m_LocalRotation: {x: 0.7160644, y: 0.5864811, z: -0.34375393, w: 0.1585088}
   m_LocalPosition: {x: -0.13791987, y: -0.025879871, z: 0.012650215}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
