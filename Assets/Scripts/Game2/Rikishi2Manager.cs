@@ -111,6 +111,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
     [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
     public float graMax = 15f;  // 重心耐久の最大値
+    private float wholeY;  // 全身のワールドY座標
     private Vector3 center;  // プレイヤーの重心初期座標
     [SerializeField] private Vector3 gravityPlace;  // プレイヤーの重心初期座標
     public Vector3 gravityWorldPos;  // プレイヤーの重心ワールド座標
@@ -140,12 +141,34 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float inputMoveRLR = 0f;  // 右足移動時からの左右の重心移動入力値
     [SerializeField] private float inputMoveRFB = 0f;  // 右足移動時からの前後の重心移動入力値
     [Header("角度計算")]
-    [SerializeField] private Vector3 spineAngle;  // 上半身の角度
     private float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
     private float spineFBIntercept = 10f;  // 上半身の前後の角度の切片
     private float spineLRSlope = -3f;  // 上半身の左右の角度の傾き
     private float spineLRIntercept = 0f;  // 上半身の左右の角度の切片
-    private float wholeY;  // 全身のワールドY座標
+    private float lsXSlope;  // 左肩のX軸の角度の傾き
+    private float lsXIntercept;  // 左肩のX軸の角度の切片
+    private float lsYSlope;  // 左肩のY軸の角度の傾き
+    private float lsYIntercept;  // 左肩のY軸の角度の切片
+    private float lsZSlope;  // 左肩のZ軸の角度の傾き
+    private float lsZIntercept;  // 左肩のZ軸の角度の切片
+    private float rsXSlope;  // 右肩のX軸の角度の傾き
+    private float rsXIntercept;  // 右肩のX軸の角度の切片
+    private float rsYSlope;  // 右肩のY軸の角度の傾き
+    private float rsYIntercept;  // 右肩のY軸の角度の切片
+    private float rsZSlope;  // 右肩のZ軸の角度の傾き
+    private float rsZIntercept;  // 右肩のZ軸の角度の切片
+    // private float leXSlope;  // 左肘のX軸の角度の傾き
+    // private float leXIntercept;  // 左肘のX軸の角度の切片
+    // private float leYSlope;  // 左肘のY軸の角度の傾き
+    // private float leYIntercept;  // 左肘のY軸の角度の切片
+    // private float leZSlope;  // 左肘のZ軸の角度の傾き
+    // private float leZIntercept;  // 左肘のZ軸の角度の切片
+    // private float reXSlope;  // 右肘のX軸の角度の傾き
+    // private float reXIntercept;  // 右肘のX軸の角度の切片
+    // private float reYSlope;  // 右肘のY軸の角度の傾き
+    // private float reYIntercept;  // 右肘のY軸の角度の切片
+    // private float reZSlope;  // 右肘のZ軸の角度の傾き
+    // private float reZIntercept;  // 右肘のZ軸の角度の切片
     [SerializeField] private float angleY;  // 全身のY方向角度
     [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
     [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
@@ -1749,11 +1772,11 @@ public class Rikishi2Manager : MonoBehaviour
     // 上半身の角度の変更を行う関数
     private void SetSpineAngle()
     {
-        spineAngle = spineObj.transform.localEulerAngles;
-        spineAngle.x = spineFBSlope * graFBNum + spineFBIntercept;
-        spineAngle.y = 0;
-        spineAngle.z = spineLRSlope * graLRNum + spineLRIntercept;
-        spineObj.transform.localEulerAngles = spineAngle;
+        spineObj.transform.localEulerAngles = new Vector3(
+            spineFBSlope * graFBNum + spineFBIntercept,
+            0,
+            spineLRSlope * graLRNum + spineLRIntercept
+        );
     }
 
     // 全身の角度の回転を行う関数
@@ -1774,14 +1797,70 @@ public class Rikishi2Manager : MonoBehaviour
         {
             case PlayStyle.Yothu:
                 SetHandRot();
+                if(angDifAbs <= 60)
+                {
+                    if(graFBNum < 0f)
+                    {
+                        lsXSlope = -1.8548f;
+                        lsXIntercept = -252.637f;
+                        lsYSlope = 2.8718f;
+                        lsYIntercept = 70.262f;
+                        lsZSlope = 3.4962f;
+                        lsZIntercept = -31.069f;
+                        rsXSlope = 1.8548f;
+                        rsXIntercept = -287.363f;
+                        rsYSlope = 2.8718f;
+                        rsYIntercept = 250.262f;
+                        rsZSlope = 3.4962f;
+                        rsZIntercept = -211.069f;
+                    }
+                    else if(graFBNum < 7.5f)
+                    {
+                        lsXSlope = 0.2572f;
+                        lsXIntercept = -252.637f;
+                        lsYSlope = 10.3464f;
+                        lsYIntercept = 70.262f;
+                        lsZSlope = 11.3008f;
+                        lsZIntercept = -31.069f;
+                        rsXSlope = 4.8872f;
+                        rsXIntercept = -287.363f;
+                        rsYSlope = -13.6536f;
+                        rsYIntercept = 250.262f;
+                        rsZSlope = -12.6992f;
+                        rsZIntercept = -211.069f;
+                    }
+                    else
+                    {
+                        lsXSlope = 3.2376f;
+                        lsXIntercept = -274.99f;
+                        lsYSlope = 5.078f;
+                        lsYIntercept = 109.775f;
+                        lsZSlope = 5.04f;
+                        lsZIntercept = 15.887f;
+                        rsXSlope = 3.2376f;
+                        rsXIntercept = -274.991f;
+                        rsYSlope = 5.078f;
+                        rsYIntercept = 109.775f;
+                        rsZSlope = 5.04f;
+                        rsZIntercept = -344.113f;
+                    }
+                }
                 if(enemyDis < attackMax)
                 {
                     leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                     reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                     if(angDifAbs <= 60)
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(-246.522f, 50.021f, -50.088f);
-                        rsObj.transform.localEulerAngles = new Vector3(-293.478f, 230.021f, -230.088f);
+                        lsObj.transform.localEulerAngles = new Vector3(
+                            lsXSlope * graFBNum + lsXIntercept,
+                            lsYSlope * graFBNum + lsYIntercept,
+                            lsZSlope * graFBNum + lsZIntercept
+                        );
+                        rsObj.transform.localEulerAngles = new Vector3(
+                            rsXSlope * graFBNum + rsXIntercept,
+                            rsYSlope * graFBNum + rsYIntercept,
+                            rsZSlope * graFBNum + rsZIntercept
+                        );
                     }
                     else if(angDifAbs <= 120)
                     {
@@ -1849,12 +1928,53 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 break;
             case PlayStyle.Oshi:
+                if(angDifAbs <= 60)
+                {
+                    if(graFBNum < 0f)
+                    {
+                        lsXSlope = -0.2952f;
+                        lsXIntercept = -201.737f;
+                        lsYSlope = 0.2282f;
+                        lsYIntercept = 100.532f;
+                        lsZSlope = 2.378f;
+                        lsZIntercept = -17.101f;
+                        rsXSlope = 0.2952f;
+                        rsXIntercept = -338.263f;
+                        rsYSlope = 0.2282f;
+                        rsYIntercept = -79.468f;
+                        rsZSlope = 2.378f;
+                        rsZIntercept = -197.101f;
+                    }
+                    else
+                    {
+                        lsXSlope = 0.5422f;
+                        lsXIntercept = -201.737f;
+                        lsYSlope = 0.6386f;
+                        lsYIntercept = 100.532f;
+                        lsZSlope = 3.4646f;
+                        lsZIntercept = -17.101f;
+                        rsXSlope = -0.5422f;
+                        rsXIntercept = -338.263f;
+                        rsYSlope = 0.6386f;
+                        rsYIntercept = -79.468f;
+                        rsZSlope = 3.4646f;
+                        rsZIntercept = -197.101f;
+                    }
+                }
                 if(enemyDis < attackMax)
                 {
                     if(angDifAbs <= 60)
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(-201.884f, 100.532f, -3.473f);
-                        rsObj.transform.localEulerAngles = new Vector3(-338.116f, -79.468f, -183.473f);
+                        lsObj.transform.localEulerAngles = new Vector3(
+                            lsXSlope * graFBNum + lsXIntercept,
+                            lsYSlope * graFBNum + lsYIntercept,
+                            lsZSlope * graFBNum + lsZIntercept
+                        );
+                        rsObj.transform.localEulerAngles = new Vector3(
+                            rsXSlope * graFBNum + rsXIntercept,
+                            rsYSlope * graFBNum + rsYIntercept,
+                            rsZSlope * graFBNum + rsZIntercept
+                        );
                         leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                         reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                         lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
