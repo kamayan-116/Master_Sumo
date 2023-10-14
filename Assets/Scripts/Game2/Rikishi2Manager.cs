@@ -6,6 +6,7 @@ using XInputDotNetPure;
 public class Rikishi2Manager : MonoBehaviour
 {
     #region 変数宣言
+    #region プレイヤーの攻撃状態の変数
     private enum PlayStyle
     {
         Yothu = 1,
@@ -14,7 +15,9 @@ public class Rikishi2Manager : MonoBehaviour
         Hataki = 4
     };
     private PlayStyle playStyle;  // 現在の攻撃状態
+    #endregion
 
+    #region 参照に関する変数
     [Header("各オブジェクト")]
     [SerializeField] private Rikishi2UIManager rikishiUI;  // プレイヤーのUIを表示するプログラム
     [SerializeField] private Rikishi2Manager enemy;  // 相手のスクリプト
@@ -31,6 +34,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject reObj;  // 右肘のオブジェクト
     [SerializeField] private GameObject lhObj;  // 左手のオブジェクト
     [SerializeField] private GameObject rhObj;  // 右手のオブジェクト
+    [SerializeField] private GameObject lhColliderObj;  // 左手の当たり判定のオブジェクト
+    [SerializeField] private GameObject rhColliderObj;  // 右手の当たり判定のオブジェクト
     [SerializeField] private GameObject lThumbObj;  // 左親指のオブジェクト
     [SerializeField] private GameObject rThumbObj;  // 右親指のオブジェクト
     [SerializeField] private GameObject lIndexObj;  // 左人差し指のオブジェクト
@@ -41,7 +46,6 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject rRingObj;  // 右薬指のオブジェクト
     [SerializeField] private GameObject lLittleObj;  // 左小指のオブジェクト
     [SerializeField] private GameObject rLittleObj;  // 右小指のオブジェクト
-
     [SerializeField] private GameObject viewObj;  // 視線ベクトルオブジェクト
     [SerializeField] private GameObject lOFObj;  // 左足外前座標オブジェクト
     [SerializeField] private GameObject lOBObj;  // 左足外後座標オブジェクト
@@ -51,6 +55,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject rOBObj;  // 右足外後座標オブジェクト
     [SerializeField] private GameObject rIFObj;  // 右足内前座標オブジェクト
     [SerializeField] private GameObject rIBObj;  // 右足内後座標オブジェクト
+    #endregion
+    #region 基本情報に関する変数
     [Header("基本情報")]
     public int playerNum;  // プレイヤーナンバー
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
@@ -59,6 +65,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
+    #endregion
+    #region 座標に関する変数
     [Header("足や座標の情報")]
     [SerializeField] private Vector3 lf;  // 左足のワールド座標
     [SerializeField] private Vector3 rf;  // 右足のワールド座標
@@ -70,6 +78,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
     [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
     private float dohyoRadius = 4.85f;  // 土俵の半径
+    #endregion
+    #region 立会いに関する変数
     [Header("立会い")]
     [SerializeField] private float startPushTime = 0f;  // 立会いのボタンを押す時間
     [SerializeField] private int penaltyNum = 0;  // 立会いの反則回数
@@ -79,17 +89,23 @@ public class Rikishi2Manager : MonoBehaviour
     private float startPosXSlope = 0.5f;  // 立会い開始X座標の傾き
     private float startPosXIntercept = 0.75f;  // 立会い開始X座標の切片
     private float tachiaiSpeedMag = 2.5f;  // 立会いのスピード倍率
+    #endregion
+    #region 抵抗に関する変数
     [Header("抵抗")]
     [SerializeField] private float dragNum = 0f;  // 倒れる際の抵抗値
     [SerializeField] private float maxAngle;  // 倒れている時の最大角度
     private float angleMagNum = 20f;  // 角度による抵抗値減速係数
     [SerializeField] private float minusPerSecond;  // 抵抗値の減る秒速値
+    #endregion
+    #region 体重に関する変数
     [Header("体重")]
     [SerializeField] private float weightNum;  // 体重の数値
     [SerializeField] private float weightMin = 80f;  // 体重の最小値
     [SerializeField] private float weightMax = 220f;  // 体重の最大値
     [SerializeField] private float powerMagNum;  // 体重パワーの倍率
     [SerializeField] private float speedMagNum;  // スピード倍率
+    #endregion
+    #region 入力値に関する変数
     [Header("足入力値")]
     [SerializeField] private float lFFBNum = 0f;  // 左足前後方の値（前方と後方の最大値:5）
     [SerializeField] private float lFLRNum = 0f;  // 左足左右の値（左と右の最大値:5）
@@ -97,6 +113,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float rFLRNum = 0f;  // 右足左右の値（左と右の最大値:5）
     private float footMax = 5f;  // 足の値の最大値
     private float clossMax = 2f;  // クロスの時の最大値
+    #endregion
+    #region 移動に関する変数
     [Header("移動倍率数値")]
     [SerializeField] private float moveLRDisMagNum;  // 左右移動距離の倍率数値
     [SerializeField] private float moveFBDisMagNum;  // 前後移動距離の倍率数値
@@ -107,6 +125,8 @@ public class Rikishi2Manager : MonoBehaviour
     private float graLRMagSlope;  // 重心左右移動の倍率の傾き
     private float graLRMagIntercept = 0f;  // 重心左右移動の倍率の切片
     private float moveSpeedMagNum = 5f;  // 移動スピードの倍率数値
+    #endregion
+    #region 重心に関する変数
     [Header("重心")]
     [SerializeField] private float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
     [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
@@ -140,42 +160,35 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float inputMoveLFB = 0f;  // 左足移動時からの前後の重心移動入力値
     [SerializeField] private float inputMoveRLR = 0f;  // 右足移動時からの左右の重心移動入力値
     [SerializeField] private float inputMoveRFB = 0f;  // 右足移動時からの前後の重心移動入力値
+    #endregion
+    #region 角度に関する変数
     [Header("角度計算")]
     private float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
     private float spineFBIntercept = 10f;  // 上半身の前後の角度の切片
     private float spineLRSlope = -3f;  // 上半身の左右の角度の傾き
     private float spineLRIntercept = 0f;  // 上半身の左右の角度の切片
-    private float lsXSlope;  // 左肩のX軸の角度の傾き
-    private float lsXIntercept;  // 左肩のX軸の角度の切片
-    private float lsYSlope;  // 左肩のY軸の角度の傾き
-    private float lsYIntercept;  // 左肩のY軸の角度の切片
-    private float lsZSlope;  // 左肩のZ軸の角度の傾き
-    private float lsZIntercept;  // 左肩のZ軸の角度の切片
-    private float rsXSlope;  // 右肩のX軸の角度の傾き
-    private float rsXIntercept;  // 右肩のX軸の角度の切片
-    private float rsYSlope;  // 右肩のY軸の角度の傾き
-    private float rsYIntercept;  // 右肩のY軸の角度の切片
-    private float rsZSlope;  // 右肩のZ軸の角度の傾き
-    private float rsZIntercept;  // 右肩のZ軸の角度の切片
-    // private float leXSlope;  // 左肘のX軸の角度の傾き
-    // private float leXIntercept;  // 左肘のX軸の角度の切片
-    // private float leYSlope;  // 左肘のY軸の角度の傾き
-    // private float leYIntercept;  // 左肘のY軸の角度の切片
-    // private float leZSlope;  // 左肘のZ軸の角度の傾き
-    // private float leZIntercept;  // 左肘のZ軸の角度の切片
-    // private float reXSlope;  // 右肘のX軸の角度の傾き
-    // private float reXIntercept;  // 右肘のX軸の角度の切片
-    // private float reYSlope;  // 右肘のY軸の角度の傾き
-    // private float reYIntercept;  // 右肘のY軸の角度の切片
-    // private float reZSlope;  // 右肘のZ軸の角度の傾き
-    // private float reZIntercept;  // 右肘のZ軸の角度の切片
+    private float sXSlope;  // 肩のX軸の角度の傾き
+    private float sXIntercept;  // 肩のX軸の角度の切片
+    private float sYSlope;  // 肩のY軸の角度の傾き
+    private float sYIntercept;  // 肩のY軸の角度の切片
+    private float sZSlope;  // 肩のZ軸の角度の傾き
+    private float sZIntercept;  // 肩のZ軸の角度の切片
+    // private float rsXSlope;  // 右肩のX軸の角度の傾き
+    // private float rsXIntercept;  // 右肩のX軸の角度の切片
+    // private float rsYSlope;  // 右肩のY軸の角度の傾き
+    // private float rsYIntercept;  // 右肩のY軸の角度の切片
+    // private float rsZSlope;  // 右肩のZ軸の角度の傾き
+    // private float rsZIntercept;  // 右肩のZ軸の角度の切片
+    private float eXScaleSlope;  // 肘のX軸のScaleの傾き
+    private float eXScaleIntercept;  // 肘のX軸のScaleの切片
     [SerializeField] private float angleY;  // 全身のY方向角度
     [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
     [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
     [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
     [SerializeField] private float angularDif = 0;  // 相手の方向と自身の向きの角度差
     [SerializeField] private float angDifAbs = 0;  // 相手方向と自身の向きの角度差の絶対値
-
+    #endregion
+    #region bool変数
     [Header("bool判定")]
     [SerializeField] private bool gameStart = false;  // 操作方法の決定ボタンを押したか否か
     [SerializeField] private bool playerModeDecide = false;  // プレイヤー人数決定ボタンを押したか否か
@@ -199,12 +212,16 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool  isFallDown = false;  // 土俵に倒れたか否か
     [SerializeField] private bool  isOutDohyo = false;  // 土俵から出たか否か
     [SerializeField] bool isReplay = false;  // Replayボタンを押せるか否か
+    #endregion
+    #region 自動移動に関する変数
     [Header("自動移動計算")]
     [SerializeField] private Vector3 target;  // 相手の胸元方向へのベクトル
     [SerializeField] private Vector2 moveDir;  // 相手の胸元方向への単位ベクトル
     private float moveDirSpeed = 0.375f;  // 相手の胸元方向への単位ベクトルの倍率
     [SerializeField] private Vector3 nowPos;  // 自身の座標
     [SerializeField] private Vector3 enemyPos;  // 相手の座標
+    #endregion
+    #region 初期値を保存する変数
     [Header("初期情報")]
     [SerializeField] private Vector3 thisInitialPos;  // プレイヤー全体の初期座標
     [SerializeField] private Quaternion thisInitialRot;  // プレイヤー全体の初期角度
@@ -229,6 +246,11 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Quaternion lLittleInitialRot;  // 左小指オブジェクトの初期角度
     [SerializeField] private Quaternion rLittleInitialRot;  // 右小指オブジェクトの初期角度
     [SerializeField] private Vector3 playerInitialScale;  // プレイヤーオブジェクトの初期スケール
+    [SerializeField] private Vector3 leInitialScale;  // 左肘の初期スケール
+    [SerializeField] private Vector3 reInitialScale;  // 右肘の初期スケール
+    [SerializeField] private Vector3 lhInitialScale;  // 左手の初期スケール
+    [SerializeField] private Vector3 rhInitialScale;  // 右手の初期スケール
+    #endregion
     #endregion
 
     // Start is called before the first frame update
@@ -415,11 +437,11 @@ public class Rikishi2Manager : MonoBehaviour
                     SetGraPanelNum();
                     // SetVibration();
                     SetSpineAngle();
+                    SetHandCollider();
                     SetInDohyo();
+                    SetRayCast();
                     maxAngle = SetMaxAngle();
                     SetDragNum(0, maxAngle);
-
-                    SetRayCast();
 
                     switch(playerNum)
                     {
@@ -738,6 +760,10 @@ public class Rikishi2Manager : MonoBehaviour
         rRingInitialRot = rRingObj.transform.localRotation;
         lLittleInitialRot = lLittleObj.transform.localRotation;
         rLittleInitialRot = rLittleObj.transform.localRotation;
+        leInitialScale = leObj.transform.localScale;
+        reInitialScale = reObj.transform.localScale;
+        lhInitialScale = lhObj.transform.localScale;
+        rhInitialScale = rhObj.transform.localScale;
         scaleYNum = playerObj.transform.localScale.y;
         footLengNum = lfObj.transform.position.y;
         wholeY = wholeObj.transform.position.y;
@@ -1790,7 +1816,7 @@ public class Rikishi2Manager : MonoBehaviour
         );
     }
 
-    // プレイスタイルに応じて肩の角度を変更する関数
+    // プレイスタイルに応じて肩の角度や大きさを変更する関数
     private void SetShoulderRot()
     {
         switch(playStyle)
@@ -1801,48 +1827,36 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     if(graFBNum < 0f)
                     {
-                        lsXSlope = -1.8548f;
-                        lsXIntercept = -252.637f;
-                        lsYSlope = 2.8718f;
-                        lsYIntercept = 70.262f;
-                        lsZSlope = 3.4962f;
-                        lsZIntercept = -31.069f;
-                        rsXSlope = 1.8548f;
-                        rsXIntercept = -287.363f;
-                        rsYSlope = 2.8718f;
-                        rsYIntercept = 250.262f;
-                        rsZSlope = 3.4962f;
-                        rsZIntercept = -211.069f;
+                        sXSlope = -1.8294f;
+                        sXIntercept = -254.171f;
+                        sYSlope = 3.5584f;
+                        sYIntercept = 80.552f;
+                        sZSlope = 4.4742f;
+                        sZIntercept = -23.334f;
+                        eXScaleSlope = -0.04f;
+                        eXScaleIntercept = 2f;
                     }
                     else if(graFBNum < 7.5f)
                     {
-                        lsXSlope = 0.2572f;
-                        lsXIntercept = -252.637f;
-                        lsYSlope = 10.3464f;
-                        lsYIntercept = 70.262f;
-                        lsZSlope = 11.3008f;
-                        lsZIntercept = -31.069f;
-                        rsXSlope = 4.8872f;
-                        rsXIntercept = -287.363f;
-                        rsYSlope = -13.6536f;
-                        rsYIntercept = 250.262f;
-                        rsZSlope = -12.6992f;
-                        rsZIntercept = -211.069f;
+                        sXSlope = 0.6584f;
+                        sXIntercept = -254.171f;
+                        sYSlope = 9.3848f;
+                        sYIntercept = 80.552f;
+                        sZSlope = 10.1448f;
+                        sZIntercept = -23.334f;
+                        eXScaleSlope = -0.052f;
+                        eXScaleIntercept = 2f;
                     }
                     else
                     {
-                        lsXSlope = 3.2376f;
-                        lsXIntercept = -274.99f;
-                        lsYSlope = 5.078f;
-                        lsYIntercept = 109.775f;
-                        lsZSlope = 5.04f;
-                        lsZIntercept = 15.887f;
-                        rsXSlope = 3.2376f;
-                        rsXIntercept = -274.991f;
-                        rsYSlope = 5.078f;
-                        rsYIntercept = 109.775f;
-                        rsZSlope = 5.04f;
-                        rsZIntercept = -344.113f;
+                        sXSlope = 3.1292f;
+                        sXIntercept = -272.702f;
+                        sYSlope = 4.6644f;
+                        sYIntercept = 115.955f;
+                        sZSlope = 4.8632f;
+                        sZIntercept = 16.278f;
+                        eXScaleSlope = -0.056f;
+                        eXScaleIntercept = 2.03f;
                     }
                 }
                 if(enemyDis < attackMax)
@@ -1852,14 +1866,34 @@ public class Rikishi2Manager : MonoBehaviour
                     if(angDifAbs <= 60)
                     {
                         lsObj.transform.localEulerAngles = new Vector3(
-                            lsXSlope * graFBNum + lsXIntercept,
-                            lsYSlope * graFBNum + lsYIntercept,
-                            lsZSlope * graFBNum + lsZIntercept
+                            sXSlope * graFBNum + sXIntercept,
+                            sYSlope * graFBNum + sYIntercept,
+                            sZSlope * graFBNum + sZIntercept
                         );
                         rsObj.transform.localEulerAngles = new Vector3(
-                            rsXSlope * graFBNum + rsXIntercept,
-                            rsYSlope * graFBNum + rsYIntercept,
-                            rsZSlope * graFBNum + rsZIntercept
+                            sXSlope * graFBNum + sXIntercept,
+                            sYSlope * graFBNum + sYIntercept,
+                            sZSlope * graFBNum + sZIntercept
+                        );
+                        leObj.transform.localScale = new Vector3(
+                            eXScaleSlope * graFBNum + eXScaleIntercept,
+                            1,
+                            1
+                        );
+                        reObj.transform.localScale = new Vector3(
+                            eXScaleSlope * graFBNum + eXScaleIntercept,
+                            1,
+                            1
+                        );
+                        lhObj.transform.localScale = new Vector3(
+                            1 / leObj.transform.localScale.x,
+                            1,
+                            1
+                        );
+                        rhObj.transform.localScale = new Vector3(
+                            1 / reObj.transform.localScale.x,
+                            1,
+                            1
                         );
                     }
                     else if(angDifAbs <= 120)
@@ -1932,33 +1966,21 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     if(graFBNum < 0f)
                     {
-                        lsXSlope = -0.2952f;
-                        lsXIntercept = -201.737f;
-                        lsYSlope = 0.2282f;
-                        lsYIntercept = 100.532f;
-                        lsZSlope = 2.378f;
-                        lsZIntercept = -17.101f;
-                        rsXSlope = 0.2952f;
-                        rsXIntercept = -338.263f;
-                        rsYSlope = 0.2282f;
-                        rsYIntercept = -79.468f;
-                        rsZSlope = 2.378f;
-                        rsZIntercept = -197.101f;
+                        sXSlope = -0.2952f;
+                        sXIntercept = -201.737f;
+                        sYSlope = 0.2282f;
+                        sYIntercept = 100.532f;
+                        sZSlope = 2.378f;
+                        sZIntercept = -17.101f;
                     }
                     else
                     {
-                        lsXSlope = 0.5422f;
-                        lsXIntercept = -201.737f;
-                        lsYSlope = 0.6386f;
-                        lsYIntercept = 100.532f;
-                        lsZSlope = 3.4646f;
-                        lsZIntercept = -17.101f;
-                        rsXSlope = -0.5422f;
-                        rsXIntercept = -338.263f;
-                        rsYSlope = 0.6386f;
-                        rsYIntercept = -79.468f;
-                        rsZSlope = 3.4646f;
-                        rsZIntercept = -197.101f;
+                        sXSlope = 0.5422f;
+                        sXIntercept = -201.737f;
+                        sYSlope = 0.6386f;
+                        sYIntercept = 100.532f;
+                        sZSlope = 3.4646f;
+                        sZIntercept = -17.101f;
                     }
                 }
                 if(enemyDis < attackMax)
@@ -1966,14 +1988,14 @@ public class Rikishi2Manager : MonoBehaviour
                     if(angDifAbs <= 60)
                     {
                         lsObj.transform.localEulerAngles = new Vector3(
-                            lsXSlope * graFBNum + lsXIntercept,
-                            lsYSlope * graFBNum + lsYIntercept,
-                            lsZSlope * graFBNum + lsZIntercept
+                            sXSlope * graFBNum + sXIntercept,
+                            sYSlope * graFBNum + sYIntercept,
+                            sZSlope * graFBNum + sZIntercept
                         );
                         rsObj.transform.localEulerAngles = new Vector3(
-                            rsXSlope * graFBNum + rsXIntercept,
-                            rsYSlope * graFBNum + rsYIntercept,
-                            rsZSlope * graFBNum + rsZIntercept
+                            sXSlope * graFBNum + sXIntercept,
+                            sYSlope * graFBNum + sYIntercept,
+                            sZSlope * graFBNum + sZIntercept
                         );
                         leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                         reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
@@ -2080,8 +2102,23 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 勝敗に関するスクリプト
+    // 手の当たり判定の出現に関する関数
+    private void SetHandCollider()
+    {
+        if(maxAngle > 15f && (Mathf.Abs(graFBNum) > graMax || Mathf.Abs(graLRNum) > graMax))
+        {
+            lhColliderObj.SetActive(true);
+            rhColliderObj.SetActive(true);
+        }
+        else
+        {
+            lhColliderObj.SetActive(false);
+            rhColliderObj.SetActive(false);
+        }
+    }
+
     // 土俵外に出ているかの判定
-    public void SetInDohyo()
+    private void SetInDohyo()
     {
         Vector2 lfPlace =  new Vector2(lfObj.transform.position.x, lfObj.transform.position.z);
         Vector2 rfPlace =  new Vector2(rfObj.transform.position.x, rfObj.transform.position.z);
@@ -2195,6 +2232,14 @@ public class Rikishi2Manager : MonoBehaviour
         playerObj.transform.localScale = playerInitialScale;
         lsObj.transform.localRotation = lsInitialRot;
         rsObj.transform.localRotation = rsInitialRot;
+        leObj.transform.localRotation = leInitialRot;
+        reObj.transform.localRotation = reInitialRot;
+        leObj.transform.localScale = leInitialScale;
+        reObj.transform.localScale = reInitialScale;
+        lhObj.transform.localScale = lhInitialScale;
+        rhObj.transform.localScale = rhInitialScale;
+        lhColliderObj.SetActive(false);
+        rhColliderObj.SetActive(false);
         SetHandRot();
         startPushTime = 0;
         penaltyNum = 0;
