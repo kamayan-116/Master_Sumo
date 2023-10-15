@@ -1822,39 +1822,40 @@ public class Rikishi2Manager : MonoBehaviour
         switch(playStyle)
         {
             case PlayStyle.Yothu:
-                SetHandRot();
+                SetHandRot(1);
+                SetFingerRot(1);
                 if(angDifAbs <= 60)
                 {
                     if(graFBNum < 0f)
                     {
-                        sXSlope = -1.8294f;
-                        sXIntercept = -254.171f;
-                        sYSlope = 3.5584f;
-                        sYIntercept = 80.552f;
-                        sZSlope = 4.4742f;
-                        sZIntercept = -23.334f;
+                        sXSlope = -1.8466f;
+                        sXIntercept = -254.429f;
+                        sYSlope = 3.7138f;
+                        sYIntercept = 82.882f;
+                        sZSlope = 4.5356f;
+                        sZIntercept = -24.222f;
                         eXScaleSlope = -0.04f;
                         eXScaleIntercept = 2f;
                     }
                     else if(graFBNum < 7.5f)
                     {
-                        sXSlope = 0.6584f;
-                        sXIntercept = -254.171f;
-                        sYSlope = 9.3848f;
-                        sYIntercept = 80.552f;
-                        sZSlope = 10.1448f;
-                        sZIntercept = -23.334f;
+                        sXSlope = 0.7468f;
+                        sXIntercept = -254.429f;
+                        sYSlope = 9.1876f;
+                        sYIntercept = 82.882f;
+                        sZSlope = 10.1252f;
+                        sZIntercept = -24.222f;
                         eXScaleSlope = -0.052f;
                         eXScaleIntercept = 2f;
                     }
                     else
                     {
-                        sXSlope = 3.1292f;
-                        sXIntercept = -272.702f;
-                        sYSlope = 4.6644f;
-                        sYIntercept = 115.955f;
-                        sZSlope = 4.8632f;
-                        sZIntercept = 16.278f;
+                        sXSlope = 3.0752f;
+                        sXIntercept = -271.892f;
+                        sYSlope = 4.5508f;
+                        sYIntercept = 117.658f;
+                        sZSlope = 4.7456f;
+                        sZIntercept = 16.124f;
                         eXScaleSlope = -0.056f;
                         eXScaleIntercept = 2.03f;
                     }
@@ -1924,7 +1925,8 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 break;
             case PlayStyle.Mawashi: 
-                SetHandRot();
+                SetHandRot(0);
+                SetFingerRot(0);
                 if(enemyDis < attackMax)
                 {
                     leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
@@ -1999,18 +2001,8 @@ public class Rikishi2Manager : MonoBehaviour
                         );
                         leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                         reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
-                        lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
-                        rhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
-                        lThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
-                        rThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
-                        lIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
-                        rIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
-                        lMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
-                        rMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
-                        lRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
-                        rRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
-                        lLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
-                        rLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                        SetHandRot(3);
+                        SetFingerRot(3);
                     }
                     else
                     {
@@ -2018,7 +2010,8 @@ public class Rikishi2Manager : MonoBehaviour
                         rsObj.transform.localRotation = rsInitialRot;
                         leObj.transform.localRotation = leInitialRot;
                         reObj.transform.localRotation = reInitialRot;
-                        SetHandRot();
+                        SetHandRot(0);
+                        SetFingerRot(0);
                     }
                 }
                 else
@@ -2027,11 +2020,13 @@ public class Rikishi2Manager : MonoBehaviour
                     rsObj.transform.localRotation = rsInitialRot;
                     leObj.transform.localRotation = leInitialRot;
                     reObj.transform.localRotation = reInitialRot;
-                    SetHandRot();
+                    SetHandRot(0);
+                    SetFingerRot(0);
                 }
                 break;
             case PlayStyle.Hataki:
-                SetHandRot();
+                SetHandRot(0);
+                SetFingerRot(0);
                 if(enemyDis < hatakiMax)
                 {
                     if(angDifAbs <= 60)
@@ -2061,20 +2056,75 @@ public class Rikishi2Manager : MonoBehaviour
     }
 
     // 手の先の角度を初期に戻す関数
-    private void SetHandRot()
+    private void SetHandRot(int _attacknum)
     {
-        lhObj.transform.localRotation = lhInitialRot;
-        rhObj.transform.localRotation = rhInitialRot;
-        lThumbObj.transform.localRotation = lThumbInitialRot;
-        rThumbObj.transform.localRotation = rThumbInitialRot;
-        lIndexObj.transform.localRotation = lIndexInitialRot;
-        rIndexObj.transform.localRotation = rIndexInitialRot;
-        lMiddleObj.transform.localRotation = lMiddleInitialRot;
-        rMiddleObj.transform.localRotation = rMiddleInitialRot;
-        lRingObj.transform.localRotation = lRingInitialRot;
-        rRingObj.transform.localRotation = rRingInitialRot;
-        lLittleObj.transform.localRotation = lLittleInitialRot;
-        rLittleObj.transform.localRotation = rLittleInitialRot;
+        switch(_attacknum)
+        {
+            case 0:
+                lhObj.transform.localRotation = lhInitialRot;
+                rhObj.transform.localRotation = rhInitialRot;
+                break;
+            case 1:
+                lhObj.transform.localEulerAngles = new Vector3(20.67f, -2.9f, -2.083f);
+                rhObj.transform.localEulerAngles = new Vector3(20.67f, -2.9f, -2.083f);
+                break;
+            case 2:
+                break;
+            case 3:
+                lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                rhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                break;
+            case 4:
+                break;   
+        }
+    }
+
+    // 指の角度を初期に戻す関数
+    private void SetFingerRot(int _attacknum)
+    {
+        switch(_attacknum)
+        {
+            case 0:
+                lThumbObj.transform.localRotation = lThumbInitialRot;
+                rThumbObj.transform.localRotation = rThumbInitialRot;
+                lIndexObj.transform.localRotation = lIndexInitialRot;
+                rIndexObj.transform.localRotation = rIndexInitialRot;
+                lMiddleObj.transform.localRotation = lMiddleInitialRot;
+                rMiddleObj.transform.localRotation = rMiddleInitialRot;
+                lRingObj.transform.localRotation = lRingInitialRot;
+                rRingObj.transform.localRotation = rRingInitialRot;
+                lLittleObj.transform.localRotation = lLittleInitialRot;
+                rLittleObj.transform.localRotation = rLittleInitialRot;
+                break;
+            case 1:
+                lThumbObj.transform.localEulerAngles = new Vector3(-38.814f, 144.835f, 4.534f);
+                rThumbObj.transform.localEulerAngles = new Vector3(-38.814f, 144.835f, 4.534f);
+                lIndexObj.transform.localEulerAngles = new Vector3(14.481f, 176.018f, 2.948f);
+                rIndexObj.transform.localEulerAngles = new Vector3(14.481f, 176.018f, 2.948f);
+                lMiddleObj.transform.localEulerAngles = new Vector3(23.765f, 177.59f, 2.105f);
+                rMiddleObj.transform.localEulerAngles = new Vector3(23.765f, 177.59f, 2.105f);
+                lRingObj.transform.localEulerAngles = new Vector3(28.935f, 176.837f, -3.297f);
+                rRingObj.transform.localEulerAngles = new Vector3(28.935f, 176.837f, -3.297f);
+                lLittleObj.transform.localEulerAngles = new Vector3(29.761f, 177.865f, -7.876f);
+                rLittleObj.transform.localEulerAngles = new Vector3(29.761f, 177.865f, -7.876f);
+                break;
+            case 2:
+                break;
+            case 3:
+                lThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
+                rThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
+                lIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
+                rIndexObj.transform.localEulerAngles = new Vector3(14.306f, 177.402f, 7.608f);
+                lMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
+                rMiddleObj.transform.localEulerAngles = new Vector3(23.152f, -175.871f, 6.675f);
+                lRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
+                rRingObj.transform.localEulerAngles = new Vector3(27.452f, -168.91f, -1.89f);
+                lLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                rLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
+                break;
+            case 4:
+                break;   
+        }
     }
     #endregion
 
@@ -2240,7 +2290,8 @@ public class Rikishi2Manager : MonoBehaviour
         rhObj.transform.localScale = rhInitialScale;
         lhColliderObj.SetActive(false);
         rhColliderObj.SetActive(false);
-        SetHandRot();
+        SetHandRot(0);
+        SetFingerRot(0);
         startPushTime = 0;
         penaltyNum = 0;
         pushTimeLag = 0;
