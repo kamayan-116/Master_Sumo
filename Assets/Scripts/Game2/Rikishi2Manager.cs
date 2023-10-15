@@ -32,6 +32,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private GameObject rsObj;  // 右肩のオブジェクト
     [SerializeField] private GameObject leObj;  // 左肘のオブジェクト
     [SerializeField] private GameObject reObj;  // 右肘のオブジェクト
+    [SerializeField] private GameObject lhPosObj;  // 左手の座標オブジェクト（localScale用）
+    [SerializeField] private GameObject rhPosObj;  // 右手の座標オブジェクト（localScale用）
     [SerializeField] private GameObject lhObj;  // 左手のオブジェクト
     [SerializeField] private GameObject rhObj;  // 右手のオブジェクト
     [SerializeField] private GameObject lhColliderObj;  // 左手の当たり判定のオブジェクト
@@ -762,8 +764,8 @@ public class Rikishi2Manager : MonoBehaviour
         rLittleInitialRot = rLittleObj.transform.localRotation;
         leInitialScale = leObj.transform.localScale;
         reInitialScale = reObj.transform.localScale;
-        lhInitialScale = lhObj.transform.localScale;
-        rhInitialScale = rhObj.transform.localScale;
+        lhInitialScale = lhPosObj.transform.localScale;
+        rhInitialScale = rhPosObj.transform.localScale;
         scaleYNum = playerObj.transform.localScale.y;
         footLengNum = lfObj.transform.position.y;
         wholeY = wholeObj.transform.position.y;
@@ -1886,12 +1888,12 @@ public class Rikishi2Manager : MonoBehaviour
                             1,
                             1
                         );
-                        lhObj.transform.localScale = new Vector3(
+                        lhPosObj.transform.localScale = new Vector3(
                             1 / leObj.transform.localScale.x,
                             1,
                             1
                         );
-                        rhObj.transform.localScale = new Vector3(
+                        rhPosObj.transform.localScale = new Vector3(
                             1 / reObj.transform.localScale.x,
                             1,
                             1
@@ -1925,16 +1927,80 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 break;
             case PlayStyle.Mawashi: 
-                SetHandRot(0);
-                SetFingerRot(0);
+                SetHandRot(2);
+                SetFingerRot(2);
+                if(angDifAbs <= 60)
+                {
+                    if(graFBNum < 0f)
+                    {
+                        sXSlope = -1.5232f;
+                        sXIntercept = -235.921f;
+                        sYSlope = 1.9828f;
+                        sYIntercept = 64.543f;
+                        sZSlope = 2.9786f;
+                        sZIntercept = -44.869f;
+                        eXScaleSlope = -0.04f;
+                        eXScaleIntercept = 2.4f;
+                    }
+                    else if(graFBNum < 7.5f)
+                    {
+                        sXSlope = 0.1808f;
+                        sXIntercept = -235.921f;
+                        sYSlope = 3.7184f;
+                        sYIntercept = 64.543f;
+                        sZSlope = 5.1052f;
+                        sZIntercept = -44.869f;
+                        eXScaleSlope = -0.052f;
+                        eXScaleIntercept = 2.4f;
+                    }
+                    else
+                    {
+                        sXSlope = 0.9088f;
+                        sXIntercept = -241.38f;
+                        sYSlope = 2.6356f;
+                        sYIntercept = 72.664f;
+                        sZSlope = 4.7236f;
+                        sZIntercept = -42.007f;
+                        eXScaleSlope = -0.056f;
+                        eXScaleIntercept = 2.43f;
+                    }
+                }
                 if(enemyDis < attackMax)
                 {
                     leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                     reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                     if(angDifAbs <= 60)
                     {
-                        lsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
-                        rsObj.transform.localEulerAngles = new Vector3(-219.864f, 56.919f, -59.877f);
+                        lsObj.transform.localEulerAngles = new Vector3(
+                            sXSlope * graFBNum + sXIntercept,
+                            sYSlope * graFBNum + sYIntercept,
+                            sZSlope * graFBNum + sZIntercept
+                        );
+                        rsObj.transform.localEulerAngles = new Vector3(
+                            sXSlope * graFBNum + sXIntercept,
+                            sYSlope * graFBNum + sYIntercept,
+                            sZSlope * graFBNum + sZIntercept
+                        );
+                        leObj.transform.localScale = new Vector3(
+                            eXScaleSlope * graFBNum + eXScaleIntercept,
+                            1,
+                            1
+                        );
+                        reObj.transform.localScale = new Vector3(
+                            eXScaleSlope * graFBNum + eXScaleIntercept,
+                            1,
+                            1
+                        );
+                        lhPosObj.transform.localScale = new Vector3(
+                            1 / leObj.transform.localScale.x,
+                            1,
+                            1
+                        );
+                        rhPosObj.transform.localScale = new Vector3(
+                            1 / reObj.transform.localScale.x,
+                            1,
+                            1
+                        );
                     }
                     else if(angDifAbs <= 120)
                     {
@@ -2069,6 +2135,8 @@ public class Rikishi2Manager : MonoBehaviour
                 rhObj.transform.localEulerAngles = new Vector3(20.67f, -2.9f, -2.083f);
                 break;
             case 2:
+                lhObj.transform.localEulerAngles = new Vector3(-6.23f, -1.585f, -1.984f);
+                rhObj.transform.localEulerAngles = new Vector3(-6.23f, -1.585f, -1.984f);
                 break;
             case 3:
                 lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
@@ -2109,6 +2177,16 @@ public class Rikishi2Manager : MonoBehaviour
                 rLittleObj.transform.localEulerAngles = new Vector3(29.761f, 177.865f, -7.876f);
                 break;
             case 2:
+                lThumbObj.transform.localEulerAngles = new Vector3(-35.904f, 117.309f, 29.463f);
+                rThumbObj.transform.localEulerAngles = new Vector3(-35.904f, 117.309f, 29.463f);
+                lIndexObj.transform.localEulerAngles = new Vector3(12.581f, -177.547f, 22.851f);
+                rIndexObj.transform.localEulerAngles = new Vector3(12.581f, -177.547f, 22.851f);
+                lMiddleObj.transform.localEulerAngles = new Vector3(22.963f, -175.203f, 17.187f);
+                rMiddleObj.transform.localEulerAngles = new Vector3(22.963f, -175.203f, 17.187f);
+                lRingObj.transform.localEulerAngles = new Vector3(29.185f, -177.123f, 11.515f);
+                rRingObj.transform.localEulerAngles = new Vector3(29.185f, -177.123f, 11.515f);
+                lLittleObj.transform.localEulerAngles = new Vector3(31.231f, -176.602f, 8.399f);
+                rLittleObj.transform.localEulerAngles = new Vector3(31.231f, -176.602f, 8.399f);
                 break;
             case 3:
                 lThumbObj.transform.localEulerAngles = new Vector3(7.322f, 151.168f, -19.634f);
@@ -2286,8 +2364,8 @@ public class Rikishi2Manager : MonoBehaviour
         reObj.transform.localRotation = reInitialRot;
         leObj.transform.localScale = leInitialScale;
         reObj.transform.localScale = reInitialScale;
-        lhObj.transform.localScale = lhInitialScale;
-        rhObj.transform.localScale = rhInitialScale;
+        lhPosObj.transform.localScale = lhInitialScale;
+        rhPosObj.transform.localScale = rhInitialScale;
         lhColliderObj.SetActive(false);
         rhColliderObj.SetActive(false);
         SetHandRot(0);
