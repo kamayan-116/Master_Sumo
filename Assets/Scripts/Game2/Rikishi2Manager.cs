@@ -130,7 +130,7 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     #region 重心に関する変数
     [Header("重心")]
-    [SerializeField] private float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
+    public float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
     [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
     public float graMax = 15f;  // 重心耐久の最大値
     private float wholeY;  // 全身のワールドY座標
@@ -2034,21 +2034,41 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     if(graFBNum < 0f)
                     {
-                        sXSlope = -0.2952f;
-                        sXIntercept = -201.737f;
-                        sYSlope = 0.2282f;
-                        sYIntercept = 100.532f;
-                        sZSlope = 2.378f;
-                        sZIntercept = -17.101f;
+                        sXSlope = -0.2744f;
+                        sXIntercept = -197.819f;
+                        sYSlope = 0.4046f;
+                        sYIntercept = 100.442f;
+                        sZSlope = 2.54f;
+                        sZIntercept = -14.613f;
+                        if(enemy.graFBNum < 0f)
+                        {
+                            eXScaleSlope = -0.044f;
+                            eXScaleIntercept = 1.69f - 0.01f * enemy.graFBNum;
+                        }
+                        else
+                        {
+                            eXScaleSlope = -0.044f - 0.00026667f * enemy.graFBNum;
+                            eXScaleIntercept = 1.69f - 0.04f * enemy.graFBNum;
+                        }
                     }
                     else
                     {
-                        sXSlope = 0.5422f;
-                        sXIntercept = -201.737f;
-                        sYSlope = 0.6386f;
-                        sYIntercept = 100.532f;
-                        sZSlope = 3.4646f;
-                        sZIntercept = -17.101f;
+                        sXSlope = 0.7232f;
+                        sXIntercept = -197.819f;
+                        sYSlope = 0.4862f;
+                        sYIntercept = 100.442f;
+                        sZSlope = 3.3644f;
+                        sZIntercept = -14.613f;
+                        if(enemy.graFBNum < 0f)
+                        {
+                            eXScaleSlope = -0.05f - 0.0001333f * enemy.graFBNum;
+                            eXScaleIntercept = 1.69f - 0.01f * enemy.graFBNum;
+                        }
+                        else
+                        {
+                            eXScaleSlope = -0.05f + 0.00026667f * enemy.graFBNum;
+                            eXScaleIntercept = 1.69f - 0.04f * enemy.graFBNum;
+                        }
                     }
                 }
                 if(enemyDis < attackMax)
@@ -2064,6 +2084,26 @@ public class Rikishi2Manager : MonoBehaviour
                             sXSlope * graFBNum + sXIntercept,
                             sYSlope * graFBNum + sYIntercept,
                             sZSlope * graFBNum + sZIntercept
+                        );
+                        leObj.transform.localScale = new Vector3(
+                            eXScaleSlope * graFBNum + eXScaleIntercept,
+                            1,
+                            1
+                        );
+                        reObj.transform.localScale = new Vector3(
+                            eXScaleSlope * graFBNum + eXScaleIntercept,
+                            1,
+                            1
+                        );
+                        lhPosObj.transform.localScale = new Vector3(
+                            1 / leObj.transform.localScale.x,
+                            1,
+                            1
+                        );
+                        rhPosObj.transform.localScale = new Vector3(
+                            1 / reObj.transform.localScale.x,
+                            1,
+                            1
                         );
                         leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                         reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
@@ -2139,8 +2179,8 @@ public class Rikishi2Manager : MonoBehaviour
                 rhObj.transform.localEulerAngles = new Vector3(-6.23f, -1.585f, -1.984f);
                 break;
             case 3:
-                lhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
-                rhObj.transform.localEulerAngles = new Vector3(21.684f, 32.586f, 102.046f);
+                lhObj.transform.localEulerAngles = new Vector3(23.515f, 23.515f, 96.7f);
+                rhObj.transform.localEulerAngles = new Vector3(23.515f, 23.515f, 96.7f);
                 break;
             case 4:
                 break;   
