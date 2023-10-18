@@ -145,7 +145,7 @@ public class Rikishi2UIManager : MonoBehaviour
     }
 
     // 立会いのBボタンの点滅を行う関数
-    public void SetBlinkTachiai()
+    private void SetBlinkTachiai()
     {
         tachiaiInputImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
     }

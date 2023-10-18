@@ -705,6 +705,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -45
       objectReference: {fileID: 0}
+    - target: {fileID: 6445104143714808207, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 512957225}
     - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -713,6 +717,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 80eea4c65238acb448ec2173e89a30fb, type: 2}
+    - target: {fileID: 6871947681156764527, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 512957225}
     - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -757,6 +765,10 @@ PrefabInstance:
       propertyPath: m_NormalizedViewPortRect.width
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9078879485588672830, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 512957225}
     - target: {fileID: 9103451553311600423, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -902,6 +914,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 500
       objectReference: {fileID: 0}
+    - target: {fileID: 6445104143714808207, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 502546569}
     - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -910,6 +926,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: cf792951e1df6b245a73ba66563e6a4a, type: 2}
+    - target: {fileID: 6871947681156764527, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 502546569}
     - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -930,6 +950,10 @@ PrefabInstance:
       propertyPath: m_NormalizedViewPortRect.width
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 9078879485588672830, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 502546569}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
 --- !u!4 &512957224 stripped
@@ -1320,6 +1344,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1133429256}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1206822351 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2691032574464181690, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 151651869}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1255156393 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8252328074927270683, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 151651869}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1374932569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1375,6 +1415,8 @@ MonoBehaviour:
   gameState: 0
   gamePlayer: 0
   gameMode: 0
+  titleUI: {fileID: 1206822351}
+  startBText: {fileID: 1255156393}
   operatorUI: {fileID: 151651879}
   gameModeUI: {fileID: 151651878}
   onePlayerButton: {fileID: 151651877}
@@ -8387,6 +8429,7 @@ MonoBehaviour:
   angularDif: 0
   angDifAbs: 0
   gameStart: 0
+  playStart: 0
   playerModeDecide: 0
   levelModeDecide: 0
   weightStick: 0
@@ -8611,6 +8654,7 @@ MonoBehaviour:
   angularDif: 0
   angDifAbs: 0
   gameStart: 0
+  playStart: 0
   playerModeDecide: 0
   levelModeDecide: 0
   weightStick: 0
@@ -12517,6 +12561,7 @@ MonoBehaviour:
   angularDif: 0
   angDifAbs: 0
   gameStart: 0
+  playStart: 0
   playerModeDecide: 0
   levelModeDecide: 0
   weightStick: 0
@@ -31618,6 +31663,7 @@ MonoBehaviour:
   angularDif: 0
   angDifAbs: 0
   gameStart: 0
+  playStart: 0
   playerModeDecide: 0
   levelModeDecide: 0
   weightStick: 0
@@ -33274,6 +33320,7 @@ MonoBehaviour:
   angularDif: 0
   angDifAbs: 0
   gameStart: 0
+  playStart: 0
   playerModeDecide: 0
   levelModeDecide: 0
   weightStick: 0

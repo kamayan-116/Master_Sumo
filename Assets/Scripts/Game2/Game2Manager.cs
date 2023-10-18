@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class Game2Manager : MonoBehaviour
 {
     #region 変数宣言
+    #region ゲーム状態の変数
     public bool isSelect = false;  // GameModeの選択をしたか否か（したらtrue）
     [SerializeField] private int kimariteNum;  // 決まり手ナンバー
     private float waitTime = 0.3f;  // 各音声間の休止タイム
@@ -30,8 +31,14 @@ public class Game2Manager : MonoBehaviour
         Normal
     };
     public GameMode gameMode;  // 現在のゲームモード
-
+    #endregion
+    #region UIオブジェクトの変数
     [Header("UI")]
+    [SerializeField] private GameObject titleUI;  // タイトルのパネルオブジェクト
+    [SerializeField] private Text startBText;  // スタートボタンのテキスト
+    private float blinkingSpeed = 0.2f;  // 点滅スピード
+    private Color32 startColor = new Color32(50, 50, 50, 255);  // ループ開始時の色
+    private Color32 endColor = new Color32(50, 50, 50, 128);  // ループ終了時の色
     [SerializeField] private GameObject operatorUI;  // 操作方法のパネルオブジェクト
     [SerializeField] private GameObject gameModeUI;  // ゲームモードのパネルオブジェクト
     [SerializeField] private Button onePlayerButton;  // OnePlayerModeのボタンUI
@@ -44,7 +51,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Image resultImage; // 決まり手のUI画像
     [SerializeField] private Sprite[] resultSprite; // 決まり手の画像配列
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
-
+    #endregion
+    #region カメラの参照を取る変数
     [Header("カメラ")]
     [SerializeField] private Camera cameraObj;  // メインカメラのオブジェクト
     [SerializeField] private Vector3 cameraInitialPos;  // メインカメラの初期座標
@@ -53,7 +61,8 @@ public class Game2Manager : MonoBehaviour
     [Header("中心座標")]
     [SerializeField] private Vector3 centerGravity;  // 二人のプレイヤーの中心重心座標
     [SerializeField] private Vector2 centerPlace;  // 二人のプレイヤーの中心座標
-
+    #endregion
+    #region プレイヤー1に対する変数
     [Header("プレイヤー1")]
     [SerializeField] private Rikishi2Manager p1Ctrl;  // プレイヤー1のスクリプト
     [SerializeField] private Rikishi2UIManager p1UICtrl;  // プレイヤー1のUIスクリプト
@@ -76,7 +85,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private float p1AngDif = 0;  // プレイヤー1の相手方向との角度差
     [SerializeField] private bool p1InColl = false;  // プレイヤー1は内側の足が当たっているか
     [SerializeField] private bool p1OutColl = false;  // プレイヤー1は外側の足が当たっているか
-    
+    #endregion
+    #region プレイヤー2に対する変数
     [Header("プレイヤー2")]
     [SerializeField] private Rikishi2Manager p2Ctrl;  // プレイヤー2のスクリプト
     [SerializeField] private Rikishi2UIManager p2UICtrl;  // プレイヤー2のUIスクリプト
@@ -99,7 +109,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private float p2AngDif = 0;  // プレイヤー2の相手方向との角度差
     [SerializeField] private bool p2InColl = false;  // プレイヤー2は内側の足が当たっているか
     [SerializeField] private bool p2OutColl = false;  // プレイヤー2は外側の足が当たっているか
-
+    #endregion
+    #region サウンドの参照を取る変数
     [Header("サウンド")]
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
     [SerializeField] private AudioClip startSound;  // のこったのサウンド
@@ -109,6 +120,7 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private AudioClip[] winnerSound;  // 勝者のサウンド
     [SerializeField] private AudioSource playAudioSource;  // プレイ中のAudioSource
     [SerializeField] private AudioSource seAudioSource;  // 効果音のAudioSource
+    #endregion
     
     private static Game2Manager instance;
     public static Game2Manager Instance {get => instance;}
@@ -135,6 +147,10 @@ public class Game2Manager : MonoBehaviour
         SetCenterGravityPlace();
         SetCenterPlace();
         SetCameraPlace();
+        if(titleUI.gameObject.activeSelf)
+        {
+            SetBlinkButtonText();
+        }
     }
 
     // ゲーム状態の保存
@@ -142,13 +158,28 @@ public class Game2Manager : MonoBehaviour
     {
         gameState = _gameState;
     }
-    
-    // GameStartボタンを押した
+
+    #region 操作方法までに関するスクリプト
+    // PushBtoStartボタンを押した
     public void PushGameStart()
+    {
+        titleUI.SetActive(false);
+        operatorUI.SetActive(true);
+    }
+
+    // ゲームスタートのボタンテキストの点滅を行う関数
+    private void SetBlinkButtonText()
+    {
+        startBText.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
+    }
+
+    // PlayStartボタンを押した
+    public void PushPlayStart()
     {
         operatorUI.SetActive(false);
         gameModeUI.SetActive(true);
     }
+    #endregion
 
     #region モード選択に関するスクリプト
     // プレイヤー1人への変更
@@ -478,9 +509,16 @@ public class Game2Manager : MonoBehaviour
                                 }
                                 else
                                 {
-                                    if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum) && p1AttackFBNum < 0)
+                                    if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum))
                                     {
-                                        reasonNum = 1;
+                                        if(p1AttackFBNum < 0)
+                                        {
+                                            reasonNum = 1;
+                                        }
+                                        else
+                                        {
+                                            reasonNum = 7;
+                                        }
                                     }
                                     else
                                     {
@@ -499,7 +537,7 @@ public class Game2Manager : MonoBehaviour
                                 reasonNum = 3;
                                 break;
                             case 4:
-                                if(Mathf.Abs(p2AngDif) < 60f)
+                                if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum))
                                 {
                                     reasonNum = 7;
                                 }
@@ -565,9 +603,16 @@ public class Game2Manager : MonoBehaviour
                                 }
                                 else
                                 {
-                                    if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum) && p2AttackFBNum < 0)
+                                    if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum))
                                     {
-                                        reasonNum = 1;
+                                        if(p2AttackFBNum < 0)
+                                        {
+                                            reasonNum = 1;
+                                        }
+                                        else
+                                        {
+                                            reasonNum = 7;
+                                        }
                                     }
                                     else
                                     {
@@ -586,7 +631,7 @@ public class Game2Manager : MonoBehaviour
                                 reasonNum = 3;
                                 break;
                             case 4:
-                                if(Mathf.Abs(p1AngDif) < 60f)
+                                if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum))
                                 {
                                     reasonNum = 7;
                                 }

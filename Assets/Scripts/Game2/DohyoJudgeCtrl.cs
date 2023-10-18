@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Spine2JudgeCtrll : MonoBehaviour
+public class DohyoJudgeCtrl : MonoBehaviour
 {
     [SerializeField] private Rikishi2Manager me;  // 自身の全体スクリプト
     [SerializeField] private Rikishi2Manager enemy;  // 相手の全体スクリプト

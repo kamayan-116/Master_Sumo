@@ -192,7 +192,8 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     #region bool変数
     [Header("bool判定")]
-    [SerializeField] private bool gameStart = false;  // 操作方法の決定ボタンを押したか否か
+    [SerializeField] private bool gameStart = false;  // ゲーム開始ボタンを押したか否か
+    [SerializeField] private bool playStart = false;  // 操作方法の決定ボタンを押したか否か
     [SerializeField] private bool playerModeDecide = false;  // プレイヤー人数決定ボタンを押したか否か
     [SerializeField] private bool levelModeDecide = false;  // レベルモード決定ボタンを押したか否か
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
@@ -271,7 +272,7 @@ public class Rikishi2Manager : MonoBehaviour
         switch(Game2Manager.Instance.gameState)
         {
             case Game2Manager.GameState.BeforePlay:
-                #region 操作方法
+                #region タイトルスタート
                 if(!gameStart)
                 {
                     if(Input.GetButtonDown("Decide1"))
@@ -281,117 +282,132 @@ public class Rikishi2Manager : MonoBehaviour
                     }
                 }
                 #endregion
-                #region モード選択
+                #region 操作方法
                 else
                 {
-                    if(!levelModeDecide)
+                    if(!playStart)
                     {
-                        if(!playerModeDecide)
+                        if(Input.GetButtonDown("Decide1"))
                         {
-                            if(Input.GetAxisRaw("ModeChange") < 0)
-                            {
-                                Game2Manager.Instance.SelectOnePlayer();
-                            }
-                            if(Input.GetAxisRaw("ModeChange") > 0)
-                            {
-                                Game2Manager.Instance.SelectTwoPlayer();
-                            }
-                            if(Input.GetButtonDown("Decide1"))
-                            {
-                                playerModeDecide = true;
-                                Game2Manager.Instance.DecidePlayerDown();
-                            }
-                        }
-                        else
-                        {
-                            if(Input.GetAxisRaw("ModeChange") < 0)
-                            {
-                                Game2Manager.Instance.SelectEasyMode();
-                            }
-                            if(Input.GetAxisRaw("ModeChange") > 0)
-                            {
-                                Game2Manager.Instance.SelectNormalMode();
-                            }
-                            if(Input.GetButtonDown("Decide1"))
-                            {
-                                levelModeDecide = true;
-                                Game2Manager.Instance.DecideModeDown();
-                                SetCameraPlace();
-                                Game2Manager.Instance.SetMainCamera();
-                                rikishiUI.SetUIPlace(playerNum);
-                            }
+                            playStart = true;
+                            Game2Manager.Instance.PushPlayStart();
                         }
                     }
                 #endregion
-                #region 体重入力
+                #region モード選択
                     else
                     {
-                        if(!weightInput)
+                        if(!levelModeDecide)
                         {
-                            rikishiUI.SetWeightText(weightNum);
-
-                            switch(playerNum)
+                            if(!playerModeDecide)
                             {
-                                case 1:
-                                    if(Input.GetAxisRaw("WeightBigChange1") != 0 && !weightStick)
-                                    {
-                                        weightStick = true;
-                                        rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange1"));
-                                    }
-                                    if(Input.GetAxisRaw("WeightSmallChange1") != 0 && !weightStick)
-                                    {
-                                        weightStick = true;
-                                        rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange1"));
-                                    }
-                                    if(Input.GetAxisRaw("WeightBigChange1") == 0 && Input.GetAxisRaw("WeightSmallChange1") == 0)
-                                    {
-                                        weightStick = false;
-                                    }
-                                    if(Input.GetButtonDown("Decide1"))
-                                    {
-                                        rikishiUI.SetWeightInput();
-                                    }
-                                    break;
-                                case 2:
-                                    if(Input.GetAxisRaw("WeightBigChange2") != 0 && !weightStick)
-                                    {
-                                        weightStick = true;
-                                        rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange2"));
-                                    }
-                                    if(Input.GetAxisRaw("WeightSmallChange2") != 0 && !weightStick)
-                                    {
-                                        weightStick = true;
-                                        rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange2"));
-                                    }
-                                    if(Input.GetAxisRaw("WeightBigChange2") == 0 && Input.GetAxisRaw("WeightSmallChange2") == 0)
-                                    {
-                                        weightStick = false;
-                                    }
-                                    if(Input.GetButtonDown("Decide2"))
-                                    {
-                                        rikishiUI.SetWeightInput();
-                                    }
-                                    break;
+                                if(Input.GetAxisRaw("ModeChange") < 0)
+                                {
+                                    Game2Manager.Instance.SelectOnePlayer();
+                                }
+                                if(Input.GetAxisRaw("ModeChange") > 0)
+                                {
+                                    Game2Manager.Instance.SelectTwoPlayer();
+                                }
+                                if(Input.GetButtonDown("Decide1"))
+                                {
+                                    playerModeDecide = true;
+                                    Game2Manager.Instance.DecidePlayerDown();
+                                }
+                            }
+                            else
+                            {
+                                if(Input.GetAxisRaw("ModeChange") < 0)
+                                {
+                                    Game2Manager.Instance.SelectEasyMode();
+                                }
+                                if(Input.GetAxisRaw("ModeChange") > 0)
+                                {
+                                    Game2Manager.Instance.SelectNormalMode();
+                                }
+                                if(Input.GetButtonDown("Decide1"))
+                                {
+                                    levelModeDecide = true;
+                                    Game2Manager.Instance.DecideModeDown();
+                                    SetCameraPlace();
+                                    Game2Manager.Instance.SetMainCamera();
+                                    rikishiUI.SetUIPlace(playerNum);
+                                }
                             }
                         }
+                #endregion
+                #region 体重入力
                         else
                         {
-                            switch(playerNum)
+                            if(!weightInput)
                             {
-                                case 1:
-                                    if(Input.GetButtonDown("Decide1"))
-                                    {
-                                        SetPenalty();
-                                        rikishiUI.SetTachiaiBActive(true);
-                                    }
-                                    break;
-                                case 2:
-                                    if(Input.GetButtonDown("Decide2"))
-                                    {
-                                        SetPenalty();
-                                        rikishiUI.SetTachiaiBActive(true);
-                                    }
-                                    break;
+                                rikishiUI.SetWeightText(weightNum);
+
+                                switch(playerNum)
+                                {
+                                    case 1:
+                                        if(Input.GetAxisRaw("WeightBigChange1") != 0 && !weightStick)
+                                        {
+                                            weightStick = true;
+                                            rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange1"));
+                                        }
+                                        if(Input.GetAxisRaw("WeightSmallChange1") != 0 && !weightStick)
+                                        {
+                                            weightStick = true;
+                                            rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange1"));
+                                        }
+                                        if(Input.GetAxisRaw("WeightBigChange1") == 0 && Input.GetAxisRaw("WeightSmallChange1") == 0)
+                                        {
+                                            weightStick = false;
+                                        }
+                                        if(Input.GetButtonDown("Decide1"))
+                                        {
+                                            rikishiUI.SetWeightInput();
+                                        }
+                                        break;
+                                    case 2:
+                                        if(Input.GetAxisRaw("WeightBigChange2") != 0 && !weightStick)
+                                        {
+                                            weightStick = true;
+                                            rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange2"));
+                                        }
+                                        if(Input.GetAxisRaw("WeightSmallChange2") != 0 && !weightStick)
+                                        {
+                                            weightStick = true;
+                                            rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange2"));
+                                        }
+                                        if(Input.GetAxisRaw("WeightBigChange2") == 0 && Input.GetAxisRaw("WeightSmallChange2") == 0)
+                                        {
+                                            weightStick = false;
+                                        }
+                                        if(Input.GetButtonDown("Decide2"))
+                                        {
+                                            rikishiUI.SetWeightInput();
+                                        }
+                                        break;
+                                }
+                            }
+                #endregion
+                #region 立会いペナルティ入力
+                            else
+                            {
+                                switch(playerNum)
+                                {
+                                    case 1:
+                                        if(Input.GetButtonDown("Decide1"))
+                                        {
+                                            SetPenalty();
+                                            rikishiUI.SetTachiaiBActive(true);
+                                        }
+                                        break;
+                                    case 2:
+                                        if(Input.GetButtonDown("Decide2"))
+                                        {
+                                            SetPenalty();
+                                            rikishiUI.SetTachiaiBActive(true);
+                                        }
+                                        break;
+                                }
                             }
                         }
                     }
@@ -2382,7 +2398,7 @@ public class Rikishi2Manager : MonoBehaviour
     // 再度遊ぶ際に状態をResetする関数
     public void SetReset()
     {
-        gameStart = false;
+        playStart = false;
         playerModeDecide = false;
         levelModeDecide = false;
         weightInput = false;
