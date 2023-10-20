@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using XInputDotNetPure;
 
 public class Rikishi2Manager : MonoBehaviour
 {
@@ -75,8 +74,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Vector2 footInidis;  // 左右の足の初期距離(xが横方向、yが縦方向)
     [SerializeField] private Vector2 footDis;  // 左右の足の距離(xが横方向、yが縦方向)
     [SerializeField] private float enemyDis;  // 敵プレイヤーとの距離
-    private float hatakiMax = 2.5f;  // はたきができる最大距離
-    private float attackMax = 1.6f;  // はたき以外の攻撃ができる最大距離
+    private float hatakiMax = 1.9f;  // はたきができる最大距離
+    private float attackMax = 1f;  // はたき以外の攻撃ができる最大距離
     [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
     [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
     private float dohyoRadius = 4.85f;  // 土俵の半径
@@ -88,9 +87,9 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float pushTimeLag = 0f;  // 立会いのボタンを押した時間差
     private float pushMaxLag = 6f;  // 立会いの最大時間差
     [SerializeField] private Vector3 startPos;  // プレイヤーの立会いによる開始座標
-    private float startPosXSlope = 0.5f;  // 立会い開始X座標の傾き
-    private float startPosXIntercept = 0.75f;  // 立会い開始X座標の切片
-    private float tachiaiSpeedMag = 2.5f;  // 立会いのスピード倍率
+    private float startPosXSlope = 0.55f;  // 立会い開始X座標の傾き
+    private float startPosXIntercept = 0.45f;  // 立会い開始X座標の切片
+    private float tachiaiSpeedMag = 3f;  // 立会いのスピード倍率
     #endregion
     #region 抵抗に関する変数
     [Header("抵抗")]
@@ -453,7 +452,6 @@ public class Rikishi2Manager : MonoBehaviour
                     rikishiUI.SetGravityUI(graLRNum, graFBNum);
                     rikishiUI.SetArrowSprite((int)playStyle, angDifAbs, isAttack, isHataki);
                     SetGraPanelNum();
-                    // SetVibration();
                     SetSpineAngle();
                     SetHandCollider();
                     SetInDohyo();
@@ -1695,38 +1693,6 @@ public class Rikishi2Manager : MonoBehaviour
         if((Mathf.Abs(right1) > inputMin || Mathf.Abs(front1) > inputMin) && (Mathf.Abs(right2) > inputMin || Mathf.Abs(front2) > inputMin))
         {
             rikishiUI.SetGraPanelColor(3);
-        }
-    }
-
-    // 重心の移動によるバイブレーション
-    private void SetVibration()
-    {
-        switch(playerNum)
-        {
-            case 1:
-                if((right1 >= 0 && (right1 + right2 < -inputMin)) || (right1 <= 0 && (right1 + right2 > inputMin)) ||
-                    (front1 >= 0 && (front1 + front2 < -inputMin)) || (front1 <= 0 && (front1 + front2 > inputMin))
-                    )
-                {
-                    GamePad.SetVibration(PlayerIndex.Two, 1, 1);
-                }
-                else
-                {
-                    GamePad.SetVibration(PlayerIndex.Two, 0, 0);
-                }
-                break;
-            case 2:
-                if((right2 >= 0 && (right1 + right2 < -inputMin)) || (right2 <= 0 && (right1 + right2 > inputMin)) ||
-                    (front2 >= 0 && (front1 + front2 < -inputMin)) || (front2 <= 0 && (front1 + front2 > inputMin))
-                    )
-                {
-                    GamePad.SetVibration(PlayerIndex.One, 1, 1);
-                }
-                else
-                {
-                    GamePad.SetVibration(PlayerIndex.One, 0, 0);
-                }
-                break;
         }
     }
     #endregion
