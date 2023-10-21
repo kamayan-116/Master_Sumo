@@ -1885,36 +1885,36 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     if(graFBNum < 0f)
                     {
-                        sXSlope = -1.5232f;
-                        sXIntercept = -235.921f;
-                        sYSlope = 1.9828f;
-                        sYIntercept = 64.543f;
-                        sZSlope = 2.9786f;
-                        sZIntercept = -44.869f;
-                        eXScaleSlope = -0.04f;
-                        eXScaleIntercept = 2.4f;
+                        sXSlope = -1.5444f;
+                        sXIntercept = -228.113f;
+                        sYSlope = 0.6172f;
+                        sYIntercept = 54.203f;
+                        sZSlope = 1.8372f;
+                        sZIntercept = -57.373f;
+                        eXScaleSlope = -0.032f;
+                        eXScaleIntercept = 1.26f;
                     }
                     else if(graFBNum < 7.5f)
                     {
-                        sXSlope = 0.1808f;
-                        sXIntercept = -235.921f;
-                        sYSlope = 3.7184f;
-                        sYIntercept = 64.543f;
-                        sZSlope = 5.1052f;
-                        sZIntercept = -44.869f;
-                        eXScaleSlope = -0.052f;
-                        eXScaleIntercept = 2.4f;
+                        sXSlope = -0.7928f;
+                        sXIntercept = -228.113f;
+                        sYSlope = 2.3316f;
+                        sYIntercept = 54.203f;
+                        sZSlope = 3.518f;
+                        sZIntercept = -57.373f;
+                        eXScaleSlope = -0.048f;
+                        eXScaleIntercept = 1.26f;
                     }
                     else
                     {
-                        sXSlope = 0.9088f;
-                        sXIntercept = -241.38f;
-                        sYSlope = 2.6356f;
-                        sYIntercept = 72.664f;
-                        sZSlope = 4.7236f;
-                        sZIntercept = -42.007f;
-                        eXScaleSlope = -0.056f;
-                        eXScaleIntercept = 2.43f;
+                        sXSlope = -1.3932f;
+                        sXIntercept = -223.61f;
+                        sYSlope = 4.0684f;
+                        sYIntercept = 41.178f;
+                        sZSlope = 5.5964f;
+                        sZIntercept = -72.961f;
+                        eXScaleSlope = -0.052f;
+                        eXScaleIntercept = 1.29f;
                     }
                 }
                 if(enemyDis < attackMax)
@@ -2204,8 +2204,8 @@ public class Rikishi2Manager : MonoBehaviour
                 rhObj.transform.localEulerAngles = new Vector3(-6.23f, -1.585f, -1.984f);
                 break;
             case 3:
-                lhObj.transform.localEulerAngles = new Vector3(23.515f, 23.515f, 96.7f);
-                rhObj.transform.localEulerAngles = new Vector3(23.515f, 23.515f, 96.7f);
+                lhObj.transform.localEulerAngles = new Vector3(21.582f, 36.409f, 103.66f);
+                rhObj.transform.localEulerAngles = new Vector3(21.582f, 36.409f, 103.66f);
                 break;
             case 4:
                 lhObj.transform.localEulerAngles = new Vector3(34.54f, -3.507f, -14.536f);

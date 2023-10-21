@@ -503,13 +503,13 @@ public class Game2Manager : MonoBehaviour
                         {
                             case 1:
                             case 2:
-                                if(Mathf.Abs(p1AngDif) > 120f)
+                                if(Mathf.Abs(p1AngDif) >= 120f)
                                 {
                                     reasonNum = 12;
                                 }
                                 else
                                 {
-                                    if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum))
+                                    if(Mathf.Abs(p1AttackFBNum) >=  Mathf.Abs(p1AttackLRNum))
                                     {
                                         if(p1AttackFBNum < 0)
                                         {
@@ -537,7 +537,7 @@ public class Game2Manager : MonoBehaviour
                                 reasonNum = 3;
                                 break;
                             case 4:
-                                if(Mathf.Abs(p1AttackFBNum) >  Mathf.Abs(p1AttackLRNum))
+                                if(Mathf.Abs(p1AttackFBNum) >=  Mathf.Abs(p1AttackLRNum))
                                 {
                                     reasonNum = 7;
                                 }
@@ -597,13 +597,13 @@ public class Game2Manager : MonoBehaviour
                         {
                             case 1:
                             case 2:
-                                if(Mathf.Abs(p2AngDif) > 120f)
+                                if(Mathf.Abs(p2AngDif) >= 120f)
                                 {
                                     reasonNum = 12;
                                 }
                                 else
                                 {
-                                    if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum))
+                                    if(Mathf.Abs(p2AttackFBNum) >=  Mathf.Abs(p2AttackLRNum))
                                     {
                                         if(p2AttackFBNum < 0)
                                         {
@@ -631,7 +631,7 @@ public class Game2Manager : MonoBehaviour
                                 reasonNum = 3;
                                 break;
                             case 4:
-                                if(Mathf.Abs(p2AttackFBNum) >  Mathf.Abs(p2AttackLRNum))
+                                if(Mathf.Abs(p2AttackFBNum) >=  Mathf.Abs(p2AttackLRNum))
                                 {
                                     reasonNum = 7;
                                 }
