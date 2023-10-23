@@ -2088,52 +2088,52 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     if(-graMax < graFBNum && graFBNum < 0f)
                     {
-                        if(enemy.graFBNum < 0f)
+                       if(enemy.graFBNum < 0f)
                         {
-                            sXSlope = 0.621f + 0.05534667f * enemy.graFBNum;
-                            sXIntercept = -223.105f + 0.0556f * enemy.graFBNum;
-                            sYSlope = 3.2234f + 0.05938667f * enemy.graFBNum;
-                            sYIntercept = 131.941f + 1.21946667f * enemy.graFBNum;
-                            sZSlope = 4.6506f + 0.04832f * enemy.graFBNum;
-                            sZIntercept = 33.904f + 1.30533333f * enemy.graFBNum;
-                            eXScaleSlope = -0.054f - 0.00053333f * enemy.graFBNum;
-                            eXScaleIntercept = 1.8f - 0.08666667f * enemy.graFBNum;
+                            sXSlope = 0.8134f + 0.0109333f * enemy.graFBNum;
+                            sXIntercept = -206.417f + 1.0528f * enemy.graFBNum;
+                            sYSlope = 2.4004f - 0.03998667f * enemy.graFBNum;
+                            sYIntercept = 139.919f + 1.2004f * enemy.graFBNum;
+                            sZSlope = 3.8856f - 0.04450667f * enemy.graFBNum;
+                            sZIntercept = 49.087f + 1.77093333f * enemy.graFBNum;
+                            eXScaleSlope = -0.05f + 0.00026667f * enemy.graFBNum;
+                            eXScaleIntercept = 0.65f - 0.08266667f * enemy.graFBNum;
                         }
                         else
                         {
-                            sXSlope = 0.621f + 0.03944f * enemy.graFBNum;
-                            sXIntercept = -223.105f + 1.10486667f * enemy.graFBNum;
-                            sYSlope = 3.2234f - 0.07574667f * enemy.graFBNum;
-                            sYIntercept = 131.941f - 0.65493333f * enemy.graFBNum;
-                            sZSlope = 4.6506f - 0.0524f * enemy.graFBNum;
-                            sZIntercept = 33.904f - 0.6562f * enemy.graFBNum;
-                            eXScaleSlope = -0.054f + 0.00053333f * enemy.graFBNum;
-                            eXScaleIntercept = 1.8f - 0.09266667f * enemy.graFBNum;
+                            sXSlope = 0.8134f + 0.18484f * enemy.graFBNum;
+                            sXIntercept = -206.417f + 0.4634f * enemy.graFBNum;
+                            sYSlope = 2.4004f + 0.03796f * enemy.graFBNum;
+                            sYIntercept = 139.919f + 1.478f * enemy.graFBNum;
+                            sZSlope = 3.8856f + 0.01564f * enemy.graFBNum;
+                            sZIntercept = 49.087f + 0.6922f * enemy.graFBNum;
+                            eXScaleSlope = -0.05f;
+                            eXScaleIntercept = 0.65f - 0.08f * enemy.graFBNum;
                         }
                     }
                     else if(graFBNum < graMax)
                     {
                         if(enemy.graFBNum < 0f)
                         {
-                            sXSlope = 2.6828f + 0.06765333f * enemy.graFBNum;
-                            sXIntercept = -223.105f + 0.0556f * enemy.graFBNum;
-                            sYSlope = 0.9484f - 0.05301333f * enemy.graFBNum;
-                            sYIntercept = 131.941f + 1.21946667f * enemy.graFBNum;
-                            sZSlope = 3.1056f - 0.03454667f * enemy.graFBNum;
-                            sZIntercept = 33.904f + 1.30533333f * enemy.graFBNum;
-                            eXScaleSlope = -0.034f + 0.0008f * enemy.graFBNum;
-                            eXScaleIntercept = 1.8f - 0.08666667f * enemy.graFBNum;
+                            sXSlope = 3.2274f + 0.12429333f * enemy.graFBNum;
+                            sXIntercept = -206.417f + 1.0528f * enemy.graFBNum;
+                            sYSlope = 0.598f - 0.122f * enemy.graFBNum;
+                            sYIntercept = 139.919f + 1.2004f * enemy.graFBNum;
+                            sZSlope = 3.2038f - 0.05524f * enemy.graFBNum;
+                            sZIntercept = 49.087f + 1.77093333f * enemy.graFBNum;
+                            eXScaleSlope = -0.04f + 0.00053333f * enemy.graFBNum;
+                            eXScaleIntercept = 0.65f - 0.08266667f * enemy.graFBNum;
                         }
                         else
                         {
-                            sXSlope = 2.6828f - 0.10002667f * enemy.graFBNum;
-                            sXIntercept = -223.105f + 1.10486667f * enemy.graFBNum;
-                            sYSlope = 0.9484f - 0.07208f * enemy.graFBNum;
-                            sYIntercept = 131.941f - 0.65493333f * enemy.graFBNum;
-                            sZSlope = 3.1056f + 0.00881333f * enemy.graFBNum;
-                            sZIntercept = 33.904f - 0.6562f * enemy.graFBNum;
-                            eXScaleSlope = -0.034f + 0.00226667f * enemy.graFBNum;
-                            eXScaleIntercept = 1.8f - 0.09266667f * enemy.graFBNum;
+                            sXSlope = 3.2274f + 0.04028f * enemy.graFBNum;
+                            sXIntercept = -206.417f + 0.4634f * enemy.graFBNum;
+                            sYSlope = 0.598f + 0.39436f * enemy.graFBNum;
+                            sYIntercept = 139.919f + 1.478f * enemy.graFBNum;
+                            sZSlope = 3.2038f - 0.01432f * enemy.graFBNum;
+                            sZIntercept = 49.087f + 0.6922f * enemy.graFBNum;
+                            eXScaleSlope = -0.04f + 0.002f * enemy.graFBNum;
+                            eXScaleIntercept = 0.65f - 0.08f * enemy.graFBNum;
                         }
                     }
                 }
@@ -2274,8 +2274,8 @@ public class Rikishi2Manager : MonoBehaviour
                 );
                 break;
             case 4:
-                lhObj.transform.localEulerAngles = new Vector3(34.54f, -3.507f, -14.536f);
-                rhObj.transform.localEulerAngles = new Vector3(34.54f, -3.507f, -14.536f);
+                lhObj.transform.localEulerAngles = new Vector3(34.54f, -3.507f, -14.147f);
+                rhObj.transform.localEulerAngles = new Vector3(34.54f, -3.507f, -14.147f);
                 break;   
         }
     }
@@ -2334,16 +2334,16 @@ public class Rikishi2Manager : MonoBehaviour
                 rLittleObj.transform.localEulerAngles = new Vector3(29.109f, -163.104f, -8.058f);
                 break;
             case 4:
-                lThumbObj.transform.localEulerAngles = new Vector3(-2.632f, 151.828f, -20.845f);
-                rThumbObj.transform.localEulerAngles = new Vector3(-2.632f, 151.828f, -20.845f);
+                lThumbObj.transform.localEulerAngles = new Vector3(-5.032f, 160.233f, -32.896f);
+                rThumbObj.transform.localEulerAngles = new Vector3(-5.032f, 160.233f, -32.896f);
                 lIndexObj.transform.localEulerAngles = new Vector3(14.787f, 175.928f, 18.425f);
                 rIndexObj.transform.localEulerAngles = new Vector3(14.787f, 175.928f, 18.425f);
                 lMiddleObj.transform.localEulerAngles = new Vector3(24.012f, -178.938f, 16.393f);
                 rMiddleObj.transform.localEulerAngles = new Vector3(24.012f, -178.938f, 16.393f);
-                lRingObj.transform.localEulerAngles = new Vector3(28.81f, -179.58f, 5.673f);
-                rRingObj.transform.localEulerAngles = new Vector3(28.81f, -179.58f, 5.673f);
-                lLittleObj.transform.localEulerAngles = new Vector3(29.423f, -177f, 2.652f);
-                rLittleObj.transform.localEulerAngles = new Vector3(29.423f, -177f, 2.652f);
+                lRingObj.transform.localEulerAngles = new Vector3(28.81f, -179.58f, 12.123f);
+                rRingObj.transform.localEulerAngles = new Vector3(28.81f, -179.58f, 12.123f);
+                lLittleObj.transform.localEulerAngles = new Vector3(29.423f, -177f, 20.866f);
+                rLittleObj.transform.localEulerAngles = new Vector3(29.423f, -177f, 20.866f);
                 break;   
         }
     }
