@@ -1866,13 +1866,13 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 if(enemyDis < attackMax)
                 {
-                    SetElbowRot(1);
                     SetHandRot(1);
                     SetFingerRot(1);
                     if(angDifAbs <= 60)
                     {
                         SetShoulderRot(1);
                         SetElbowHandScale(1);
+                        SetElbowRot(1);
                     }
                     else if(angDifAbs <= 120)
                     {
@@ -2087,53 +2087,53 @@ public class Rikishi2Manager : MonoBehaviour
                 if(angDifAbs <= 60)
                 {
                     if(-graMax < graFBNum && graFBNum < 0f)
-                    {
-                       if(enemy.graFBNum < 0f)
+                    {   
+                        if(enemy.graFBNum < 0f)
                         {
-                            sXSlope = 0.8134f + 0.0109333f * enemy.graFBNum;
-                            sXIntercept = -206.417f + 1.0528f * enemy.graFBNum;
-                            sYSlope = 2.4004f - 0.03998667f * enemy.graFBNum;
-                            sYIntercept = 139.919f + 1.2004f * enemy.graFBNum;
-                            sZSlope = 3.8856f - 0.04450667f * enemy.graFBNum;
-                            sZIntercept = 49.087f + 1.77093333f * enemy.graFBNum;
-                            eXScaleSlope = -0.05f + 0.00026667f * enemy.graFBNum;
-                            eXScaleIntercept = 0.65f - 0.08266667f * enemy.graFBNum;
+                            sXSlope = 1.69324f - 0.9776f * enemyDis + (0.05083327f - 0.0443333f * enemyDis) * enemy.graFBNum;
+                            sXIntercept = -198.6599f - 8.619f * enemyDis + (1.743939997f - 0.76793333f * enemyDis) * enemy.graFBNum;
+                            sYSlope = 3.05488f - 0.7272f * enemyDis + (-0.035222673f - 0.00529333f * enemyDis) * enemy.graFBNum;
+                            sYIntercept = 163.5251f - 26.229f * enemyDis + (1.886440003f - 0.76226667f * enemyDis) * enemy.graFBNum;
+                            sZSlope = 4.251f - 0.406f * enemyDis + (-0.050290673f + 0.00642667f * enemyDis) * enemy.graFBNum;
+                            sZIntercept = 75.3616f - 29.194f * enemyDis + (2.704533327f - 1.03733333f * enemyDis) * enemy.graFBNum;
+                            eXScaleSlope = -0.0536f + 0.004f * enemyDis + (0.000026676f + 0.00026667f * enemyDis) * enemy.graFBNum;
+                            eXScaleIntercept = -1.105f + 1.95f * enemyDis + (-0.07906667f - 0.004f * enemyDis) * enemy.graFBNum;
                         }
                         else
                         {
-                            sXSlope = 0.8134f + 0.18484f * enemy.graFBNum;
-                            sXIntercept = -206.417f + 0.4634f * enemy.graFBNum;
-                            sYSlope = 2.4004f + 0.03796f * enemy.graFBNum;
-                            sYIntercept = 139.919f + 1.478f * enemy.graFBNum;
-                            sZSlope = 3.8856f + 0.01564f * enemy.graFBNum;
-                            sZIntercept = 49.087f + 0.6922f * enemy.graFBNum;
-                            eXScaleSlope = -0.05f;
-                            eXScaleIntercept = 0.65f - 0.08f * enemy.graFBNum;
+                            sXSlope = 1.69324f - 0.9776f * enemyDis + (0.26656f - 0.0908f * enemyDis) * enemy.graFBNum;
+                            sXIntercept = -198.6599f - 8.619f * enemyDis + (0.73628f - 0.3032f * enemyDis) * enemy.graFBNum;
+                            sYSlope = 3.05488f - 0.7272f * enemyDis + (0.035368f + 0.00288f * enemyDis) * enemy.graFBNum;
+                            sYIntercept = 163.5251f - 26.229f * enemyDis + (2.49302f - 1.1278f * enemyDis) * enemy.graFBNum;
+                            sZSlope = 4.251f - 0.406f * enemyDis + (-0.0173f + 0.0366f * enemyDis) * enemy.graFBNum;
+                            sZIntercept = 75.3616f - 29.194f * enemyDis + (1.08334f - 0.4346f * enemyDis) * enemy.graFBNum;
+                            eXScaleSlope = -0.0536f + 0.004f * enemyDis + (0.00144f - 0.0016f * enemyDis) * enemy.graFBNum;
+                            eXScaleIntercept = -1.105f + 1.95f * enemyDis + (-0.0602f - 0.022f * enemyDis) * enemy.graFBNum;
                         }
                     }
                     else if(graFBNum < graMax)
                     {
                         if(enemy.graFBNum < 0f)
                         {
-                            sXSlope = 3.2274f + 0.12429333f * enemy.graFBNum;
-                            sXIntercept = -206.417f + 1.0528f * enemy.graFBNum;
-                            sYSlope = 0.598f - 0.122f * enemy.graFBNum;
-                            sYIntercept = 139.919f + 1.2004f * enemy.graFBNum;
-                            sZSlope = 3.2038f - 0.05524f * enemy.graFBNum;
-                            sZIntercept = 49.087f + 1.77093333f * enemy.graFBNum;
-                            eXScaleSlope = -0.04f + 0.00053333f * enemy.graFBNum;
-                            eXScaleIntercept = 0.65f - 0.08266667f * enemy.graFBNum;
+                            sXSlope = 5.21838f - 2.2122f * enemyDis + (0.195477327f - 0.07909333f * enemyDis) * enemy.graFBNum;
+                            sXIntercept = -198.6599f - 8.619f * enemyDis + (1.743939997f - 0.76793333f * enemyDis) * enemy.graFBNum;
+                            sYSlope = -0.45932f + 1.1748f * enemyDis + (-0.187052f + 0.07228f * enemyDis) * enemy.graFBNum;
+                            sYIntercept = 163.5251f - 26.229f * enemyDis + (1.886440003f - 0.76226667f * enemyDis) * enemy.graFBNum;
+                            sZSlope = 2.65462f + 0.6102f * enemyDis + (-0.085372f + 0.03348f * enemyDis) * enemy.graFBNum;
+                            sZIntercept = 75.3616f - 29.194f * enemyDis + (2.704533327f - 1.03733333f * enemyDis) * enemy.graFBNum;
+                            eXScaleSlope = -0.022f - 0.02f * enemyDis + (0.002213324f - 0.00186667f * enemyDis) * enemy.graFBNum;
+                            eXScaleIntercept = -1.105f + 1.95f * enemyDis + (-0.07906667f - 0.004f * enemyDis) * enemy.graFBNum;
                         }
                         else
                         {
-                            sXSlope = 3.2274f + 0.04028f * enemy.graFBNum;
-                            sXIntercept = -206.417f + 0.4634f * enemy.graFBNum;
-                            sYSlope = 0.598f + 0.39436f * enemy.graFBNum;
-                            sYIntercept = 139.919f + 1.478f * enemy.graFBNum;
-                            sZSlope = 3.2038f - 0.01432f * enemy.graFBNum;
-                            sZIntercept = 49.087f + 0.6922f * enemy.graFBNum;
-                            eXScaleSlope = -0.04f + 0.002f * enemy.graFBNum;
-                            eXScaleIntercept = 0.65f - 0.08f * enemy.graFBNum;
+                            sXSlope = 5.21838f - 2.2122f * enemyDis + (0.03398f + 0.007f * enemyDis) * enemy.graFBNum;
+                            sXIntercept = -198.6599f - 8.619f * enemyDis + (0.73628f - 0.3032f * enemyDis) * enemy.graFBNum;
+                            sYSlope = -0.45932f + 1.1748f * enemyDis + (0.802132f - 0.45308f * enemyDis) * enemy.graFBNum;
+                            sYIntercept = 163.5251f - 26.229f * enemyDis + (2.49302f - 1.1278f * enemyDis) * enemy.graFBNum;
+                            sZSlope = 2.65462f + 0.6102f * enemyDis + (0.045908f - 0.06692f * enemyDis) * enemy.graFBNum;
+                            sZIntercept = 75.3616f - 29.194f * enemyDis + (1.08334f - 0.4346f * enemyDis) * enemy.graFBNum;
+                            eXScaleSlope = -0.022f - 0.02f * enemyDis + (-0.00016f + 0.0024f * enemyDis) * enemy.graFBNum;
+                            eXScaleIntercept = -1.105f + 1.95f * enemyDis + (-0.0602f - 0.022f * enemyDis) * enemy.graFBNum;
                         }
                     }
                 }
@@ -2204,6 +2204,14 @@ public class Rikishi2Manager : MonoBehaviour
             case 1:
                 leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                 reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
+                break;
+            case 2:
+                leObj.transform.localEulerAngles = new Vector3(-8.388f, -17.4f, -29.608f);
+                reObj.transform.localEulerAngles = new Vector3(-50.949f, -35.541f, -28.172f);
+                break;
+            case 3:
+                leObj.transform.localEulerAngles = new Vector3(-50.949f, -35.541f, -28.172f);
+                reObj.transform.localEulerAngles = new Vector3(-8.388f, -17.4f, -29.608f);
                 break;
         }
     }
@@ -2359,9 +2367,9 @@ public class Rikishi2Manager : MonoBehaviour
                 lFObj.transform.localRotation = lFInitialRot;
                 break;
             case 1:
-                lLObj.transform.localEulerAngles = new Vector3(-27.336f, 0f, 9.954f);
-                lKObj.transform.localEulerAngles = new Vector3(75.169f, -27.768f, -45.837f);
-                lFObj.transform.localEulerAngles = new Vector3(-52.807f, -165.511f, 174.625f);
+                lLObj.transform.localEulerAngles = new Vector3(-38.392f, -4.941f, 22.577f);
+                lKObj.transform.localEulerAngles = new Vector3(72.595f, -148.66f, -166.321f);
+                lFObj.transform.localEulerAngles = new Vector3(-141.3f, 0.437f, -12.036f);
                 break;
         }
     }
@@ -2377,9 +2385,9 @@ public class Rikishi2Manager : MonoBehaviour
                 rFObj.transform.localRotation = rFInitialRot;
                 break;
             case 1:
-                rLObj.transform.localEulerAngles = new Vector3(-27.336f, 0f, 9.954f);
-                rKObj.transform.localEulerAngles = new Vector3(75.169f, -27.768f, -45.837f);
-                rFObj.transform.localEulerAngles = new Vector3(-52.807f, -165.511f, 174.625f);
+                rLObj.transform.localEulerAngles = new Vector3(-38.392f, -4.941f, 22.577f);
+                rKObj.transform.localEulerAngles = new Vector3(72.595f, -148.66f, -166.321f);
+                rFObj.transform.localEulerAngles = new Vector3(-141.3f, 0.437f, -12.036f);
                 break;
         }
     }
