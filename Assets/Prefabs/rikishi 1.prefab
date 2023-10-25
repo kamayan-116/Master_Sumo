@@ -3049,6 +3049,7 @@ MonoBehaviour:
   graFBNum: 0
   graLRNum: 0
   graMax: 15
+  playStyleMagNum: 0
   gravityPlace: {x: 0, y: 0, z: 0}
   gravityWorldPos: {x: 0, y: 0, z: 0}
   attackLLR: 0
