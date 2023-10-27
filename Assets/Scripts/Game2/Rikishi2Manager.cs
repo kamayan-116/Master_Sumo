@@ -111,7 +111,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float weightMin = 80f;  // 体重の最小値
     [SerializeField] private float weightMax = 220f;  // 体重の最大値
     [SerializeField] private float powerMagNum;  // 体重パワーの倍率
-    [SerializeField] private float speedMagNum;  // スピード倍率
+    [SerializeField] private float speedMagNum;  // 移動スピード倍率
     #endregion
     #region 入力値に関する変数
     [Header("足入力値")]
@@ -494,14 +494,14 @@ public class Rikishi2Manager : MonoBehaviour
                                 (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                                 )
                             {
-                                SetLeftFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
+                                SetLeftFootNum(Input.GetAxis("RightHorizontal1") * speedMagNum, Input.GetAxis("RightVertical1") * speedMagNum);
                             }
 
                             if(Input.GetAxis("MoveFoot1") > 0f &&
                                 (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                                 )
                             {
-                                SetRightFootNum(Input.GetAxis("RightHorizontal1"), Input.GetAxis("RightVertical1"));
+                                SetRightFootNum(Input.GetAxis("RightHorizontal1") * speedMagNum, Input.GetAxis("RightVertical1") * speedMagNum);
                             }
 
                             if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f)
@@ -512,12 +512,12 @@ public class Rikishi2Manager : MonoBehaviour
 
                             if(Input.GetAxis("Rotation1") != 0f)
                             {
-                                SetWholeRot(enemy.gameObject, -Input.GetAxis("Rotation1"));
+                                SetWholeRot(enemy.gameObject, -Input.GetAxis("Rotation1") * speedMagNum);
                             }
 
                             if(Input.GetAxis("MyRotation1") != 0f)
                             {
-                                SetWholeRot(this.gameObject, Input.GetAxis("MyRotation1"));
+                                SetWholeRot(this.gameObject, Input.GetAxis("MyRotation1") * speedMagNum);
                             }
 
                             if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
@@ -539,7 +539,7 @@ public class Rikishi2Manager : MonoBehaviour
                                 )
                             {
                                 moveDir = FindTransform();
-                                // SetCollisionMove(moveDir.x, moveDir.y);
+                                // SetCollisionMove(moveDir.x * speedMagNum, moveDir.y * speedMagNum);
                             }
 
                             if(Input.GetButtonDown("Decide1"))
@@ -581,14 +581,14 @@ public class Rikishi2Manager : MonoBehaviour
                                 (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                                 )
                             {
-                                SetLeftFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
+                                SetLeftFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
                             }
 
                             if(Input.GetAxis("MoveFoot2") > 0f &&
                                 (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                                 )
                             {
-                                SetRightFootNum(Input.GetAxis("RightHorizontal2"), Input.GetAxis("RightVertical2"));
+                                SetRightFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
                             }
 
                             if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
@@ -599,12 +599,12 @@ public class Rikishi2Manager : MonoBehaviour
 
                             if(Input.GetAxis("Rotation2") != 0f)
                             {
-                                SetWholeRot(enemy.gameObject, -Input.GetAxis("Rotation2"));
+                                SetWholeRot(enemy.gameObject, -Input.GetAxis("Rotation2") * speedMagNum);
                             }
 
                             if(Input.GetAxis("MyRotation2") != 0f)
                             {
-                                SetWholeRot(this.gameObject, Input.GetAxis("MyRotation2"));
+                                SetWholeRot(this.gameObject, Input.GetAxis("MyRotation2") * speedMagNum);
                             }
 
                             if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
@@ -626,7 +626,7 @@ public class Rikishi2Manager : MonoBehaviour
                                 )
                             {
                                 moveDir = FindTransform();
-                                // SetCollisionMove(moveDir.x, moveDir.y);
+                                // SetCollisionMove(moveDir.x * speedMagNum, moveDir.y * speedMagNum);
                             }
 
                             if(Input.GetButtonDown("Decide2"))
@@ -704,11 +704,11 @@ public class Rikishi2Manager : MonoBehaviour
     // 体重によるScaleの変化
     private void SetBodyScale()
     {
-        scaleVector = playerObj.transform.localScale;
-        scaleVector.y = scaleYNum;
-        scaleVector.x = localScaleNum;
-        scaleVector.z = localScaleNum;
-        playerObj.transform.localScale = scaleVector;
+        // scaleVector = playerObj.transform.localScale;
+        // scaleVector.y = scaleYNum;
+        // scaleVector.x = localScaleNum;
+        // scaleVector.z = localScaleNum;
+        // playerObj.transform.localScale = scaleVector;
         lossyScaleNum = playerObj.transform.lossyScale.x;
         SetMoveDisMagNum();
         SetMoveGraMagNum();
@@ -1100,8 +1100,8 @@ public class Rikishi2Manager : MonoBehaviour
         if((rightPosi < 0f && -footMax < lFLRNum) || (rightPosi > 0f && lFLRNum < clossMax))
         {
             lFLRInput = true;
-            rFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
-            lFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
+            rFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum;
+            lFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum;
             myLFLRPos += rightPosi;
             if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
             {
@@ -1131,8 +1131,8 @@ public class Rikishi2Manager : MonoBehaviour
         if((frontPosi < 0f && -footMax < lFFBNum) || (frontPosi > 0f && lFFBNum < footMax))
         {
             lFFBInput = true;
-            rFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
-            lFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
+            rFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum;
+            lFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum;
             myLFFBPos += frontPosi;
             if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
             {
@@ -1240,8 +1240,8 @@ public class Rikishi2Manager : MonoBehaviour
 
         if((rightPosi < 0f && -clossMax < rFLRNum) || (rightPosi > 0f && rFLRNum < footMax))
         {
-            rFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
-            lFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum * speedMagNum;
+            rFLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum;
+            lFLRNum -= Time.deltaTime * rightPosi * moveSpeedMagNum;
             rFLRInput = true;
             myRFLRPos += rightPosi;
             if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
@@ -1271,8 +1271,8 @@ public class Rikishi2Manager : MonoBehaviour
 
         if((frontPosi < 0f && -footMax < rFFBNum) || (frontPosi > 0f && rFFBNum < footMax))
         {
-            rFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
-            lFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum * speedMagNum;
+            rFFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum;
+            lFFBNum -= Time.deltaTime * frontPosi * moveSpeedMagNum;
             rFFBInput = true;
             myRFFBPos += frontPosi;
             if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
@@ -1567,8 +1567,8 @@ public class Rikishi2Manager : MonoBehaviour
         
         enemy.SetGraChangeNum(
             playerNum,
-            attackLLR + attackMoveLLR + attackMoveRLR,
-            attackLFB + attackMoveLFB + attackMoveRFB
+            (attackLLR + attackMoveLLR + attackMoveRLR) * powerMagNum * playStyleMagNum,
+            (attackLFB + attackMoveLFB + attackMoveRFB) * powerMagNum * playStyleMagNum
             );
     }
 
@@ -1679,7 +1679,6 @@ public class Rikishi2Manager : MonoBehaviour
     // プレイ状態に応じて重心変化倍率を変更する関数
     private void SetPlayStyleMagNum()
     {
-        // まだ未完成
         switch(playStyle)
         {
             case PlayStyle.Yothu:
@@ -1689,12 +1688,10 @@ public class Rikishi2Manager : MonoBehaviour
                 playStyleMagNum = 1f;
                 break;
             case PlayStyle.Oshi:
-                // playStyleMagNum = 0.2f * localScaleNum + 0.7f;
-                playStyleMagNum = 1f * localScaleNum - 0.5f;
+                playStyleMagNum = 0.2f * localScaleNum + 0.7f;
                 break;
             case PlayStyle.Hataki:
-                // playStyleMagNum = -0.2f * localScaleNum + 1.3f;
-                playStyleMagNum = -1f * localScaleNum + 2.5f;
+                playStyleMagNum = -0.2f * localScaleNum + 1.3f;
                 break;
         }
     }
@@ -1702,8 +1699,8 @@ public class Rikishi2Manager : MonoBehaviour
     // 重心値の変化を行う関数
     private void SetGravityNum(float rightPosi, float frontPosi)
     {
-        graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum * powerMagNum * playStyleMagNum;
-        graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum * powerMagNum * playStyleMagNum;
+        graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum;
+        graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum;
         SetMoveGraMagNum();
     }
 
@@ -1791,9 +1788,9 @@ public class Rikishi2Manager : MonoBehaviour
     private void SetPlayerPos(float rightPosi, float frontPosi)
     {
         this.transform.Translate(
-            Time.deltaTime * rightPosi * moveSpeedMagNum * moveLRDisMagNum * lossyScaleNum * speedMagNum,
+            Time.deltaTime * rightPosi * moveSpeedMagNum * moveLRDisMagNum * lossyScaleNum,
             0f,
-            Time.deltaTime * frontPosi * moveSpeedMagNum * moveFBDisMagNum * lossyScaleNum * speedMagNum
+            Time.deltaTime * frontPosi * moveSpeedMagNum * moveFBDisMagNum * lossyScaleNum
         );
     }
 
@@ -1845,7 +1842,7 @@ public class Rikishi2Manager : MonoBehaviour
         (
             target.transform.position,
             Vector3.up,
-            Time.deltaTime * rotateSpeed * moveSpeedMagNum * moveSpeedMagNum * speedMagNum
+            Time.deltaTime * rotateSpeed * moveSpeedMagNum * moveSpeedMagNum
         );
     }
 
@@ -2538,9 +2535,9 @@ public class Rikishi2Manager : MonoBehaviour
     private void SetCollisionMove(float rightDir, float frontDir)
     {
         this.transform.Translate(
-            Time.deltaTime * rightDir * moveSpeedMagNum * moveLRDisMagNum * speedMagNum,
+            Time.deltaTime * rightDir * moveSpeedMagNum * moveLRDisMagNum,
             0f, 
-            Time.deltaTime * frontDir * moveSpeedMagNum * moveFBDisMagNum * speedMagNum,
+            Time.deltaTime * frontDir * moveSpeedMagNum * moveFBDisMagNum,
             Space.World
         );
     }
