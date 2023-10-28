@@ -1346,6 +1346,7 @@ Transform:
   - {fileID: 751967446672245162}
   - {fileID: 1038889258}
   - {fileID: 339553459584219694}
+  - {fileID: 1712725508417035484}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1490,6 +1491,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rikishiManager: {fileID: 1038889259}
   resultText: {fileID: 1304647810}
+  playerNameText: {fileID: 0}
   weightPanel: {fileID: 1552348739}
   weightText: {fileID: 2144504384}
   weightSlider: {fileID: 410523246}
@@ -2184,6 +2186,10 @@ PrefabInstance:
     - target: {fileID: 5452828675853371540, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032850699261515979, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -405
       objectReference: {fileID: 0}
     - target: {fileID: 6445104143714808207, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
@@ -3954,8 +3960,6 @@ MonoBehaviour:
   rFLRNum: 0
   moveLRDisMagNum: 0
   moveFBDisMagNum: 0
-  moveFBGraMagNum: 0
-  moveLRGraMagNum: 0
   graFBNum: 0
   graLRNum: 0
   graMax: 15
@@ -11538,6 +11542,88 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Weight:150Kg
+--- !u!1001 &1712725508417035483
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 316267630}
+    m_Modifications:
+    - target: {fileID: 1185235730059031014, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1185235730059031014, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869505, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_Name
+      value: rikishi 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+--- !u!4 &1712725508417035484 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4025585018143869510, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+  m_PrefabInstance: {fileID: 1712725508417035483}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1717446884478802466
 Transform:
   m_ObjectHideFlags: 0
@@ -11640,8 +11726,6 @@ MonoBehaviour:
   rFLRNum: 0
   moveLRDisMagNum: 0
   moveFBDisMagNum: 0
-  moveFBGraMagNum: 0
-  moveLRGraMagNum: 0
   graFBNum: 0
   graLRNum: 0
   graMax: 15
@@ -11930,8 +12014,6 @@ MonoBehaviour:
   rFLRNum: 0
   moveLRDisMagNum: 0
   moveFBDisMagNum: 0
-  moveFBGraMagNum: 0
-  moveLRGraMagNum: 0
   graFBNum: 0
   graLRNum: 0
   graMax: 15
@@ -13379,6 +13461,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rikishiManager: {fileID: 1717533931847202437}
   resultText: {fileID: 7346384462016130898}
+  playerNameText: {fileID: 0}
   weightPanel: {fileID: 406497091251931885}
   weightText: {fileID: 1704914177236545398}
   weightSlider: {fileID: 1633262334792961539}
@@ -13579,6 +13662,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rikishiManager: {fileID: 1804879642073861377}
   resultText: {fileID: 7722065620474303702}
+  playerNameText: {fileID: 0}
   weightPanel: {fileID: 828093374820397417}
   weightText: {fileID: 1833178436609053938}
   weightSlider: {fileID: 1761843184785634695}

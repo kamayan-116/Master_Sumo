@@ -257,7 +257,7 @@ public class Game2Manager : MonoBehaviour
         switch(gamePlayer)
         {
             case GamePlayer.One:
-                cameraObj.rect = new Rect(0.75f, 0f, 0.25f, 0.25f);
+                cameraObj.rect = new Rect(0.75f, 0.75f, 0.25f, 0.25f);
                 break;
             case GamePlayer.Two:
                 cameraObj.rect = new Rect(0.375f, 0.75f, 0.25f, 0.25f);

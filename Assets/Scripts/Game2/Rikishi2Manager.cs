@@ -82,7 +82,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float enemyDis;  // 敵プレイヤーとの距離
     private float hatakiNotMoveMax = 1.8f;  // はたきで動かずに重心移動する最大距離
     private float hatakiMax = 1.9f;  // はたきができる最大距離
-    private float attackMax = 1f;  // はたき以外の攻撃ができる最大距離
+    private float attackMax = 1.1f;  // はたき以外の攻撃ができる最大距離
     [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
     [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
     private float dohyoRadius = 4.85f;  // 土俵の半径
@@ -127,18 +127,18 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("移動倍率数値")]
     [SerializeField] private float moveLRDisMagNum;  // 左右移動距離の倍率数値
     [SerializeField] private float moveFBDisMagNum;  // 前後移動距離の倍率数値
-    [SerializeField] private float moveFBGraMagNum;  // 重心前後移動の倍率数値
-    [SerializeField] private float moveLRGraMagNum;  // 重心左右移動の倍率数値
-    private float graFBMagSlope;  // 重心前後移動の倍率の傾き
-    private float graFBMagIntercept;  // 重心前後移動の倍率の切片
-    private float graLRMagSlope;  // 重心左右移動の倍率の傾き
-    private float graLRMagIntercept = 0f;  // 重心左右移動の倍率の切片
+    float moveFBGraMagNum = 0.009f;  // 重心前後移動の倍率数値
+    private float moveLRGraMagNum = 0.02f;  // 重心左右移動の倍率数値
+    // private float graFBMagSlope;  // 重心前後移動の倍率の傾き
+    // private float graFBMagIntercept;  // 重心前後移動の倍率の切片
+    // private float graLRMagSlope;  // 重心左右移動の倍率の傾き
+    // private float graLRMagIntercept = 0f;  // 重心左右移動の倍率の切片
     private float moveSpeedMagNum = 5f;  // 移動スピードの倍率数値
     #endregion
     #region 重心に関する変数
     [Header("重心")]
     public float graFBNum = 0f;  // 前後方重心の値（重心耐久の最大値:15）
-    [SerializeField] private float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
+    public float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
     public float graMax = 15f;  // 重心耐久の最大値
     [SerializeField] private float playStyleMagNum;  // 攻撃状態に応じた重心移動倍率
     private float wholeY;  // 全身のワールドY座標
@@ -173,6 +173,12 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     #region 角度に関する変数
     [Header("角度計算")]
+    [SerializeField] private float angleY;  // 全身のY方向角度
+    [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
+    [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
+    [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
+    [SerializeField] private float angularDif = 0;  // 相手の方向と自身の向きの角度差
+    [SerializeField] private float angDifAbs = 0;  // 相手方向と自身の向きの角度差の絶対値
     private float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
     private float spineFBIntercept = 10f;  // 上半身の前後の角度の切片
     private float spineLRSlope = -3f;  // 上半身の左右の角度の傾き
@@ -191,12 +197,6 @@ public class Rikishi2Manager : MonoBehaviour
     private float hYIntercept;  // 手のY軸の角度の切片
     private float hZSlope;  // 手のZ軸の角度の傾き
     private float hZIntercept;  // 手のZ軸の角度の切片
-    [SerializeField] private float angleY;  // 全身のY方向角度
-    [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
-    [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
-    [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
-    [SerializeField] private float angularDif = 0;  // 相手の方向と自身の向きの角度差
-    [SerializeField] private float angDifAbs = 0;  // 相手方向と自身の向きの角度差の絶対値
     #endregion
     #region bool変数
     [Header("bool判定")]
@@ -223,6 +223,30 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool  isFallDown = false;  // 土俵に倒れたか否か
     [SerializeField] private bool  isOutDohyo = false;  // 土俵から出たか否か
     [SerializeField] bool isReplay = false;  // Replayボタンを押せるか否か
+    #endregion
+    #region コンピュータ対戦の際の変数
+    [Header("コンピュータ対戦")]
+    [SerializeField] float myGraFBPer;  // 自身の前後重心の状態割合
+    [SerializeField] float myGraLRPer;  // 自身の左右重心の状態割合
+    [SerializeField] float eneGraFBPer;  // 相手の前後重心の状態割合
+    [SerializeField] float eneGraLRPer;  // 相手の左右重心の状態割合
+    [SerializeField] float angDifPer;  // 相手の方向と自身の向きの角度差の状態割合
+    [SerializeField] float dohyoLDisPer;  // 土俵の中心と左足との距離の状態割合
+    [SerializeField] float dohyoRDisPer;  // 土俵の中心と右足との距離の状態割合
+    private float cpuPushTime = 1f;  // コンピュータの立会いのボタンを押す時間
+    private float stateWaitTime = 0.1f;  // コンピュータのStateの変更待機時間
+    private enum CpuState
+    {
+        State,  // 初期状態：何も入力がない状態
+        MyGraMove,  // 自身の重心移動の入力
+        EneGraMove,  // 相手の重心移動の入力
+        LFMove,  // 左足の移動の入力
+        RFMove,  // 右足の移動の入力
+        MyRotate,  // 自転の入力
+        EneRotate  // 公転の入力
+    };
+    private CpuState cpuState;  // コンピュータの現在の入力状態
+    private CpuState cpuNextState;  // コンピュータの次の入力状態
     #endregion
     #region 自動移動に関する変数
     [Header("自動移動計算")]
@@ -380,23 +404,31 @@ public class Rikishi2Manager : MonoBehaviour
                                         }
                                         break;
                                     case 2:
-                                        if(Input.GetAxisRaw("WeightBigChange2") != 0 && !weightStick)
+                                        switch(Game2Manager.Instance.gamePlayer)
                                         {
-                                            weightStick = true;
-                                            rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange2"));
-                                        }
-                                        if(Input.GetAxisRaw("WeightSmallChange2") != 0 && !weightStick)
-                                        {
-                                            weightStick = true;
-                                            rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange2"));
-                                        }
-                                        if(Input.GetAxisRaw("WeightBigChange2") == 0 && Input.GetAxisRaw("WeightSmallChange2") == 0)
-                                        {
-                                            weightStick = false;
-                                        }
-                                        if(Input.GetButtonDown("Decide2"))
-                                        {
-                                            rikishiUI.SetWeightInput();
+                                            case Game2Manager.GamePlayer.One:
+                                                rikishiUI.SetWeightInput();
+                                                break;
+                                            case Game2Manager.GamePlayer.Two:
+                                                if(Input.GetAxisRaw("WeightBigChange2") != 0 && !weightStick)
+                                                {
+                                                    weightStick = true;
+                                                    rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange2"));
+                                                }
+                                                if(Input.GetAxisRaw("WeightSmallChange2") != 0 && !weightStick)
+                                                {
+                                                    weightStick = true;
+                                                    rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange2"));
+                                                }
+                                                if(Input.GetAxisRaw("WeightBigChange2") == 0 && Input.GetAxisRaw("WeightSmallChange2") == 0)
+                                                {
+                                                    weightStick = false;
+                                                }
+                                                if(Input.GetButtonDown("Decide2"))
+                                                {
+                                                    rikishiUI.SetWeightInput();
+                                                }
+                                                break;
                                         }
                                         break;
                                 }
@@ -442,10 +474,18 @@ public class Rikishi2Manager : MonoBehaviour
                             }
                             break;
                         case 2:
-                            if(Input.GetButtonDown("Decide2"))
+                            switch(Game2Manager.Instance.gamePlayer)
                             {
-                                TachiaiInput();
-                                rikishiUI.SetTachiaiInput();
+                                case Game2Manager.GamePlayer.One:
+                                    SetCpuTachiaiInput();
+                                    break;
+                                case Game2Manager.GamePlayer.Two:
+                                    if(Input.GetButtonDown("Decide2"))
+                                    {
+                                        TachiaiInput();
+                                        rikishiUI.SetTachiaiInput();
+                                    }
+                                    break;
                             }
                             break;
                     }
@@ -456,7 +496,6 @@ public class Rikishi2Manager : MonoBehaviour
                 #region 重心移動対戦中
                 else
                 {
-                    
                     SetEnemyTransform();
                     SetEnemyRot();
                     SetFootInput();
@@ -565,88 +604,149 @@ public class Rikishi2Manager : MonoBehaviour
                         #endregion
                         #region プレイヤー2の入力
                         case 2:
-                            if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
+                            switch(Game2Manager.Instance.gamePlayer)
                             {
-                                SetEnemyGraInput(Input.GetAxis("LeftHorizontal2") * notMoveMagNum, Input.GetAxis("LeftVertical2") * notMoveMagNum);
-                            }
+                                case Game2Manager.GamePlayer.One:
+                                    SetStatePercent();
+                                    switch(cpuState)
+                                    {
+                                        case CpuState.State:
+                                            StateUpdate();
+                                            break;
+                                        case CpuState.MyGraMove:
+                                            MyGraMoveUpdate();
+                                            break;
+                                        case CpuState.EneGraMove:
+                                            EneGraMoveUpdate();
+                                            break;
+                                        case CpuState.LFMove:
+                                            LFMoveUpdate();
+                                            break;
+                                        case CpuState.RFMove:
+                                            RFMoveUpdate();
+                                            break;
+                                        case CpuState.MyRotate:
+                                            MyRotateUpdate();
+                                            break;
+                                        case CpuState.EneRotate:
+                                            EneRotateUpdate();
+                                            break;
+                                    }
 
-                            if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
-                                Input.GetAxis("MoveFoot2") == 0f
-                                )
-                            {
-                                SetOwnGravity(2, Input.GetAxis("RightHorizontal2") * notMoveMagNum, Input.GetAxis("RightVertical2") * notMoveMagNum);
-                            }
+                                    if(cpuState != cpuNextState)
+                                    {
+                                        switch(cpuState)
+                                        {
+                                            case CpuState.State:
+                                                StateEnd();
+                                                break;
+                                            case CpuState.MyGraMove:
+                                                MyGraMoveEnd();
+                                                break;
+                                            case CpuState.EneGraMove:
+                                                EneGraMoveEnd();
+                                                break;
+                                            case CpuState.LFMove:
+                                                LFMoveEnd();
+                                                break;
+                                            case CpuState.RFMove:
+                                                RFMoveEnd();
+                                                break;
+                                            case CpuState.MyRotate:
+                                                MyRotateEnd();
+                                                break;
+                                            case CpuState.EneRotate:
+                                                EneRotateEnd();
+                                                break;
+                                        }
+                                        cpuState = cpuNextState;
+                                    }
+                                    break;
+                                case Game2Manager.GamePlayer.Two:
+                                    if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
+                                    {
+                                        SetEnemyGraInput(Input.GetAxis("LeftHorizontal2") * notMoveMagNum, Input.GetAxis("LeftVertical2") * notMoveMagNum);
+                                    }
 
-                            if(Input.GetAxis("MoveFoot2") < 0f &&
-                                (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                                )
-                            {
-                                SetLeftFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
-                            }
+                                    if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
+                                        Input.GetAxis("MoveFoot2") == 0f
+                                        )
+                                    {
+                                        SetOwnGravity(2, Input.GetAxis("RightHorizontal2") * notMoveMagNum, Input.GetAxis("RightVertical2") * notMoveMagNum);
+                                    }
 
-                            if(Input.GetAxis("MoveFoot2") > 0f &&
-                                (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                                )
-                            {
-                                SetRightFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
-                            }
+                                    if(Input.GetAxis("MoveFoot2") < 0f &&
+                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
+                                        )
+                                    {
+                                        SetLeftFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
+                                    }
 
-                            if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
-                            {
-                                SetLeftFootNum(0, 0);
-                                SetRightFootNum(0, 0);
-                            }
+                                    if(Input.GetAxis("MoveFoot2") > 0f &&
+                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
+                                        )
+                                    {
+                                        SetRightFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
+                                    }
 
-                            if(Input.GetAxis("Rotation2") != 0f)
-                            {
-                                SetWholeRot(enemy.gameObject, -Input.GetAxis("Rotation2") * speedMagNum);
-                            }
+                                    if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
+                                    {
+                                        SetLeftFootNum(0, 0);
+                                        SetRightFootNum(0, 0);
+                                    }
 
-                            if(Input.GetAxis("MyRotation2") != 0f)
-                            {
-                                SetWholeRot(this.gameObject, Input.GetAxis("MyRotation2") * speedMagNum);
-                            }
+                                    if(Input.GetAxis("Rotation2") != 0f)
+                                    {
+                                        SetWholeRot(enemy.gameObject, -Input.GetAxis("Rotation2") * speedMagNum);
+                                    }
 
-                            if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
-                            {
-                                SetEnemyGraInput(0, 0);
-                            }
+                                    if(Input.GetAxis("MyRotation2") != 0f)
+                                    {
+                                        SetWholeRot(this.gameObject, Input.GetAxis("MyRotation2") * speedMagNum);
+                                    }
 
-                            if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
-                                (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
-                                )
-                            {
-                                SetOwnGravity(2, 0 ,0);
-                            }
+                                    if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
+                                    {
+                                        SetEnemyGraInput(0, 0);
+                                    }
 
-                            if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f &&
-                                Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f &&
-                                Input.GetAxis("Rotation2") == 0f &&
-                                !isCollision && !isEnd
-                                )
-                            {
-                                moveDir = FindTransform();
-                                // SetCollisionMove(moveDir.x * speedMagNum, moveDir.y * speedMagNum);
-                            }
+                                    if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
+                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
+                                        )
+                                    {
+                                        SetOwnGravity(2, 0 ,0);
+                                    }
 
-                            if(Input.GetButtonDown("Decide2"))
-                            {
-                                SetDragNum(1f, 0);
-                            }
+                                    if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f &&
+                                        Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f &&
+                                        Input.GetAxis("Rotation2") == 0f &&
+                                        !isCollision && !isEnd
+                                        )
+                                    {
+                                        moveDir = FindTransform();
+                                        // SetCollisionMove(moveDir.x * speedMagNum, moveDir.y * speedMagNum);
+                                    }
 
-                            if(Input.GetButtonDown("Mawashi2"))
-                            {
-                                SetPlayStyle(PlayStyle.Mawashi);
-                            }
+                                    if(Input.GetButtonDown("Decide2"))
+                                    {
+                                        SetDragNum(1f, 0);
+                                    }
 
-                            if(Input.GetButtonDown("Oshi2"))
-                            {
-                                SetPlayStyle(PlayStyle.Oshi);
-                            }
+                                    if(Input.GetButtonDown("Mawashi2"))
+                                    {
+                                        SetPlayStyle(PlayStyle.Mawashi);
+                                    }
 
-                            if(Input.GetButtonDown("Hataki2"))
-                            {
-                                SetPlayStyle(PlayStyle.Hataki);
+                                    if(Input.GetButtonDown("Oshi2"))
+                                    {
+                                        SetPlayStyle(PlayStyle.Oshi);
+                                    }
+
+                                    if(Input.GetButtonDown("Hataki2"))
+                                    {
+                                        SetPlayStyle(PlayStyle.Hataki);
+                                    }
+                                    break;
                             }
                             break;
                         #endregion
@@ -711,7 +811,7 @@ public class Rikishi2Manager : MonoBehaviour
         // playerObj.transform.localScale = scaleVector;
         lossyScaleNum = playerObj.transform.lossyScale.x;
         SetMoveDisMagNum();
-        SetMoveGraMagNum();
+        // SetMoveGraMagNum();
     }
 
     // 移動距離倍率の数値の計算を行う関数
@@ -724,46 +824,46 @@ public class Rikishi2Manager : MonoBehaviour
     }
 
     // 重心移動倍率の数値の計算を行う関数
-    private void SetMoveGraMagNum()
-    {
-        switch(Game2Manager.Instance.gameMode)
-        {
-            case Game2Manager.GameMode.Easy:
-                break;
-            case Game2Manager.GameMode.Normal:
-                graLRMagSlope = 0.2f / graMax;
-                if(localScaleNum < 1.5f)
-                {
-                    if(graFBNum < 0f)
-                    {
-                        graFBMagSlope = 0.22f / graMax;
-                        graFBMagIntercept = -0.15f / graMax;
-                    }
-                    else
-                    {
-                        graFBMagSlope = 0.19f / graMax;
-                        graFBMagIntercept = -0.11f / graMax;
-                    }
-                }
-                else
-                {
-                    if(graFBNum < 0f)
-                    {
-                        graFBMagSlope = 0.14f / graMax;
-                        graFBMagIntercept = -0.03f / graMax;
-                    }
-                    else
-                    {
-                        graFBMagSlope = 0.1f / graMax;
-                        graFBMagIntercept = 0.025f / graMax;
-                    }
-                }
-                break;
-        }
+    // private void SetMoveGraMagNum()
+    // {
+    //     switch(Game2Manager.Instance.gameMode)
+    //     {
+    //         case Game2Manager.GameMode.Easy:
+    //             break;
+    //         case Game2Manager.GameMode.Normal:
+    //             graLRMagSlope = 0.2f / graMax;
+    //             if(localScaleNum < 1.5f)
+    //             {
+    //                 if(graFBNum < 0f)
+    //                 {
+    //                     graFBMagSlope = 0.22f / graMax;
+    //                     graFBMagIntercept = -0.15f / graMax;
+    //                 }
+    //                 else
+    //                 {
+    //                     graFBMagSlope = 0.19f / graMax;
+    //                     graFBMagIntercept = -0.11f / graMax;
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 if(graFBNum < 0f)
+    //                 {
+    //                     graFBMagSlope = 0.14f / graMax;
+    //                     graFBMagIntercept = -0.03f / graMax;
+    //                 }
+    //                 else
+    //                 {
+    //                     graFBMagSlope = 0.1f / graMax;
+    //                     graFBMagIntercept = 0.025f / graMax;
+    //                 }
+    //             }
+    //             break;
+    //     }
         
-        moveFBGraMagNum = graFBMagSlope * localScaleNum + graFBMagIntercept;
-        moveLRGraMagNum = graLRMagSlope * localScaleNum + graLRMagIntercept;
-    }
+    //     moveFBGraMagNum = graFBMagSlope * localScaleNum + graFBMagIntercept;
+    //     moveLRGraMagNum = graLRMagSlope * localScaleNum + graLRMagIntercept;
+    // }
 
     // 初期状態の記録
     private void SetInitialNum()
@@ -806,6 +906,127 @@ public class Rikishi2Manager : MonoBehaviour
         wholeY = wholeObj.transform.position.y;
         center = new Vector3(0f, wholeY, -0.03f);
     }
+    #endregion
+
+    #region コンピュータ対戦に関するスクリプト
+    // コンピュータの立会いの入力に関するスクリプト
+    private void SetCpuTachiaiInput()
+    {
+        if(startPushTime > cpuPushTime)
+        {
+            TachiaiInput();
+        }
+    }
+
+    // コンピュータの状態遷移を行うスクリプト
+    private void SetCpuState(CpuState nextState)
+    {
+        cpuNextState = nextState;
+    }
+
+    // 現在の状態割合の計算を行う関数
+    private void SetStatePercent()
+    {
+        myGraFBPer = Mathf.Abs(graFBNum) / graMax;
+        myGraLRPer = Mathf.Abs(graLRNum) / graMax;
+        eneGraFBPer = Mathf.Abs(graMax - enemy.graFBNum) / graMax;
+        eneGraLRPer = Mathf.Abs(graMax - enemy.graLRNum) / graMax;
+        angDifPer = angDifAbs / 90f;
+        dohyoLDisPer = dohyoLDis / dohyoRadius;
+        dohyoRDisPer = dohyoRDis / dohyoRadius;
+    }
+
+    #region State状態の処理
+    // CpuState.StateのUpdate処理
+    private void StateUpdate()
+    {
+        
+    }
+
+    // CpuState.Stateの終了処理
+    private void StateEnd()
+    {
+        
+    }
+    #endregion
+    #region MyGraMove状態の処理
+    // CpuState.MyGraMoveのUpdate処理
+    private void MyGraMoveUpdate()
+    {
+        
+    }
+
+    // CpuState.MyGraMoveの終了処理
+    private void MyGraMoveEnd()
+    {
+        
+    }
+    #endregion
+    #region EneGraMove状態の処理
+    // CpuState.EneGraMoveのUpdate処理
+    private void EneGraMoveUpdate()
+    {
+        
+    }
+
+    // CpuState.EneGraMoveの終了処理
+    private void EneGraMoveEnd()
+    {
+        
+    }
+    #endregion
+    #region LFMove状態の処理
+    // CpuState.LFMoveのUpdate処理
+    private void LFMoveUpdate()
+    {
+        
+    }
+
+    // CpuState.LFMoveの終了処理
+    private void LFMoveEnd()
+    {
+        
+    }
+    #endregion
+    #region RFMove状態の処理
+    // CpuState.RFMoveのUpdate処理
+    private void RFMoveUpdate()
+    {
+        
+    }
+
+    // CpuState.RFMoveの終了処理
+    private void RFMoveEnd()
+    {
+        
+    }
+    #endregion
+    #region MyRotate状態の処理
+    // CpuState.MyRotateのUpdate処理
+    private void MyRotateUpdate()
+    {
+        
+    }
+
+    // CpuState.MyRotateの終了処理
+    private void MyRotateEnd()
+    {
+        
+    }
+    #endregion
+    #region EneRotate状態の処理
+    // CpuState.EneRotateのUpdate処理
+    private void EneRotateUpdate()
+    {
+        
+    }
+
+    // CpuState.EneRotateの終了処理
+    private void EneRotateEnd()
+    {
+        
+    }
+    #endregion
     #endregion
 
     #region 体重に関するスクリプト
@@ -1701,7 +1922,7 @@ public class Rikishi2Manager : MonoBehaviour
     {
         graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum;
         graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum;
-        SetMoveGraMagNum();
+        // SetMoveGraMagNum();
     }
 
     // 重心の位置の変更を行う関数
@@ -2228,14 +2449,6 @@ public class Rikishi2Manager : MonoBehaviour
             case 1:
                 leObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
                 reObj.transform.localEulerAngles = new Vector3(-12.081f, -15.295f, 18.526f);
-                break;
-            case 2:
-                leObj.transform.localEulerAngles = new Vector3(-8.388f, -17.4f, -29.608f);
-                reObj.transform.localEulerAngles = new Vector3(-50.949f, -35.541f, -28.172f);
-                break;
-            case 3:
-                leObj.transform.localEulerAngles = new Vector3(-50.949f, -35.541f, -28.172f);
-                reObj.transform.localEulerAngles = new Vector3(-8.388f, -17.4f, -29.608f);
                 break;
         }
     }

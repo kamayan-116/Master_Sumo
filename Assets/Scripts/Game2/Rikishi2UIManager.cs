@@ -8,20 +8,23 @@ public class Rikishi2UIManager : MonoBehaviour
     #region 変数宣言
     [SerializeField] private Rikishi2Manager rikishiManager;  // RikishiManagerプログラム
     [SerializeField] private Text resultText; // 結果テキスト
+    [SerializeField] private Text playerNameText; // プレイヤーネームテキスト
+    #region 体重関連
     [SerializeField] private Image weightPanel; // 体重パネルのImage
     [SerializeField] private Text weightText; // 体重テキスト
     [SerializeField] private Slider weightSlider;  // 体重スライダー
     [SerializeField] private Button decideButton;  // 体重決定ボタン
-    [SerializeField] private float weightInitialNum;  // プレイヤー全体の初期座標
+    [SerializeField] private float weightInitialNum;  // 体重の初期値
+    #endregion
+    #region 立会いパネルや立会いの入力UI
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
     [SerializeField] private Image tachiaiInputImage; // 立合いの入力に応じた画像
     [SerializeField] private Sprite[] tachiaiInputSprite; // 立合いの入力に応じた画像配列（0が開始前、1が立会い時）
-    private float blinkingSpeed = 0.2f;  // 点滅スピード
-    private Color32 startColor = new Color32(255, 255, 255, 255);  // ループ開始時の色
-    private Color32 endColor = new Color32(255, 255, 255, 128);  // ループ終了時の色
     [SerializeField] private Image playImage; // プレイ状態のUI画像
     [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が四つ、2がまわし、3が押し、4がはたき）
     [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
+    #endregion
+    #region 重心関連
     [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
     [SerializeField] private Image gravityImage; // 重心座標のUI画像
     private float graUIMoveMagNum;  // 重心UIの移動倍率数値
@@ -30,12 +33,20 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveLeftArrow; // 左方向重心移動可能画像
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
     [SerializeField] private Sprite[] graMoveSprite; // 重心移動画像
+    #endregion
+    #region 足の操作関連
     [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
     [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
     [SerializeField] private Image rFCircleImage; // 右足の操作中のUI画像
     private float lfCircley;  // 左足のUIのワールドY座標
     private float rfCircley;  // 右足のUIのワールドY座標
+    #endregion
+    #region UIの点滅
+    private float blinkingSpeed = 0.2f;  // 点滅スピード
+    private Color32 startColor = new Color32(255, 255, 255, 255);  // ループ開始時の色
+    private Color32 endColor = new Color32(255, 255, 255, 128);  // ループ終了時の色
+    #endregion
     #endregion
 
     // Start is called before the first frame update
@@ -72,7 +83,10 @@ public class Rikishi2UIManager : MonoBehaviour
                 {
                     case 1:
                         weightPanel.rectTransform.localPosition = new Vector3(-755f, 450f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(-755f, 285f, 0);
+                        playerNameText.rectTransform.localPosition = new Vector3(0f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
+                        footOperateImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
                         break;
                 }
                 break;
@@ -81,11 +95,17 @@ public class Rikishi2UIManager : MonoBehaviour
                 {
                     case 1:
                         weightPanel.rectTransform.localPosition = new Vector3(-280f, 450f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(-280f, 285f, 0);
+                        playerNameText.rectTransform.localPosition = new Vector3(45f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
+                        footOperateImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
                         break;
                     case 2:
                         weightPanel.rectTransform.localPosition = new Vector3(280f, 450f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(280f, 285f, 0);
+                        playerNameText.rectTransform.localPosition = new Vector3(-45f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
+                        footOperateImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
                         break;
                 }
                 break;
