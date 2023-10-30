@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -228,25 +229,24 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("コンピュータ対戦")]
     [SerializeField] float myGraFBPer;  // 自身の前後重心の状態割合
     [SerializeField] float myGraLRPer;  // 自身の左右重心の状態割合
-    [SerializeField] float eneGraFBPer;  // 相手の前後重心の状態割合
-    [SerializeField] float eneGraLRPer;  // 相手の左右重心の状態割合
-    [SerializeField] float angDifPer;  // 相手の方向と自身の向きの角度差の状態割合
     [SerializeField] float dohyoLDisPer;  // 土俵の中心と左足との距離の状態割合
     [SerializeField] float dohyoRDisPer;  // 土俵の中心と右足との距離の状態割合
+    [SerializeField] float angDifPer;  // 相手の方向と自身の向きの角度差の状態割合
     private float cpuPushTime = 1f;  // コンピュータの立会いのボタンを押す時間
-    private float stateWaitTime = 0.1f;  // コンピュータのStateの変更待機時間
+    [SerializeField] private float stayNowTime = 0f;  // 状態遷移時間の待機計測時間
+    private float changeStayTime = 0.5f;  // 状態遷移時間の待機時間
     private enum CpuState
     {
-        State,  // 初期状態：何も入力がない状態
-        MyGraMove,  // 自身の重心移動の入力
-        EneGraMove,  // 相手の重心移動の入力
+        StateStay,  // 状態遷移時間の待機状態
+        MyGraMove,  // 直接自身の重心移動の入力
+        EneGraMove,  // 直接相手の重心移動の入力
         LFMove,  // 左足の移動の入力
         RFMove,  // 右足の移動の入力
         MyRotate,  // 自転の入力
-        EneRotate  // 公転の入力
     };
-    private CpuState cpuState;  // コンピュータの現在の入力状態
-    private CpuState cpuNextState;  // コンピュータの次の入力状態
+    [SerializeField] private CpuState cpuState = CpuState.StateStay;  // コンピュータの現在の入力状態
+    [SerializeField] private CpuState cpuNextState = CpuState.StateStay;  // コンピュータの次の入力状態
+    [SerializeField] private CpuState nextState = CpuState.StateStay;  // 次の入力状態候補
     #endregion
     #region 自動移動に関する変数
     [Header("自動移動計算")]
@@ -496,6 +496,7 @@ public class Rikishi2Manager : MonoBehaviour
                 #region 重心移動対戦中
                 else
                 {
+                    #region 共通入力
                     SetEnemyTransform();
                     SetEnemyRot();
                     SetFootInput();
@@ -512,6 +513,7 @@ public class Rikishi2Manager : MonoBehaviour
                     SetRayCast();
                     maxAngle = SetMaxAngle();
                     SetDragNum(0, maxAngle);
+                    #endregion
 
                     switch(playerNum)
                     {
@@ -610,8 +612,8 @@ public class Rikishi2Manager : MonoBehaviour
                                     SetStatePercent();
                                     switch(cpuState)
                                     {
-                                        case CpuState.State:
-                                            StateUpdate();
+                                        case CpuState.StateStay:
+                                            StateStayUpdate();
                                             break;
                                         case CpuState.MyGraMove:
                                             MyGraMoveUpdate();
@@ -628,17 +630,14 @@ public class Rikishi2Manager : MonoBehaviour
                                         case CpuState.MyRotate:
                                             MyRotateUpdate();
                                             break;
-                                        case CpuState.EneRotate:
-                                            EneRotateUpdate();
-                                            break;
                                     }
 
                                     if(cpuState != cpuNextState)
                                     {
                                         switch(cpuState)
                                         {
-                                            case CpuState.State:
-                                                StateEnd();
+                                            case CpuState.StateStay:
+                                                StateStayEnd();
                                                 break;
                                             case CpuState.MyGraMove:
                                                 MyGraMoveEnd();
@@ -654,9 +653,6 @@ public class Rikishi2Manager : MonoBehaviour
                                                 break;
                                             case CpuState.MyRotate:
                                                 MyRotateEnd();
-                                                break;
-                                            case CpuState.EneRotate:
-                                                EneRotateEnd();
                                                 break;
                                         }
                                         cpuState = cpuNextState;
@@ -919,7 +915,7 @@ public class Rikishi2Manager : MonoBehaviour
     }
 
     // コンピュータの状態遷移を行うスクリプト
-    private void SetCpuState(CpuState nextState)
+    private void ChangeCpuState(CpuState nextState)
     {
         cpuNextState = nextState;
     }
@@ -929,102 +925,239 @@ public class Rikishi2Manager : MonoBehaviour
     {
         myGraFBPer = Mathf.Abs(graFBNum) / graMax;
         myGraLRPer = Mathf.Abs(graLRNum) / graMax;
-        eneGraFBPer = Mathf.Abs(graMax - enemy.graFBNum) / graMax;
-        eneGraLRPer = Mathf.Abs(graMax - enemy.graLRNum) / graMax;
-        angDifPer = angDifAbs / 90f;
         dohyoLDisPer = dohyoLDis / dohyoRadius;
         dohyoRDisPer = dohyoRDis / dohyoRadius;
+        angDifPer = angDifAbs / 90f;
+
+        SetStateDecide();
     }
 
-    #region State状態の処理
-    // CpuState.StateのUpdate処理
-    private void StateUpdate()
+    // 状態の選別を行う関数
+    private void SetStateDecide()
     {
-        
+        if(angDifPer > 0.1f)
+        {
+            nextState = CpuState.MyRotate;
+        }
+        else
+        {
+            if(dohyoLDisPer > 0.7f || dohyoRDisPer > 0.7f)
+            {
+                if(dohyoLDisPer > dohyoRDisPer)
+                {
+                    nextState = CpuState.LFMove;
+                }
+                else
+                {
+                    nextState = CpuState.RFMove;
+                }
+            }
+            else
+            {
+                if(myGraFBPer > 0.5f || myGraLRPer > 0.5f)
+                {
+                    nextState = CpuState.MyGraMove;
+                }
+                else
+                {
+                    nextState = CpuState.EneGraMove;
+                }
+            }
+        }
+
+        if(cpuNextState != nextState)
+        {
+            ChangeCpuState(CpuState.StateStay);
+        }
     }
 
-    // CpuState.Stateの終了処理
-    private void StateEnd()
+    #region StateStay状態の処理
+    // CpuState.StateStayのUpdate処理
+    private void StateStayUpdate()
     {
-        
+        if(stayNowTime < changeStayTime)
+        {
+            stayNowTime += Time.deltaTime;
+        }
+        else
+        {
+            ChangeCpuState(nextState);
+        }
+    }
+
+    // CpuState.StateStayの終了処理
+    private void StateStayEnd()
+    {
+        stayNowTime = 0;
     }
     #endregion
     #region MyGraMove状態の処理
     // CpuState.MyGraMoveのUpdate処理
     private void MyGraMoveUpdate()
     {
-        
+        float myInputFBNum = 0;
+        float myInputLRNum = 0;
+
+        if(graFBNum < 0)
+        {
+            myInputFBNum = 1;
+        }
+        else if(graFBNum > 0)
+        {
+            myInputFBNum = -1;
+        }
+
+        if(graLRNum < 0)
+        {
+            myInputLRNum = 1f;
+        }
+        else if(graLRNum > 0)
+        {
+            myInputLRNum = -1f;
+        }
+
+        SetOwnGravity(2, myInputLRNum * notMoveMagNum, myInputFBNum * notMoveMagNum);
     }
 
     // CpuState.MyGraMoveの終了処理
     private void MyGraMoveEnd()
     {
-        
+        SetOwnGravity(2, 0 ,0);
     }
     #endregion
     #region EneGraMove状態の処理
     // CpuState.EneGraMoveのUpdate処理
     private void EneGraMoveUpdate()
     {
+        float eneInputFBNum = 0;
+        float eneInputLRNum = 0;
+        var rnd = UnityEngine.Random.value;
         
+        if(enemy.graFBNum <= 0)
+        {
+            eneInputFBNum = rnd;
+        }
+        else if(enemy.graFBNum >= 0)
+        {
+            eneInputFBNum = -rnd;
+        }
+        // else
+        // {
+        //     eneInputFBNum = 0;
+        // }
+
+        if(enemy.graLRNum <= 0)
+        {
+            eneInputLRNum = 1f- rnd;
+        }
+        else if(enemy.graLRNum >= 0)
+        {
+            eneInputLRNum = -(1f - rnd);
+        }
+        // else
+        // {
+        //     eneInputLRNum = 0;
+        // }
+
+        SetEnemyGraInput(eneInputLRNum * notMoveMagNum, eneInputFBNum * notMoveMagNum);
     }
 
     // CpuState.EneGraMoveの終了処理
     private void EneGraMoveEnd()
     {
-        
+        SetEnemyGraInput(0, 0);
     }
     #endregion
     #region LFMove状態の処理
     // CpuState.LFMoveのUpdate処理
     private void LFMoveUpdate()
     {
-        
+        float lfInputFBNum = 0;
+        float lfInputLRNum = 0;
+
+        if(lFFBNum < -4.5f)
+        {
+            lfInputFBNum = 1f;
+        }
+        else if(lFFBNum > 4.5f)
+        {
+            lfInputFBNum = -1f;
+        }
+
+        if(lFLRNum < -4.5f)
+        {
+            lfInputLRNum = 1f;
+        }
+        else if(lFLRNum > 1.5f)
+        {
+            lfInputLRNum = -1f;
+        }
+
+        SetLeftFootNum(lfInputLRNum * speedMagNum, lfInputFBNum * speedMagNum);
     }
 
     // CpuState.LFMoveの終了処理
     private void LFMoveEnd()
     {
-        
+        SetLeftFootNum(0, 0);
     }
     #endregion
     #region RFMove状態の処理
     // CpuState.RFMoveのUpdate処理
     private void RFMoveUpdate()
     {
-        
+        float rfInputFBNum = 0;
+        float rfInputLRNum = 0;
+
+        if(rFFBNum < -4.5f)
+        {
+            rfInputFBNum = 1f;
+        }
+        else if(rFFBNum > 4.5f)
+        {
+            rfInputFBNum = -1f;
+        }
+
+        if(rFLRNum < -1.5f)
+        {
+            rfInputLRNum = 1f;
+        }
+        else if(rFLRNum > 4.5f)
+        {
+            rfInputLRNum = -1f;
+        }
+
+        SetRightFootNum(rfInputLRNum * speedMagNum, rfInputFBNum * speedMagNum);
     }
 
     // CpuState.RFMoveの終了処理
     private void RFMoveEnd()
     {
-        
+        SetRightFootNum(0, 0);
     }
     #endregion
     #region MyRotate状態の処理
     // CpuState.MyRotateのUpdate処理
     private void MyRotateUpdate()
     {
-        
+        float angInputNum = 0;
+
+        if(angularDif < 0)
+        {
+            angInputNum = 1f;
+        }
+        else if(angularDif > 0)
+        {
+            angInputNum = -1f;
+        }
+
+        SetWholeRot(this.gameObject, angInputNum * speedMagNum);
     }
 
     // CpuState.MyRotateの終了処理
     private void MyRotateEnd()
     {
-        
-    }
-    #endregion
-    #region EneRotate状態の処理
-    // CpuState.EneRotateのUpdate処理
-    private void EneRotateUpdate()
-    {
-        
-    }
-
-    // CpuState.EneRotateの終了処理
-    private void EneRotateEnd()
-    {
-        
+        SetWholeRot(this.gameObject, 0);
     }
     #endregion
     #endregion
@@ -1876,8 +2009,8 @@ public class Rikishi2Manager : MonoBehaviour
         
         SetGraChangeNum(
             playerNum,
-            leftLR + rightLR + moveLFLR + moveRFLR,
-            leftFB + rightFB + moveLFFB + moveRFFB
+            (leftLR + rightLR + moveLFLR + moveRFLR) * powerMagNum,
+            (leftFB + rightFB + moveLFFB + moveRFFB) * powerMagNum
             );
     }
 
@@ -2807,6 +2940,9 @@ public class Rikishi2Manager : MonoBehaviour
         SetGravityPlace();
         SetSpineRot();
         SetPlayStyle(PlayStyle.Yothu);
+        cpuState = CpuState.StateStay;
+        cpuNextState = CpuState.StateStay;
+        nextState = CpuState.StateStay;
     }
     #endregion
 

@@ -356,6 +356,7 @@ public class Rikishi2UIManager : MonoBehaviour
         SetWeightText(weightSlider.value);
         tachiaiPanel.color = new Color32(255, 255, 255, 100);
         tachiaiInputImage.sprite = tachiaiInputSprite[0];
+        gravityPanel.color = new Color32(255, 255, 255, 100);
         SetPlayImage(0);
         SetPenaltyText(0);
         SetArrowActive(0, false);
