@@ -120,7 +120,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float lFLRNum = 0f;  // 左足左右の値（左と右の最大値:5）
     [SerializeField] private float rFFBNum = 0f;  // 右足前後方の値（前方と後方の最大値:5）
     [SerializeField] private float rFLRNum = 0f;  // 右足左右の値（左と右の最大値:5）
-    private float notMoveMagNum = 0.95f;  // 重心移動のみの入力倍率
+    private float notMoveMagNum = 0.97f;  // 重心移動のみの入力倍率
     private float footMax = 5f;  // 足の値の最大値
     private float clossMax = 2f;  // クロスの時の最大値
     #endregion
@@ -232,14 +232,16 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] float dohyoLDisPer;  // 土俵の中心と左足との距離の状態割合
     [SerializeField] float dohyoRDisPer;  // 土俵の中心と右足との距離の状態割合
     [SerializeField] float angDifPer;  // 相手の方向と自身の向きの角度差の状態割合
+    [SerializeField] bool isPlayerMove = false;  // プレイヤーが移動しているかの判定（SetPlayerPos関数が呼ばれているか否か）
+    [SerializeField] bool isLFMove = true;  // 左足を動かすか否か（trueなら左足、falseなら右足）
+    private float grafMoveNum = 8f;  // 相手が倒れてきた際に足を動かす相手の基準重心値
     private float cpuPushTime = 1f;  // コンピュータの立会いのボタンを押す時間
     [SerializeField] private float stayNowTime = 0f;  // 状態遷移時間の待機計測時間
     private float changeStayTime = 0.5f;  // 状態遷移時間の待機時間
     private enum CpuState
     {
         StateStay,  // 状態遷移時間の待機状態
-        MyGraMove,  // 直接自身の重心移動の入力
-        EneGraMove,  // 直接相手の重心移動の入力
+        GraMove,  // 直接重心移動の入力
         LFMove,  // 左足の移動の入力
         RFMove,  // 右足の移動の入力
         MyRotate,  // 自転の入力
@@ -615,11 +617,8 @@ public class Rikishi2Manager : MonoBehaviour
                                         case CpuState.StateStay:
                                             StateStayUpdate();
                                             break;
-                                        case CpuState.MyGraMove:
-                                            MyGraMoveUpdate();
-                                            break;
-                                        case CpuState.EneGraMove:
-                                            EneGraMoveUpdate();
+                                        case CpuState.GraMove:
+                                            GraMoveUpdate();
                                             break;
                                         case CpuState.LFMove:
                                             LFMoveUpdate();
@@ -639,11 +638,8 @@ public class Rikishi2Manager : MonoBehaviour
                                             case CpuState.StateStay:
                                                 StateStayEnd();
                                                 break;
-                                            case CpuState.MyGraMove:
-                                                MyGraMoveEnd();
-                                                break;
-                                            case CpuState.EneGraMove:
-                                                EneGraMoveEnd();
+                                            case CpuState.GraMove:
+                                                GraMoveEnd();
                                                 break;
                                             case CpuState.LFMove:
                                                 LFMoveEnd();
@@ -941,27 +937,21 @@ public class Rikishi2Manager : MonoBehaviour
         }
         else
         {
-            if(dohyoLDisPer > 0.7f || dohyoRDisPer > 0.7f)
+            if(dohyoLDisPer > 0.7f || dohyoRDisPer > 0.7f || (isPlayerMove && myGraFBPer > 0.5f) || enemy.graFBNum > grafMoveNum)
             {
-                if(dohyoLDisPer > dohyoRDisPer)
+                if(dohyoLDisPer - dohyoRDisPer > -0.3f && isLFMove)
                 {
                     nextState = CpuState.LFMove;
                 }
-                else
+
+                if(dohyoRDisPer - dohyoLDisPer > -0.3f && !isLFMove)
                 {
                     nextState = CpuState.RFMove;
                 }
             }
             else
             {
-                if(myGraFBPer > 0.5f || myGraLRPer > 0.5f)
-                {
-                    nextState = CpuState.MyGraMove;
-                }
-                else
-                {
-                    nextState = CpuState.EneGraMove;
-                }
+                nextState = CpuState.GraMove;        
             }
         }
 
@@ -991,48 +981,35 @@ public class Rikishi2Manager : MonoBehaviour
         stayNowTime = 0;
     }
     #endregion
-    #region MyGraMove状態の処理
-    // CpuState.MyGraMoveのUpdate処理
-    private void MyGraMoveUpdate()
+    #region GraMove状態の処理
+    // CpuState.GraMoveのUpdate処理
+    private void GraMoveUpdate()
     {
         float myInputFBNum = 0;
         float myInputLRNum = 0;
+        float fbPerNum = myGraFBPer / (myGraFBPer +  myGraLRPer);
+        float eneInputFBNum = 0;
+        float eneInputLRNum = 0;
+        var rnd = UnityEngine.Random.value;
 
         if(graFBNum < 0)
         {
-            myInputFBNum = 1;
+            myInputFBNum = fbPerNum;
         }
         else if(graFBNum > 0)
         {
-            myInputFBNum = -1;
+            myInputFBNum = -fbPerNum;
         }
 
         if(graLRNum < 0)
         {
-            myInputLRNum = 1f;
+            myInputLRNum = 1 - fbPerNum;
         }
         else if(graLRNum > 0)
         {
-            myInputLRNum = -1f;
+            myInputLRNum = -(1 - fbPerNum);
         }
 
-        SetOwnGravity(2, myInputLRNum * notMoveMagNum, myInputFBNum * notMoveMagNum);
-    }
-
-    // CpuState.MyGraMoveの終了処理
-    private void MyGraMoveEnd()
-    {
-        SetOwnGravity(2, 0 ,0);
-    }
-    #endregion
-    #region EneGraMove状態の処理
-    // CpuState.EneGraMoveのUpdate処理
-    private void EneGraMoveUpdate()
-    {
-        float eneInputFBNum = 0;
-        float eneInputLRNum = 0;
-        var rnd = UnityEngine.Random.value;
-        
         if(enemy.graFBNum <= 0)
         {
             eneInputFBNum = rnd;
@@ -1041,10 +1018,6 @@ public class Rikishi2Manager : MonoBehaviour
         {
             eneInputFBNum = -rnd;
         }
-        // else
-        // {
-        //     eneInputFBNum = 0;
-        // }
 
         if(enemy.graLRNum <= 0)
         {
@@ -1054,86 +1027,64 @@ public class Rikishi2Manager : MonoBehaviour
         {
             eneInputLRNum = -(1f - rnd);
         }
-        // else
-        // {
-        //     eneInputLRNum = 0;
-        // }
 
         SetEnemyGraInput(eneInputLRNum * notMoveMagNum, eneInputFBNum * notMoveMagNum);
+        SetOwnGravity(2, myInputLRNum * notMoveMagNum, myInputFBNum * notMoveMagNum);
     }
 
-    // CpuState.EneGraMoveの終了処理
-    private void EneGraMoveEnd()
+    // CpuState.GraMoveの終了処理
+    private void GraMoveEnd()
     {
         SetEnemyGraInput(0, 0);
+        SetOwnGravity(2, 0 ,0);
     }
     #endregion
     #region LFMove状態の処理
     // CpuState.LFMoveのUpdate処理
     private void LFMoveUpdate()
     {
-        float lfInputFBNum = 0;
-        float lfInputLRNum = 0;
+        float lfInputFBNum;
 
-        if(lFFBNum < -4.5f)
-        {
-            lfInputFBNum = 1f;
-        }
-        else if(lFFBNum > 4.5f)
+        if(enemy.graFBNum > grafMoveNum)
         {
             lfInputFBNum = -1f;
         }
-
-        if(lFLRNum < -4.5f)
+        else
         {
-            lfInputLRNum = 1f;
+            lfInputFBNum = 1f;
         }
-        else if(lFLRNum > 1.5f)
-        {
-            lfInputLRNum = -1f;
-        }
-
-        SetLeftFootNum(lfInputLRNum * speedMagNum, lfInputFBNum * speedMagNum);
+        SetLeftFootNum(0, lfInputFBNum * speedMagNum);
     }
 
     // CpuState.LFMoveの終了処理
     private void LFMoveEnd()
     {
         SetLeftFootNum(0, 0);
+        isLFMove = false;
     }
     #endregion
     #region RFMove状態の処理
     // CpuState.RFMoveのUpdate処理
     private void RFMoveUpdate()
     {
-        float rfInputFBNum = 0;
-        float rfInputLRNum = 0;
+        float rfInputFBNum;
 
-        if(rFFBNum < -4.5f)
-        {
-            rfInputFBNum = 1f;
-        }
-        else if(rFFBNum > 4.5f)
+        if(enemy.graFBNum > grafMoveNum)
         {
             rfInputFBNum = -1f;
         }
-
-        if(rFLRNum < -1.5f)
+        else
         {
-            rfInputLRNum = 1f;
+            rfInputFBNum = 1f;
         }
-        else if(rFLRNum > 4.5f)
-        {
-            rfInputLRNum = -1f;
-        }
-
-        SetRightFootNum(rfInputLRNum * speedMagNum, rfInputFBNum * speedMagNum);
+        SetRightFootNum(0, rfInputFBNum * speedMagNum);
     }
 
     // CpuState.RFMoveの終了処理
     private void RFMoveEnd()
     {
         SetRightFootNum(0, 0);
+        isLFMove = true;
     }
     #endregion
     #region MyRotate状態の処理
@@ -1519,6 +1470,7 @@ public class Rikishi2Manager : MonoBehaviour
         if(!lFLRInput && !lFFBInput)
         {
             lFOpeInput = false;
+            enemy.isPlayerMove = false;
             SetEnemyGravity(2, 0, 0);
             SetOwnGravity(3, 0, 0);
             SetLeftLegRot(0);
@@ -1526,6 +1478,7 @@ public class Rikishi2Manager : MonoBehaviour
         else
         {
             lFOpeInput = true;
+            enemy.isPlayerMove = true;
             SetOwnGravity(3, myLFLRGra, myLFFBGra);
             SetPlayerPos(myLFLRPos, myLFFBPos);
             SetFootPlace();
@@ -1660,6 +1613,7 @@ public class Rikishi2Manager : MonoBehaviour
         if(!rFLRInput && !rFFBInput)
         {
             rFOpeInput = false;
+            enemy.isPlayerMove = false;
             SetEnemyGravity(3, 0, 0);
             SetOwnGravity(4, 0, 0);
             SetRightLegRot(0);
@@ -1667,6 +1621,7 @@ public class Rikishi2Manager : MonoBehaviour
         else
         {
             rFOpeInput = true;
+            enemy.isPlayerMove = true;
             SetOwnGravity(4, myRFLRGra, myRFFBGra);
             SetPlayerPos(myRFLRPos, myRFFBPos);
             SetFootPlace();
