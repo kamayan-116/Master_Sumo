@@ -15,6 +15,9 @@ public class Rikishi2Manager : MonoBehaviour
         Hataki = 4
     };
     private PlayStyle playStyle;  // 現在の攻撃状態
+    [SerializeField] private float styleNowTime = 0;  //  攻撃状態の計測時間
+    [SerializeField] private float changeStyleTime;  //  攻撃状態の変更時間
+    [SerializeField] private int nextStyleNum;  // 次の攻撃状態の番号
     #endregion
 
     #region 参照に関する変数
@@ -78,15 +81,19 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("足や座標の情報")]
     [SerializeField] private Vector3 lf;  // 左足のワールド座標
     [SerializeField] private Vector3 rf;  // 右足のワールド座標
-    [SerializeField] private Vector2 footInidis;  // 左右の足の初期距離(xが横方向、yが縦方向)
     [SerializeField] private Vector2 footDis;  // 左右の足の距離(xが横方向、yが縦方向)
+    [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
+    [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
+    private float dohyoRadius = 4.85f;  // 土俵の半径
+    [SerializeField] private Vector3 nowPos;  // 自身の座標
+    [SerializeField] private Vector3 enemyPos;  // 相手の座標
+    [SerializeField] private Vector3 target;  // 相手の胸元方向へのベクトル
+    [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
+    [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
     [SerializeField] private float enemyDis;  // 敵プレイヤーとの距離
     private float hatakiNotMoveMax = 1.8f;  // はたきで動かずに重心移動する最大距離
     private float hatakiMax = 1.9f;  // はたきができる最大距離
     private float attackMax = 1.1f;  // はたき以外の攻撃ができる最大距離
-    [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
-    [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
-    private float dohyoRadius = 4.85f;  // 土俵の半径
     #endregion
     #region 立会いに関する変数
     [Header("立会い")]
@@ -176,8 +183,6 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("角度計算")]
     [SerializeField] private float angleY;  // 全身のY方向角度
     [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
-    [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
-    [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
     [SerializeField] private float angularDif = 0;  // 相手の方向と自身の向きの角度差
     [SerializeField] private float angDifAbs = 0;  // 相手方向と自身の向きの角度差の絶対値
     private float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
@@ -234,29 +239,26 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] float angDifPer;  // 相手の方向と自身の向きの角度差の状態割合
     [SerializeField] bool isPlayerMove = false;  // プレイヤーが移動しているかの判定（SetPlayerPos関数が呼ばれているか否か）
     [SerializeField] bool isLFMove = true;  // 左足を動かすか否か（trueなら左足、falseなら右足）
+    [SerializeField] bool isRotStart = false;  // 回転するか否か
+    [SerializeField] bool isRotEnd = true;  // 回転終わるか否か
     private float grafMoveNum = 8f;  // 相手が倒れてきた際に足を動かす相手の基準重心値
+    private float rotStartPerNum = 0.2f;  // 相手が回転した際に自身も回転し始める際の基準値
+    private float rotEndPerNum = 0.02f;  // 自身の回転を終える際の基準値
+    private float graMovePerNum = 0.7f;  // 自身の重心を戻す際の基準値
     private float cpuPushTime = 1f;  // コンピュータの立会いのボタンを押す時間
     [SerializeField] private float stayNowTime = 0f;  // 状態遷移時間の待機計測時間
     private float changeStayTime = 0.5f;  // 状態遷移時間の待機時間
     private enum CpuState
     {
         StateStay,  // 状態遷移時間の待機状態
-        GraMove,  // 直接重心移動の入力
+        MyGraMove,  // 直接自身の重心移動の入力
+        EneGraMove,  // 直接相手の重心移動の入力
         LFMove,  // 左足の移動の入力
         RFMove,  // 右足の移動の入力
-        MyRotate,  // 自転の入力
     };
     [SerializeField] private CpuState cpuState = CpuState.StateStay;  // コンピュータの現在の入力状態
     [SerializeField] private CpuState cpuNextState = CpuState.StateStay;  // コンピュータの次の入力状態
     [SerializeField] private CpuState nextState = CpuState.StateStay;  // 次の入力状態候補
-    #endregion
-    #region 自動移動に関する変数
-    [Header("自動移動計算")]
-    [SerializeField] private Vector3 target;  // 相手の胸元方向へのベクトル
-    [SerializeField] private Vector2 moveDir;  // 相手の胸元方向への単位ベクトル
-    private float moveDirSpeed = 0.375f;  // 相手の胸元方向への単位ベクトルの倍率
-    [SerializeField] private Vector3 nowPos;  // 自身の座標
-    [SerializeField] private Vector3 enemyPos;  // 相手の座標
     #endregion
     #region 初期値を保存する変数
     [Header("初期情報")]
@@ -280,6 +282,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private Quaternion rRingInitialRot;  // 右薬指オブジェクトの初期角度
     [SerializeField] private Quaternion lLittleInitialRot;  // 左小指オブジェクトの初期角度
     [SerializeField] private Quaternion rLittleInitialRot;  // 右小指オブジェクトの初期角度
+    [SerializeField] private Vector2 footInidis;  // 左右の足の初期距離(xが横方向、yが縦方向)
     [SerializeField] private Vector3 lLInitialPos;  // 左足全体の初期ローカル座標
     [SerializeField] private Vector3 rLInitialPos;  // 右足全体の初期ローカル座標
     [SerializeField] private Quaternion lLInitialRot;  // 左足全体のオブジェクトの初期角度
@@ -341,11 +344,11 @@ public class Rikishi2Manager : MonoBehaviour
                         {
                             if(!playerModeDecide)
                             {
-                                if(Input.GetAxisRaw("ModeChange") < 0)
+                                if(Input.GetAxisRaw("LeftHorizontal1") < 0)
                                 {
                                     Game2Manager.Instance.SelectOnePlayer();
                                 }
-                                if(Input.GetAxisRaw("ModeChange") > 0)
+                                if(Input.GetAxisRaw("LeftHorizontal1") > 0)
                                 {
                                     Game2Manager.Instance.SelectTwoPlayer();
                                 }
@@ -357,11 +360,11 @@ public class Rikishi2Manager : MonoBehaviour
                             }
                             else
                             {
-                                if(Input.GetAxisRaw("ModeChange") < 0)
+                                if(Input.GetAxisRaw("LeftHorizontal1") < 0)
                                 {
                                     Game2Manager.Instance.SelectEasyMode();
                                 }
-                                if(Input.GetAxisRaw("ModeChange") > 0)
+                                if(Input.GetAxisRaw("LeftHorizontal1") > 0)
                                 {
                                     Game2Manager.Instance.SelectNormalMode();
                                 }
@@ -386,17 +389,17 @@ public class Rikishi2Manager : MonoBehaviour
                                 switch(playerNum)
                                 {
                                     case 1:
-                                        if(Input.GetAxisRaw("WeightBigChange1") != 0 && !weightStick)
+                                        if(Input.GetAxisRaw("LeftHorizontal1") != 0 && !weightStick)
                                         {
                                             weightStick = true;
-                                            rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange1"));
+                                            rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal1"));
                                         }
-                                        if(Input.GetAxisRaw("WeightSmallChange1") != 0 && !weightStick)
+                                        if(Input.GetAxisRaw("LeftVertical1") != 0 && !weightStick)
                                         {
                                             weightStick = true;
-                                            rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange1"));
+                                            rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical1"));
                                         }
-                                        if(Input.GetAxisRaw("WeightBigChange1") == 0 && Input.GetAxisRaw("WeightSmallChange1") == 0)
+                                        if(Input.GetAxisRaw("LeftHorizontal1") == 0 && Input.GetAxisRaw("LeftVertical1") == 0)
                                         {
                                             weightStick = false;
                                         }
@@ -412,17 +415,17 @@ public class Rikishi2Manager : MonoBehaviour
                                                 rikishiUI.SetWeightInput();
                                                 break;
                                             case Game2Manager.GamePlayer.Two:
-                                                if(Input.GetAxisRaw("WeightBigChange2") != 0 && !weightStick)
+                                                if(Input.GetAxisRaw("LeftHorizontal2") != 0 && !weightStick)
                                                 {
                                                     weightStick = true;
-                                                    rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("WeightBigChange2"));
+                                                    rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal2"));
                                                 }
-                                                if(Input.GetAxisRaw("WeightSmallChange2") != 0 && !weightStick)
+                                                if(Input.GetAxisRaw("LeftVertical2") != 0 && !weightStick)
                                                 {
                                                     weightStick = true;
-                                                    rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("WeightSmallChange2"));
+                                                    rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical2"));
                                                 }
-                                                if(Input.GetAxisRaw("WeightBigChange2") == 0 && Input.GetAxisRaw("WeightSmallChange2") == 0)
+                                                if(Input.GetAxisRaw("LeftHorizontal2") == 0 && Input.GetAxisRaw("LeftVertical2") == 0)
                                                 {
                                                     weightStick = false;
                                                 }
@@ -504,6 +507,7 @@ public class Rikishi2Manager : MonoBehaviour
                     SetFootInput();
                     SetShoulderRot();
                     SetEnemyDis();
+                    SetStyleTimeMeasure();
                     SetGravityNum(right1 + right2, front1 + front2);
                     SetGravityPlace();
                     rikishiUI.SetGravityUI(graLRNum, graFBNum);
@@ -521,26 +525,28 @@ public class Rikishi2Manager : MonoBehaviour
                     {
                         #region プレイヤー1の入力
                         case 1:
-                            if(Input.GetAxis("LeftHorizontal1") != 0f || Input.GetAxis("LeftVertical1") != 0f)
+                            if(Input.GetAxis("LeftVertical1") > 0f &&
+                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
+                                )
                             {
-                                SetEnemyGraInput(Input.GetAxis("LeftHorizontal1") * notMoveMagNum, Input.GetAxis("LeftVertical1") * notMoveMagNum);
+                                SetEnemyGraInput(Input.GetAxis("RightHorizontal1") * notMoveMagNum, Input.GetAxis("RightVertical1") * notMoveMagNum);
                             }
 
-                            if((Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && 
-                                Input.GetAxis("MoveFoot1") == 0f
+                            if(Input.GetAxis("LeftVertical1") < 0f &&
+                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                                 )
                             {
                                 SetOwnGravity(2, Input.GetAxis("RightHorizontal1") * notMoveMagNum, Input.GetAxis("RightVertical1") * notMoveMagNum);
                             }
 
-                            if(Input.GetAxis("MoveFoot1") < 0f &&
+                            if(Input.GetAxis("LeftHorizontal1") < 0f &&
                                 (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                                 )
                             {
                                 SetLeftFootNum(Input.GetAxis("RightHorizontal1") * speedMagNum, Input.GetAxis("RightVertical1") * speedMagNum);
                             }
 
-                            if(Input.GetAxis("MoveFoot1") > 0f &&
+                            if(Input.GetAxis("LeftHorizontal1") > 0f &&
                                 (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
                                 )
                             {
@@ -549,6 +555,8 @@ public class Rikishi2Manager : MonoBehaviour
 
                             if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f)
                             {
+                                SetEnemyGraInput(0, 0);
+                                SetOwnGravity(2, 0 ,0);
                                 SetLeftFootNum(0, 0);
                                 SetRightFootNum(0, 0);
                             }
@@ -563,46 +571,9 @@ public class Rikishi2Manager : MonoBehaviour
                                 SetWholeRot(this.gameObject, Input.GetAxis("MyRotation1") * speedMagNum);
                             }
 
-                            if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
-                            {
-                                SetEnemyGraInput(0, 0);
-                            }
-
-                            if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f && Input.GetAxis("MoveFoot1") == 0f ||
-                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f) && Input.GetAxis("MoveFoot1") != 0f
-                                )
-                            {
-                                SetOwnGravity(2, 0 ,0);
-                            }
-
-                            if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f &&
-                                Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f &&
-                                Input.GetAxis("Rotation1") == 0f &&
-                                !isCollision && !isEnd
-                                )
-                            {
-                                moveDir = FindTransform();
-                                // SetCollisionMove(moveDir.x * speedMagNum, moveDir.y * speedMagNum);
-                            }
-
                             if(Input.GetButtonDown("Decide1"))
                             {
                                 SetDragNum(1f, 0);
-                            }
-
-                            if(Input.GetButtonDown("Mawashi1"))
-                            {
-                                SetPlayStyle(PlayStyle.Mawashi);
-                            }
-
-                            if(Input.GetButtonDown("Oshi1"))
-                            {
-                                SetPlayStyle(PlayStyle.Oshi);
-                            }
-
-                            if(Input.GetButtonDown("Hataki1"))
-                            {
-                                SetPlayStyle(PlayStyle.Hataki);
                             }
                             break;
                         #endregion
@@ -612,22 +583,24 @@ public class Rikishi2Manager : MonoBehaviour
                             {
                                 case Game2Manager.GamePlayer.One:
                                     SetStatePercent();
+                                    SetRotPerNum();
+                                    SetRotMove();
                                     switch(cpuState)
                                     {
                                         case CpuState.StateStay:
                                             StateStayUpdate();
                                             break;
-                                        case CpuState.GraMove:
-                                            GraMoveUpdate();
+                                        case CpuState.MyGraMove:
+                                            MyGraMoveUpdate();
+                                            break;
+                                        case CpuState.EneGraMove:
+                                            EneGraMoveUpdate();
                                             break;
                                         case CpuState.LFMove:
                                             LFMoveUpdate();
                                             break;
                                         case CpuState.RFMove:
                                             RFMoveUpdate();
-                                            break;
-                                        case CpuState.MyRotate:
-                                            MyRotateUpdate();
                                             break;
                                     }
 
@@ -638,8 +611,11 @@ public class Rikishi2Manager : MonoBehaviour
                                             case CpuState.StateStay:
                                                 StateStayEnd();
                                                 break;
-                                            case CpuState.GraMove:
-                                                GraMoveEnd();
+                                            case CpuState.MyGraMove:
+                                                MyGraMoveEnd();
+                                                break;
+                                            case CpuState.EneGraMove:
+                                                EneGraMoveEnd();
                                                 break;
                                             case CpuState.LFMove:
                                                 LFMoveEnd();
@@ -647,34 +623,33 @@ public class Rikishi2Manager : MonoBehaviour
                                             case CpuState.RFMove:
                                                 RFMoveEnd();
                                                 break;
-                                            case CpuState.MyRotate:
-                                                MyRotateEnd();
-                                                break;
                                         }
                                         cpuState = cpuNextState;
                                     }
                                     break;
                                 case Game2Manager.GamePlayer.Two:
-                                    if(Input.GetAxis("LeftHorizontal2") != 0f || Input.GetAxis("LeftVertical2") != 0f)
+                                    if(Input.GetAxis("LeftVertical2") > 0f &&
+                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
+                                        )
                                     {
-                                        SetEnemyGraInput(Input.GetAxis("LeftHorizontal2") * notMoveMagNum, Input.GetAxis("LeftVertical2") * notMoveMagNum);
+                                        SetEnemyGraInput(Input.GetAxis("RightHorizontal2") * notMoveMagNum, Input.GetAxis("RightVertical2") * notMoveMagNum);
                                     }
 
-                                    if((Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && 
-                                        Input.GetAxis("MoveFoot2") == 0f
+                                    if(Input.GetAxis("LeftVertical2") < 0f &&
+                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                                         )
                                     {
                                         SetOwnGravity(2, Input.GetAxis("RightHorizontal2") * notMoveMagNum, Input.GetAxis("RightVertical2") * notMoveMagNum);
                                     }
 
-                                    if(Input.GetAxis("MoveFoot2") < 0f &&
+                                    if(Input.GetAxis("LeftHorizontal2") < 0f &&
                                         (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                                         )
                                     {
                                         SetLeftFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
                                     }
 
-                                    if(Input.GetAxis("MoveFoot2") > 0f &&
+                                    if(Input.GetAxis("LeftHorizontal2") > 0f &&
                                         (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
                                         )
                                     {
@@ -683,6 +658,8 @@ public class Rikishi2Manager : MonoBehaviour
 
                                     if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
                                     {
+                                        SetEnemyGraInput(0, 0);
+                                        SetOwnGravity(2, 0 ,0);
                                         SetLeftFootNum(0, 0);
                                         SetRightFootNum(0, 0);
                                     }
@@ -697,46 +674,9 @@ public class Rikishi2Manager : MonoBehaviour
                                         SetWholeRot(this.gameObject, Input.GetAxis("MyRotation2") * speedMagNum);
                                     }
 
-                                    if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
-                                    {
-                                        SetEnemyGraInput(0, 0);
-                                    }
-
-                                    if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f && Input.GetAxis("MoveFoot2") == 0f ||
-                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f) && Input.GetAxis("MoveFoot2") != 0f
-                                        )
-                                    {
-                                        SetOwnGravity(2, 0 ,0);
-                                    }
-
-                                    if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f &&
-                                        Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f &&
-                                        Input.GetAxis("Rotation2") == 0f &&
-                                        !isCollision && !isEnd
-                                        )
-                                    {
-                                        moveDir = FindTransform();
-                                        // SetCollisionMove(moveDir.x * speedMagNum, moveDir.y * speedMagNum);
-                                    }
-
                                     if(Input.GetButtonDown("Decide2"))
                                     {
                                         SetDragNum(1f, 0);
-                                    }
-
-                                    if(Input.GetButtonDown("Mawashi2"))
-                                    {
-                                        SetPlayStyle(PlayStyle.Mawashi);
-                                    }
-
-                                    if(Input.GetButtonDown("Oshi2"))
-                                    {
-                                        SetPlayStyle(PlayStyle.Oshi);
-                                    }
-
-                                    if(Input.GetButtonDown("Hataki2"))
-                                    {
-                                        SetPlayStyle(PlayStyle.Hataki);
                                     }
                                     break;
                             }
@@ -931,9 +871,9 @@ public class Rikishi2Manager : MonoBehaviour
     // 状態の選別を行う関数
     private void SetStateDecide()
     {
-        if(angDifPer > 0.1f)
+        if(myGraFBPer > graMovePerNum || myGraLRPer > graMovePerNum)
         {
-            nextState = CpuState.MyRotate;
+            nextState = CpuState.MyGraMove;
         }
         else
         {
@@ -951,13 +891,45 @@ public class Rikishi2Manager : MonoBehaviour
             }
             else
             {
-                nextState = CpuState.GraMove;        
-            }
+                nextState = CpuState.EneGraMove;
+            }        
         }
 
         if(cpuNextState != nextState)
         {
             ChangeCpuState(CpuState.StateStay);
+        }
+    }
+
+    // 角度の移動判断する関数
+    private void SetRotPerNum()
+    {
+        if(angDifPer > rotEndPerNum && isRotStart)
+        {
+            isRotEnd = false;
+        }
+        else
+        {
+            isRotEnd = true;
+            isRotStart = false;
+        }
+
+        if(angDifPer > rotStartPerNum)
+        {
+            isRotStart = true;
+        }  
+    }
+
+    // 角度の移動をする関数
+    private void SetRotMove()
+    {
+        if(isRotStart && !isRotEnd)
+        {
+            MyRotateUpdate();
+        }
+        else
+        {
+            MyRotateEnd();
         }
     }
 
@@ -981,16 +953,13 @@ public class Rikishi2Manager : MonoBehaviour
         stayNowTime = 0;
     }
     #endregion
-    #region GraMove状態の処理
-    // CpuState.GraMoveのUpdate処理
-    private void GraMoveUpdate()
+    #region MyGraMove状態の処理
+    // CpuState.MyGraMoveのUpdate処理
+    private void MyGraMoveUpdate()
     {
         float myInputFBNum = 0;
         float myInputLRNum = 0;
         float fbPerNum = myGraFBPer / (myGraFBPer +  myGraLRPer);
-        float eneInputFBNum = 0;
-        float eneInputLRNum = 0;
-        var rnd = UnityEngine.Random.value;
 
         if(graFBNum < 0)
         {
@@ -1010,6 +979,23 @@ public class Rikishi2Manager : MonoBehaviour
             myInputLRNum = -(1 - fbPerNum);
         }
 
+        SetOwnGravity(2, myInputLRNum, myInputFBNum);
+    }
+
+    // CpuState.MyGraMoveの終了処理
+    private void MyGraMoveEnd()
+    {
+        SetOwnGravity(2, 0 ,0);
+    }
+    #endregion
+    #region EneGraMove状態の処理
+    // CpuState.EneGraMoveのUpdate処理
+    private void EneGraMoveUpdate()
+    {
+        float eneInputFBNum = 0;
+        float eneInputLRNum = 0;
+        var rnd = UnityEngine.Random.value;
+
         if(enemy.graFBNum <= 0)
         {
             eneInputFBNum = rnd;
@@ -1028,15 +1014,13 @@ public class Rikishi2Manager : MonoBehaviour
             eneInputLRNum = -(1f - rnd);
         }
 
-        SetEnemyGraInput(eneInputLRNum * notMoveMagNum, eneInputFBNum * notMoveMagNum);
-        SetOwnGravity(2, myInputLRNum * notMoveMagNum, myInputFBNum * notMoveMagNum);
+        SetEnemyGraInput(eneInputLRNum , eneInputFBNum);
     }
 
-    // CpuState.GraMoveの終了処理
-    private void GraMoveEnd()
+    // CpuState.EneGraMoveの終了処理
+    private void EneGraMoveEnd()
     {
         SetEnemyGraInput(0, 0);
-        SetOwnGravity(2, 0 ,0);
     }
     #endregion
     #region LFMove状態の処理
@@ -1087,8 +1071,8 @@ public class Rikishi2Manager : MonoBehaviour
         isLFMove = true;
     }
     #endregion
-    #region MyRotate状態の処理
-    // CpuState.MyRotateのUpdate処理
+    #region 自身が回転する際の処理
+    // MyRotateのUpdate処理
     private void MyRotateUpdate()
     {
         float angInputNum = 0;
@@ -1105,7 +1089,7 @@ public class Rikishi2Manager : MonoBehaviour
         SetWholeRot(this.gameObject, angInputNum * speedMagNum);
     }
 
-    // CpuState.MyRotateの終了処理
+    // MyRotateの終了処理
     private void MyRotateEnd()
     {
         SetWholeRot(this.gameObject, 0);
@@ -1129,6 +1113,7 @@ public class Rikishi2Manager : MonoBehaviour
         powerMagNum = localScaleNum;
         speedMagNum = 3f - localScaleNum;
         rb.mass = powerMagNum;
+        changeStyleTime = UnityEngine.Random.Range(3f, 6f);
         SetBodyScale();
     }
     #endregion
@@ -1216,22 +1201,32 @@ public class Rikishi2Manager : MonoBehaviour
     }
     #endregion
 
-    #region プレイヤーの入力に関するスクリプト
-    // プレイ状態の変化入力を行う関数
-    private void SetPlayStyle(PlayStyle _playStyle)
+    #region 攻撃状態に関するスクリプト
+    // 攻撃状態の遷移時間の計測
+    private void SetStyleTimeMeasure()
     {
-        if(playStyle != _playStyle)
+        if(styleNowTime < changeStyleTime)
         {
-            playStyle = _playStyle;
+            styleNowTime += Time.deltaTime;
         }
         else
         {
-            playStyle = PlayStyle.Yothu;
+            nextStyleNum = UnityEngine.Random.Range(1, 5);
+            SetPlayStyle((PlayStyle)nextStyleNum);
+            styleNowTime = 0;
         }
+    }
+
+    // プレイ状態の変化入力を行う関数
+    private void SetPlayStyle(PlayStyle _playStyle)
+    {
+        playStyle = _playStyle;
         rikishiUI.SetPlayImage((int)playStyle);
         SetPlayStyleMagNum();
     }
+    #endregion
 
+    #region プレイヤーの入力に関するスクリプト
     // 左JoyStickによる重心値の変化入力を行う関数
     private void SetEnemyGraInput(float rightPosi, float frontPosi)
     {
@@ -2053,6 +2048,17 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region オブジェクトの座標に関するスクリプト
+    // 相手の胸元方向と自身の視線方向のベクトルを計算する関数
+    private void SetEnemyTransform()
+    {
+        nowPos = this.transform.position;
+        enemyPos = enemy.gameObject.transform.position;
+        viewPos = viewObj.transform.position;
+
+        target = enemyPos - nowPos;
+        viewDir = viewPos - nowPos;
+    }
+
     // 敵との距離を測る関数
     public void SetEnemyDis()
     {
@@ -2742,6 +2748,12 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 勝敗に関するスクリプト
+    // 相手と衝突の有無時に呼ばれる関数
+    public void SetCollision(bool _isCollision)
+    {
+        isCollision = _isCollision;
+    }
+
     // 手の当たり判定の出現に関する関数
     private void SetHandCollider()
     {
@@ -2785,62 +2797,6 @@ public class Rikishi2Manager : MonoBehaviour
             isOutDohyo = _isOutDohyo;
             Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif, isInColl, isOutColl);
         }
-    }
-    #endregion
-
-    #region 自動移動に関するスクリプト
-    // 相手と衝突の有無時に呼ばれる関数
-    public void SetCollision(bool _isCollision)
-    {
-        isCollision = _isCollision;
-    }
-
-    // 相手の胸元方向と自身の視線方向のベクトルを計算する関数
-    private void SetEnemyTransform()
-    {
-        nowPos = this.transform.position;
-        enemyPos = enemy.gameObject.transform.position;
-        viewPos = viewObj.transform.position;
-
-        target = enemyPos - nowPos;
-        viewDir = viewPos - nowPos;
-    }
-
-    // 非接触時相手の胸元方向の単位移動ベクトルを計算する関数
-    private Vector2 FindTransform()
-    {
-        Vector2 _move = new Vector2();
-
-        if(target.x > 0)
-        {
-            _move.x = 1f;
-        }
-        else if(target.x < 0)
-        {
-            _move.x = -1f;
-        }
-
-        if(target.z > 0)
-        {
-            _move.y = 1f;
-        }
-        else if(target.z < 0)
-        {
-            _move.y = -1f;
-        }
-
-        return _move * moveDirSpeed;
-    }
-
-    // 非接触時相手の胸元方向に移動する関数
-    private void SetCollisionMove(float rightDir, float frontDir)
-    {
-        this.transform.Translate(
-            Time.deltaTime * rightDir * moveSpeedMagNum * moveLRDisMagNum,
-            0f, 
-            Time.deltaTime * frontDir * moveSpeedMagNum * moveFBDisMagNum,
-            Space.World
-        );
     }
     #endregion
 
