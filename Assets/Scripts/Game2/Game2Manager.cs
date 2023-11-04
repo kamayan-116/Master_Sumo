@@ -7,7 +7,6 @@ public class Game2Manager : MonoBehaviour
 {
     #region 変数宣言
     #region ゲーム状態の変数
-    public bool isSelect = false;  // GameModeの選択をしたか否か（したらtrue）
     [SerializeField] private int kimariteNum;  // 決まり手ナンバー
     private float waitTime = 0.3f;  // 各音声間の休止タイム
     public enum GameState
@@ -24,13 +23,6 @@ public class Game2Manager : MonoBehaviour
         Two
     };
     public GamePlayer gamePlayer;  // 現在のプレイヤー人数
-
-    public enum GameMode
-    {
-        Easy,
-        Normal
-    };
-    public GameMode gameMode;  // 現在のゲームモード
     #endregion
     #region UIオブジェクトの変数
     [Header("UI")]
@@ -43,8 +35,6 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private GameObject gameModeUI;  // ゲームモードのパネルオブジェクト
     [SerializeField] private Button onePlayerButton;  // OnePlayerModeのボタンUI
     [SerializeField] private Button twoPlayerButton;  // TwoPlayerModeのボタンUI
-    [SerializeField] private Button easyButton;  // EasyModeのボタンUI
-    [SerializeField] private Button normalButton;  // NormalModeのボタンUI
     [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
     [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
     [SerializeField] private Text resultText;  // 決まり手のテキスト
@@ -136,7 +126,6 @@ public class Game2Manager : MonoBehaviour
     {
         SetGameState(GameState.BeforePlay);
         SelectTwoPlayer();
-        SelectNormalMode();
         cameraInitialPos = cameraObj.gameObject.transform.position;
         cameraInitialRot = cameraObj.gameObject.transform.rotation;
     }
@@ -181,7 +170,7 @@ public class Game2Manager : MonoBehaviour
     }
     #endregion
 
-    #region モード選択に関するスクリプト
+    #region プレイヤー人数選択に関するスクリプト
     // プレイヤー1人への変更
     public void SelectOnePlayer()
     {
@@ -199,7 +188,7 @@ public class Game2Manager : MonoBehaviour
     }
 
     // プレイヤー人数選択を行った
-    public void DecidePlayerDown()
+    public void SetPlayerMode()
     {
         if(onePlayerButton.interactable)
         {
@@ -208,36 +197,6 @@ public class Game2Manager : MonoBehaviour
         if(twoPlayerButton.interactable)
         {
             twoPlayerButton.image.color = new Color32(255, 150, 150, 255);
-        }
-    }
-
-    // Easy Modeへの変更
-    public void SelectEasyMode()
-    {
-        easyButton.interactable = true;
-        normalButton.interactable = false;
-        gameMode = GameMode.Easy;
-    }
-
-    // Normal Modeへの変更
-    public void SelectNormalMode()
-    {
-        easyButton.interactable = false;
-        normalButton.interactable = true;
-        gameMode = GameMode.Normal;
-    }
-
-    // モード選択を行った
-    public void DecideModeDown()
-    {
-        isSelect = true;
-        if(easyButton.interactable)
-        {
-            easyButton.image.color = new Color32(255, 150, 150, 255);
-        }
-        if(normalButton.interactable)
-        {
-            normalButton.image.color = new Color32(255, 150, 150, 255);
         }
         StartCoroutine("DeleteModeScene");
     }
@@ -725,7 +684,6 @@ public class Game2Manager : MonoBehaviour
         gameResultUI.SetActive(false);
         resultText.text = "";
         replayButton.gameObject.SetActive(false);
-        isSelect = false;
         p1WeightInput = false;
         p2WeightInput = false;
         p1TachiaiInput = false;
@@ -760,8 +718,6 @@ public class Game2Manager : MonoBehaviour
         p2OutColl = false;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
-        easyButton.image.color = new Color32(255, 255, 255, 255);
-        normalButton.image.color = new Color32(255, 255, 255, 255);
         StartCoroutine("Reload");
     }
 

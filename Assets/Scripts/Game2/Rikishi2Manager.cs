@@ -209,7 +209,6 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool gameStart = false;  // ゲーム開始ボタンを押したか否か
     [SerializeField] private bool playStart = false;  // 操作方法の決定ボタンを押したか否か
     [SerializeField] private bool playerModeDecide = false;  // プレイヤー人数決定ボタンを押したか否か
-    [SerializeField] private bool levelModeDecide = false;  // レベルモード決定ボタンを押したか否か
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
     [SerializeField] private bool isStartPush = false;  // 立会いのスタートを押したか否か
@@ -337,45 +336,26 @@ public class Rikishi2Manager : MonoBehaviour
                         }
                     }
                 #endregion
-                #region モード選択
+                #region 人数選択
                     else
                     {
-                        if(!levelModeDecide)
+                        if(!playerModeDecide)
                         {
-                            if(!playerModeDecide)
+                            if(Input.GetAxisRaw("LeftHorizontal1") < 0)
                             {
-                                if(Input.GetAxisRaw("LeftHorizontal1") < 0)
-                                {
-                                    Game2Manager.Instance.SelectOnePlayer();
-                                }
-                                if(Input.GetAxisRaw("LeftHorizontal1") > 0)
-                                {
-                                    Game2Manager.Instance.SelectTwoPlayer();
-                                }
-                                if(Input.GetButtonDown("Decide1"))
-                                {
-                                    playerModeDecide = true;
-                                    Game2Manager.Instance.DecidePlayerDown();
-                                }
+                                Game2Manager.Instance.SelectOnePlayer();
                             }
-                            else
+                            if(Input.GetAxisRaw("LeftHorizontal1") > 0)
                             {
-                                if(Input.GetAxisRaw("LeftHorizontal1") < 0)
-                                {
-                                    Game2Manager.Instance.SelectEasyMode();
-                                }
-                                if(Input.GetAxisRaw("LeftHorizontal1") > 0)
-                                {
-                                    Game2Manager.Instance.SelectNormalMode();
-                                }
-                                if(Input.GetButtonDown("Decide1"))
-                                {
-                                    levelModeDecide = true;
-                                    Game2Manager.Instance.DecideModeDown();
-                                    SetCameraPlace();
-                                    Game2Manager.Instance.SetMainCamera();
-                                    rikishiUI.SetUIPlace(playerNum);
-                                }
+                                Game2Manager.Instance.SelectTwoPlayer();
+                            }
+                            if(Input.GetButtonDown("Decide1"))
+                            {
+                                playerModeDecide = true;
+                                Game2Manager.Instance.SetPlayerMode();
+                                SetCameraPlace();
+                                Game2Manager.Instance.SetMainCamera();
+                                rikishiUI.SetUIPlace(playerNum);
                             }
                         }
                 #endregion
@@ -2812,7 +2792,6 @@ public class Rikishi2Manager : MonoBehaviour
     {
         playStart = false;
         playerModeDecide = false;
-        levelModeDecide = false;
         weightInput = false;
         isStartPush = false;
         isTachiaiMove = false;

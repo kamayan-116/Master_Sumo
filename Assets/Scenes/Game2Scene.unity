@@ -370,28 +370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &151651874 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8431638723619384929, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
-  m_PrefabInstance: {fileID: 151651869}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &151651875 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8431638725034943256, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
-  m_PrefabInstance: {fileID: 151651869}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &151651876 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4140198647305952741, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
@@ -751,7 +729,7 @@ PrefabInstance:
       objectReference: {fileID: 512957225}
     - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 6805580677374717894, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -914,6 +892,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: sumouObj1
       objectReference: {fileID: 0}
+    - target: {fileID: 3745284814586776826, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4025585018143869505, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Name
       value: rikishi1
@@ -972,7 +954,7 @@ PrefabInstance:
       objectReference: {fileID: 502546569}
     - target: {fileID: 6797754085963489065, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 6805580677374717894, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -993,6 +975,10 @@ PrefabInstance:
     - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7169159424976704161, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7340775919414070914, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Name
@@ -1401,19 +1387,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e1368cf7913fc046aec10c56160897d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSelect: 0
   kimariteNum: 0
   gameState: 0
   gamePlayer: 0
-  gameMode: 0
   titleUI: {fileID: 1206822351}
   startBText: {fileID: 1255156393}
   operatorUI: {fileID: 151651879}
   gameModeUI: {fileID: 151651878}
   onePlayerButton: {fileID: 151651877}
   twoPlayerButton: {fileID: 151651876}
-  easyButton: {fileID: 151651875}
-  normalButton: {fileID: 151651874}
   gyojiText: {fileID: 151651873}
   gameResultUI: {fileID: 151651870}
   resultText: {fileID: 151651871}
@@ -3606,7 +3588,6 @@ MonoBehaviour:
   gameStart: 0
   playStart: 0
   playerModeDecide: 0
-  levelModeDecide: 0
   weightStick: 0
   weightInput: 0
   isStartPush: 0
@@ -3633,6 +3614,8 @@ MonoBehaviour:
   angDifPer: 0
   isPlayerMove: 0
   isLFMove: 1
+  isRotStart: 0
+  isRotEnd: 1
   stayNowTime: 0
   cpuState: 0
   cpuNextState: 0
