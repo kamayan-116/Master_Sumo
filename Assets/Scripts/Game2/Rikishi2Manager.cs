@@ -127,6 +127,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float lFLRNum = 0f;  // 左足左右の値（左と右の最大値:5）
     [SerializeField] private float rFFBNum = 0f;  // 右足前後方の値（前方と後方の最大値:5）
     [SerializeField] private float rFLRNum = 0f;  // 右足左右の値（左と右の最大値:5）
+    [SerializeField] private int arrowPatNum = 0;  // 方向パッドの値（0が未入力、1が上、2が下、3が左、4が右）
     private float notMoveMagNum = 0.97f;  // 重心移動のみの入力倍率
     private float footMax = 5f;  // 足の値の最大値
     private float clossMax = 2f;  // クロスの時の最大値
@@ -484,6 +485,7 @@ public class Rikishi2Manager : MonoBehaviour
                     #region 共通入力
                     SetEnemyTransform();
                     SetEnemyRot();
+                    SetArrowPat();
                     SetFootInput();
                     SetShoulderRot();
                     SetEnemyDis();
@@ -505,36 +507,33 @@ public class Rikishi2Manager : MonoBehaviour
                     {
                         #region プレイヤー1の入力
                         case 1:
-                            if(Input.GetAxis("LeftVertical1") > 0f &&
-                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
-                                )
+                            if(Input.GetAxis("LeftVertical1") > 0f && (arrowPatNum == 0 || arrowPatNum == 1))
                             {
+                                arrowPatNum = 1;
                                 SetEnemyGraInput(Input.GetAxis("RightHorizontal1") * notMoveMagNum, Input.GetAxis("RightVertical1") * notMoveMagNum);
                             }
 
-                            if(Input.GetAxis("LeftVertical1") < 0f &&
-                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
-                                )
+                            if(Input.GetAxis("LeftVertical1") < 0f && (arrowPatNum == 0 || arrowPatNum == 2))
                             {
+                                arrowPatNum = 2;
                                 SetOwnGravity(2, Input.GetAxis("RightHorizontal1") * notMoveMagNum, Input.GetAxis("RightVertical1") * notMoveMagNum);
                             }
 
-                            if(Input.GetAxis("LeftHorizontal1") < 0f &&
-                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
-                                )
+                            if(Input.GetAxis("LeftHorizontal1") < 0f && (arrowPatNum == 0 || arrowPatNum == 3))
                             {
+                                arrowPatNum = 3;
                                 SetLeftFootNum(Input.GetAxis("RightHorizontal1") * speedMagNum, Input.GetAxis("RightVertical1") * speedMagNum);
                             }
 
-                            if(Input.GetAxis("LeftHorizontal1") > 0f &&
-                                (Input.GetAxis("RightHorizontal1") != 0f || Input.GetAxis("RightVertical1") != 0f)
-                                )
+                            if(Input.GetAxis("LeftHorizontal1") > 0f && (arrowPatNum == 0 || arrowPatNum == 4))
                             {
+                                arrowPatNum = 4;
                                 SetRightFootNum(Input.GetAxis("RightHorizontal1") * speedMagNum, Input.GetAxis("RightVertical1") * speedMagNum);
                             }
 
-                            if(Input.GetAxis("RightHorizontal1") == 0f && Input.GetAxis("RightVertical1") == 0f)
+                            if(Input.GetAxis("LeftHorizontal1") == 0f && Input.GetAxis("LeftVertical1") == 0f)
                             {
+                                arrowPatNum = 0;
                                 SetEnemyGraInput(0, 0);
                                 SetOwnGravity(2, 0 ,0);
                                 SetLeftFootNum(0, 0);
@@ -608,36 +607,33 @@ public class Rikishi2Manager : MonoBehaviour
                                     }
                                     break;
                                 case Game2Manager.GamePlayer.Two:
-                                    if(Input.GetAxis("LeftVertical2") > 0f &&
-                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                                        )
+                                    if(Input.GetAxis("LeftVertical2") > 0f && (arrowPatNum == 0 || arrowPatNum == 1))
                                     {
+                                        arrowPatNum = 1;
                                         SetEnemyGraInput(Input.GetAxis("RightHorizontal2") * notMoveMagNum, Input.GetAxis("RightVertical2") * notMoveMagNum);
                                     }
 
-                                    if(Input.GetAxis("LeftVertical2") < 0f &&
-                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                                        )
+                                    if(Input.GetAxis("LeftVertical2") < 0f && (arrowPatNum == 0 || arrowPatNum == 2))
                                     {
+                                        arrowPatNum = 2;
                                         SetOwnGravity(2, Input.GetAxis("RightHorizontal2") * notMoveMagNum, Input.GetAxis("RightVertical2") * notMoveMagNum);
                                     }
 
-                                    if(Input.GetAxis("LeftHorizontal2") < 0f &&
-                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                                        )
+                                    if(Input.GetAxis("LeftHorizontal2") < 0f && (arrowPatNum == 0 || arrowPatNum == 3))
                                     {
+                                        arrowPatNum = 3;
                                         SetLeftFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
                                     }
 
-                                    if(Input.GetAxis("LeftHorizontal2") > 0f &&
-                                        (Input.GetAxis("RightHorizontal2") != 0f || Input.GetAxis("RightVertical2") != 0f)
-                                        )
+                                    if(Input.GetAxis("LeftHorizontal2") > 0f && (arrowPatNum == 0 || arrowPatNum == 4))
                                     {
+                                        arrowPatNum = 4;
                                         SetRightFootNum(Input.GetAxis("RightHorizontal2") * speedMagNum, Input.GetAxis("RightVertical2") * speedMagNum);
                                     }
 
-                                    if(Input.GetAxis("RightHorizontal2") == 0f && Input.GetAxis("RightVertical2") == 0f)
+                                    if(Input.GetAxis("LeftHorizontal2") == 0f && Input.GetAxis("LeftVertical2") == 0f)
                                     {
+                                        arrowPatNum = 0;
                                         SetEnemyGraInput(0, 0);
                                         SetOwnGravity(2, 0 ,0);
                                         SetLeftFootNum(0, 0);
@@ -1207,7 +1203,7 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region プレイヤーの入力に関するスクリプト
-    // 左JoyStickによる重心値の変化入力を行う関数
+    // 直接相手の重心値の変化入力を行う関数
     private void SetEnemyGraInput(float rightPosi, float frontPosi)
     {
         angleY = this.transform.eulerAngles.y;
@@ -1606,22 +1602,25 @@ public class Rikishi2Manager : MonoBehaviour
         }
     }
 
+    // 方向パッドの入力状態の確認を行う関数
+    private void SetArrowPat()
+    {
+        rikishiUI.SetArrowPatImage(arrowPatNum);
+    }
+
     // 各足の入力状態の確認を行う関数
     private void SetFootInput()
     {
         if(!lFOpeInput && !rFOpeInput)
         {
-            rikishiUI.SetFootOperateColor(0);
             rikishiUI.SetFootOpeActive(false, false);
         }
         else if(lFOpeInput && !rFOpeInput)
         {
-            rikishiUI.SetFootOperateColor(1);
             rikishiUI.SetFootOpeActive(true, false);
         }
         else if(!lFOpeInput && rFOpeInput)
         {
-            rikishiUI.SetFootOperateColor(2);
             rikishiUI.SetFootOpeActive(false, true);
         }
     }

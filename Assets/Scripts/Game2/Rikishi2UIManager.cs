@@ -34,9 +34,10 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Image graMoveRightArrow; // 右方向重心移動可能画像
     [SerializeField] private Sprite[] graMoveSprite; // 重心移動画像
     #endregion
-    #region 足の操作関連
-    [SerializeField] private Image footOperateImage; // 足の操作状態のUI画像
-    [SerializeField] private Sprite[] footOperateSprite; // 足の操作状態の画像配列（0が未入力、1が左入力、2が右入力）
+    #region 操作関連
+    [SerializeField] private Image ArrowInputImage; // 方向パッドの入力状態のUI画像
+    [SerializeField] private Text ArrowInputText;
+    [SerializeField] private Sprite[] ArrowInputSprite; // 方向パッドの入力状態の画像配列（0が未入力、1が上入力、2が下入力、3が左入力、4が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
     [SerializeField] private Image rFCircleImage; // 右足の操作中のUI画像
     private float lfCircley;  // 左足のUIのワールドY座標
@@ -86,7 +87,7 @@ public class Rikishi2UIManager : MonoBehaviour
                         tachiaiPanel.rectTransform.localPosition = new Vector3(-755f, 285f, 0);
                         playerNameText.rectTransform.localPosition = new Vector3(0f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
-                        footOperateImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
+                        ArrowInputImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
                         break;
                 }
                 break;
@@ -98,14 +99,14 @@ public class Rikishi2UIManager : MonoBehaviour
                         tachiaiPanel.rectTransform.localPosition = new Vector3(-280f, 285f, 0);
                         playerNameText.rectTransform.localPosition = new Vector3(45f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
-                        footOperateImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
+                        ArrowInputImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
                         break;
                     case 2:
                         weightPanel.rectTransform.localPosition = new Vector3(280f, 450f, 0);
                         tachiaiPanel.rectTransform.localPosition = new Vector3(280f, 285f, 0);
                         playerNameText.rectTransform.localPosition = new Vector3(-45f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
-                        footOperateImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
+                        ArrowInputImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
                         break;
                 }
                 break;
@@ -200,10 +201,24 @@ public class Rikishi2UIManager : MonoBehaviour
         playImage.color = startColor;
     }
 
-    // 操作中の足の色を変更する関数
-    public void SetFootOperateColor(int _operateNum)
+    // 操作中の方向パッドの画像に変更する関数
+    public void SetArrowPatImage(int _operateNum)
     {
-        footOperateImage.sprite = footOperateSprite[_operateNum];
+        ArrowInputImage.sprite = ArrowInputSprite[_operateNum];
+
+        // 仮：画像が来たら消す
+        if(_operateNum == 1)
+        {
+            ArrowInputText.text = "攻";
+        }
+        else if(_operateNum == 2)
+        {
+            ArrowInputText.text = "守";
+        }
+        else
+        {
+            ArrowInputText.text = "";
+        }
     }
 
     // 操作中の足のUIを表示する関数
@@ -363,7 +378,7 @@ public class Rikishi2UIManager : MonoBehaviour
         SetArrowActive(1, false);
         SetArrowActive(2, false);
         SetArrowActive(3, false);
-        SetFootOperateColor(0);
+        SetArrowPatImage(0);
         SetFootOpeActive(false, false);
     }
     #endregion
