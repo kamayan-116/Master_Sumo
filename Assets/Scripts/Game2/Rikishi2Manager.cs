@@ -152,6 +152,9 @@ public class Rikishi2Manager : MonoBehaviour
     public float graLRNum = 0f;  // 左右方重心の値（重心耐久の最大値:15）
     public float graMax = 15f;  // 重心耐久の最大値
     [SerializeField] private float playStyleMagNum;  // 攻撃状態に応じた重心移動倍率
+    private float kumiMagNum;  // 四つとまわしの攻撃状態の際の重心移動倍率
+    private float oshiMagNum;  // 押しの攻撃状態の際の重心移動倍率
+    private float hatakiMagNum;  // はたきの攻撃状態の際の重心移動倍率
     private float wholeY;  // 全身のワールドY座標
     private Vector3 center;  // プレイヤーの重心初期座標
     [SerializeField] private Vector3 gravityPlace;  // プレイヤーの重心初期座標
@@ -1095,8 +1098,13 @@ public class Rikishi2Manager : MonoBehaviour
         powerMagNum = localScaleNum;
         speedMagNum = 3f - localScaleNum;
         rb.mass = powerMagNum;
+        kumiMagNum = 1f;
+        oshiMagNum = 0.2f * localScaleNum + 0.7f;
+        hatakiMagNum = -0.2f * localScaleNum + 1.3f;
         changeStyleTime = UnityEngine.Random.Range(3f, 6f);
         SetBodyScale();
+        rikishiUI.SetMatchResultText(winsNum, lossesNum);
+        rikishiUI.SetAbilityNumSlider(powerMagNum, speedMagNum, kumiMagNum, oshiMagNum, hatakiMagNum);
     }
     #endregion
 
@@ -1977,16 +1985,16 @@ public class Rikishi2Manager : MonoBehaviour
         switch(playStyle)
         {
             case PlayStyle.Yothu:
-                playStyleMagNum = 1f;
+                playStyleMagNum = kumiMagNum;
                 break;
             case PlayStyle.Mawashi:
-                playStyleMagNum = 1f;
+                playStyleMagNum = kumiMagNum;
                 break;
             case PlayStyle.Oshi:
-                playStyleMagNum = 0.2f * localScaleNum + 0.7f;
+                playStyleMagNum = oshiMagNum;
                 break;
             case PlayStyle.Hataki:
-                playStyleMagNum = -0.2f * localScaleNum + 1.3f;
+                playStyleMagNum = hatakiMagNum;
                 break;
         }
     }
@@ -2739,12 +2747,6 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 勝敗に関するスクリプト
-    // 勝敗数をUIに送る関数
-    public void TellWinLosses()
-    {
-        rikishiUI.SetMatchResultText(winsNum, lossesNum);
-    }
-
     // 相手と衝突の有無時に呼ばれる関数
     public void SetCollision(bool _isCollision)
     {

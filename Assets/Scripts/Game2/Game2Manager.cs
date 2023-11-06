@@ -244,8 +244,6 @@ public class Game2Manager : MonoBehaviour
         {
             p1UICtrl.SetWeightPanel(false);
             p2UICtrl.SetWeightPanel(false);
-            p1Ctrl.TellWinLosses();
-            p2Ctrl.TellWinLosses();
             p1UICtrl.SetPlayerPanel(true);
             p2UICtrl.SetPlayerPanel(true);
             StartCoroutine("SoundStart");

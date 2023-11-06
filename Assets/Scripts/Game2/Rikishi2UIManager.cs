@@ -8,9 +8,16 @@ public class Rikishi2UIManager : MonoBehaviour
     #region 変数宣言
     [SerializeField] private Rikishi2Manager rikishiManager;  // RikishiManagerプログラム
     [SerializeField] private Text resultText;  // 結果テキスト
-    [SerializeField] private GameObject playerPanel;  // プレイヤーパネル
     [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
+    #region プレイヤーパネル関連
+    [SerializeField] private GameObject playerPanel;  // プレイヤーパネル
     [SerializeField] private Text matchiResultText;  // 勝敗結果のテキスト
+    [SerializeField] private Slider powerSlider;  // パワースライダー
+    [SerializeField] private Slider speedSlider;  // スピードスライダー
+    [SerializeField] private Slider kumiSlider;  // 組みスライダー
+    [SerializeField] private Slider oshiSlider;  // 押しスライダー
+    [SerializeField] private Slider hatakiSlider;  // はたきスライダー
+    #endregion
     #region 体重関連
     [SerializeField] private Image weightPanel; // 体重パネルのImage
     [SerializeField] private Text weightText; // 体重テキスト
@@ -162,6 +169,16 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetMatchResultText(int _winsNum, int _lossesNum)
     {
         matchiResultText.text = _winsNum + "勝 " + _lossesNum + "敗";
+    }
+
+    // 能力値のスライダーを管理する関数
+    public void SetAbilityNumSlider(float _powerValue, float _speedValue, float _kumiValue, float _oshiValue, float _hatakiValue)
+    {
+        powerSlider.value = _powerValue;
+        speedSlider.value = _speedValue;
+        kumiSlider.value = _kumiValue;
+        oshiSlider.value = _oshiValue;
+        hatakiSlider.value = _hatakiValue;
     }
 
     // 立会いのBボタンの画像の表示状態に関する関数
