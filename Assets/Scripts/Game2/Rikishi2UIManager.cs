@@ -7,8 +7,9 @@ public class Rikishi2UIManager : MonoBehaviour
 {
     #region 変数宣言
     [SerializeField] private Rikishi2Manager rikishiManager;  // RikishiManagerプログラム
-    [SerializeField] private Text resultText; // 結果テキスト
-    [SerializeField] private Text playerNameText; // プレイヤーネームテキスト
+    [SerializeField] private Text resultText;  // 結果テキスト
+    [SerializeField] private GameObject playerPanel;  // プレイヤーパネル
+    [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
     #region 体重関連
     [SerializeField] private Image weightPanel; // 体重パネルのImage
     [SerializeField] private Text weightText; // 体重テキスト
@@ -83,9 +84,7 @@ public class Rikishi2UIManager : MonoBehaviour
                 switch(_playerNum)
                 {
                     case 1:
-                        weightPanel.rectTransform.localPosition = new Vector3(-755f, 450f, 0);
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(-755f, 285f, 0);
-                        playerNameText.rectTransform.localPosition = new Vector3(0f, 480f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(-735f, 450f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
                         break;
@@ -95,16 +94,12 @@ public class Rikishi2UIManager : MonoBehaviour
                 switch(_playerNum)
                 {
                     case 1:
-                        weightPanel.rectTransform.localPosition = new Vector3(-280f, 450f, 0);
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(-280f, 285f, 0);
-                        playerNameText.rectTransform.localPosition = new Vector3(45f, 480f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(-255f, 450f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
                         break;
                     case 2:
-                        weightPanel.rectTransform.localPosition = new Vector3(280f, 450f, 0);
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(280f, 285f, 0);
-                        playerNameText.rectTransform.localPosition = new Vector3(-45f, 480f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(255f, 450f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
                         break;
@@ -114,6 +109,12 @@ public class Rikishi2UIManager : MonoBehaviour
     }
 
     #region 体重に関するスクリプト
+    // 体重パネルの表示状態を管理する関数
+    public void SetWeightPanel(bool _isActive)
+    {
+        weightPanel.gameObject.SetActive(_isActive);
+    }
+
     // 体重スライダーの最大値と最小値を入力する関数
     public void SetWeightMaxMin(float _weightMax, float _weightMin)
     {
@@ -144,6 +145,18 @@ public class Rikishi2UIManager : MonoBehaviour
     #endregion
 
     #region プレイ中のUI
+    // プレイヤーパネルの表示状態を管理する関数
+    public void SetPlayerPanel(bool _isActive)
+    {
+        playerPanel.SetActive(_isActive);
+    }
+
+    // ゲーム中パネルの表示状態を管理する関数
+    public void SetInGamePanel(bool _isActive)
+    {
+        inGamePanel.SetActive(_isActive);
+    }
+
     // 立会いのBボタンの画像の表示状態に関する関数
     public void SetTachiaiBActive(bool _isActive)
     {   
@@ -363,6 +376,7 @@ public class Rikishi2UIManager : MonoBehaviour
     // 再度遊ぶ際にUIをResetする関数
     public void SetResetUI()
     {
+        inGamePanel.SetActive(false);
         resultText.gameObject.SetActive(false);
         decideButton.interactable = true;
         weightSlider.interactable = true;

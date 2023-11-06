@@ -212,6 +212,7 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool playerModeDecide = false;  // プレイヤー人数決定ボタンを押したか否か
     [SerializeField] private bool weightStick = false;  // 体重入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
+    [SerializeField] private bool tachiaiInput = false;  // 立会いの入力が可能か否か
     [SerializeField] private bool isStartPush = false;  // 立会いのスタートを押したか否か
     [SerializeField] private bool isTachiaiMove = false;  // 立会いの開始位置への移動可能か否か
     [SerializeField] private bool isTachiaiEnd = false;  // 立会いが終わったか否か
@@ -357,6 +358,7 @@ public class Rikishi2Manager : MonoBehaviour
                                 SetCameraPlace();
                                 Game2Manager.Instance.SetMainCamera();
                                 rikishiUI.SetUIPlace(playerNum);
+                                rikishiUI.SetWeightPanel(true);
                             }
                         }
                 #endregion
@@ -423,22 +425,25 @@ public class Rikishi2Manager : MonoBehaviour
                 #region 立会いペナルティ入力
                             else
                             {
-                                switch(playerNum)
+                                if(tachiaiInput)
                                 {
-                                    case 1:
-                                        if(Input.GetButtonDown("Decide1"))
-                                        {
-                                            SetPenalty();
-                                            rikishiUI.SetTachiaiBActive(true);
-                                        }
-                                        break;
-                                    case 2:
-                                        if(Input.GetButtonDown("Decide2"))
-                                        {
-                                            SetPenalty();
-                                            rikishiUI.SetTachiaiBActive(true);
-                                        }
-                                        break;
+                                    switch(playerNum)
+                                    {
+                                        case 1:
+                                            if(Input.GetButtonDown("Decide1"))
+                                            {
+                                                SetPenalty();
+                                                rikishiUI.SetTachiaiBActive(true);
+                                            }
+                                            break;
+                                        case 2:
+                                            if(Input.GetButtonDown("Decide2"))
+                                            {
+                                                SetPenalty();
+                                                rikishiUI.SetTachiaiBActive(true);
+                                            }
+                                            break;
+                                    }
                                 }
                             }
                         }
@@ -1095,6 +1100,12 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 立会いに関するスクリプト
+    // 立会いの入力の可否を変更する関数
+    public void SetTachiaiInput(bool _isbool)
+    {
+        tachiaiInput = _isbool;
+    }
+
     // 立会いのペナルティ回数
     private void SetPenalty()
     {
@@ -2793,6 +2804,7 @@ public class Rikishi2Manager : MonoBehaviour
         playerModeDecide = false;
         weightInput = false;
         isStartPush = false;
+        SetTachiaiInput(false);
         isTachiaiMove = false;
         isTachiaiEnd = false;
         isEnd = false;

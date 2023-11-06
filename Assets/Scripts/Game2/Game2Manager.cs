@@ -102,6 +102,7 @@ public class Game2Manager : MonoBehaviour
     #endregion
     #region サウンドの参照を取る変数
     [Header("サウンド")]
+    [SerializeField] private AudioClip broadcastSound;  // 放送と待ったなしのサウンド
     [SerializeField] private AudioClip shoutSound;  // はっけよいのサウンド
     [SerializeField] private AudioClip startSound;  // のこったのサウンド
     [SerializeField] private AudioClip resultSound;  // 勝負ありのサウンド
@@ -239,16 +240,30 @@ public class Game2Manager : MonoBehaviour
 
         if(p1WeightInput && p2WeightInput)
         {
-            gyojiText.gameObject.SetActive(true);
-            gyojiText.text = "はっけよい";
-            seAudioSource.PlayOneShot(shoutSound);
-            StartCoroutine("UIFalse");
+            p1UICtrl.SetWeightPanel(false);
+            p2UICtrl.SetWeightPanel(false);
+            p1UICtrl.SetPlayerPanel(true);
+            p2UICtrl.SetPlayerPanel(true);
+            StartCoroutine("SoundStart");
         }
     }
 
-    // 行司の掛け声のテキストを消すコルーチン関数
-    private IEnumerator UIFalse()
+    // スタート前のアナウンスを行うコルーチン関数
+    private IEnumerator SoundStart()
     {
+        yield return new WaitForSeconds(waitTime);
+        seAudioSource.PlayOneShot(broadcastSound);
+        float broadcastTime = broadcastSound.length + waitTime;
+        yield return new WaitForSeconds(broadcastTime);
+        p1UICtrl.SetPlayerPanel(false);
+        p2UICtrl.SetPlayerPanel(false);
+        p1UICtrl.SetInGamePanel(true);
+        p2UICtrl.SetInGamePanel(true);
+        p1Ctrl.SetTachiaiInput(true);
+        p2Ctrl.SetTachiaiInput(true);
+        gyojiText.gameObject.SetActive(true);
+        gyojiText.text = "はっけよい";
+        seAudioSource.PlayOneShot(shoutSound);
         float shoutTime = shoutSound.length + waitTime * 2;
         yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
