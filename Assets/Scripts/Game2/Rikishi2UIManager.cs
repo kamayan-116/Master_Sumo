@@ -10,7 +10,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Text resultText;  // 結果テキスト
     [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
     #region プレイヤーパネル関連
-    [SerializeField] private GameObject playerPanel;  // プレイヤーパネル
+    [SerializeField] private Image playerPanel;  // プレイヤーパネル
     [SerializeField] private Text matchiResultText;  // 勝敗結果のテキスト
     [SerializeField] private Slider powerSlider;  // パワースライダー
     [SerializeField] private Slider speedSlider;  // スピードスライダー
@@ -19,10 +19,8 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Slider hatakiSlider;  // はたきスライダー
     #endregion
     #region 体重関連
-    [SerializeField] private Image weightPanel; // 体重パネルのImage
     [SerializeField] private Text weightText; // 体重テキスト
     [SerializeField] private Slider weightSlider;  // 体重スライダー
-    [SerializeField] private Button decideButton;  // 体重決定ボタン
     [SerializeField] private float weightInitialNum;  // 体重の初期値
     #endregion
     #region 立会いパネルや立会いの入力UI
@@ -117,12 +115,6 @@ public class Rikishi2UIManager : MonoBehaviour
     }
 
     #region 体重に関するスクリプト
-    // 体重パネルの表示状態を管理する関数
-    public void SetWeightPanel(bool _isActive)
-    {
-        weightPanel.gameObject.SetActive(_isActive);
-    }
-
     // 体重スライダーの最大値と最小値を入力する関数
     public void SetWeightMaxMin(float _weightMax, float _weightMin)
     {
@@ -145,9 +137,8 @@ public class Rikishi2UIManager : MonoBehaviour
     // 決定ボタンを押して体重の入力を行った
     public void SetWeightInput()
     {   
-        decideButton.interactable = false;
         weightSlider.interactable = false;
-        weightPanel.color = new Color32(0, 0, 0, 200);
+        playerPanel.color = new Color32(0, 0, 0, 200);
         rikishiManager.WeightInput();
     }
     #endregion
@@ -156,7 +147,7 @@ public class Rikishi2UIManager : MonoBehaviour
     // プレイヤーパネルの表示状態を管理する関数
     public void SetPlayerPanel(bool _isActive)
     {
-        playerPanel.SetActive(_isActive);
+        playerPanel.gameObject.SetActive(_isActive);
     }
 
     // ゲーム中パネルの表示状態を管理する関数
@@ -402,9 +393,8 @@ public class Rikishi2UIManager : MonoBehaviour
     {
         inGamePanel.SetActive(false);
         resultText.gameObject.SetActive(false);
-        decideButton.interactable = true;
+        playerPanel.color = new Color32(255, 255, 255, 100);
         weightSlider.interactable = true;
-        weightPanel.color = new Color32(255, 255, 255, 100);
         weightSlider.value = weightInitialNum;
         SetWeightText(weightSlider.value);
         tachiaiPanel.color = new Color32(255, 255, 255, 100);

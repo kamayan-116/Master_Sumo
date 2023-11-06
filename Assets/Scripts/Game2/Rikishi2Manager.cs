@@ -215,7 +215,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool gameStart = false;  // ゲーム開始ボタンを押したか否か
     [SerializeField] private bool playStart = false;  // 操作方法の決定ボタンを押したか否か
     [SerializeField] private bool playerModeDecide = false;  // プレイヤー人数決定ボタンを押したか否か
-    [SerializeField] private bool weightStick = false;  // 体重入力したか否か
+    [SerializeField] private bool cpuLevelDecide = false;  // コンピュータレベルを決定したか否か
+    [SerializeField] private bool inputStick = false;  // Slider入力したか否か
     [SerializeField] private bool weightInput = false;  // 体重決定したか否か
     [SerializeField] private bool tachiaiInput = false;  // 立会いの入力が可能か否か
     [SerializeField] private bool isStartPush = false;  // 立会いのスタートを押したか否か
@@ -238,6 +239,8 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     #region コンピュータ対戦の際の変数
     [Header("コンピュータ対戦")]
+    [SerializeField] int cpuLevel;  // コンピュータの強さ
+    [SerializeField] private float levelMagNum;  // コンピュータの強さに応じた倍率
     [SerializeField] float myGraFBPer;  // 自身の前後重心の状態割合
     [SerializeField] float myGraLRPer;  // 自身の左右重心の状態割合
     [SerializeField] float dohyoLDisPer;  // 土俵の中心と左足との距離の状態割合
@@ -312,7 +315,6 @@ public class Rikishi2Manager : MonoBehaviour
         rikishiUI.SetGraUIMoveMagNum(graMax);
         rb = playerObj.GetComponent<Rigidbody>();
         SetInitialNum();
-        SetPlayStyle(PlayStyle.Yothu);
     }
 
     // Update is called once per frame
@@ -366,87 +368,118 @@ public class Rikishi2Manager : MonoBehaviour
                             }
                         }
                 #endregion
-                #region 体重入力
+                #region コンピュータレベル入力
                         else
                         {
-                            if(!weightInput)
+                            if(!cpuLevelDecide)
                             {
-                                rikishiUI.SetWeightText(weightNum);
-
-                                switch(playerNum)
+                                switch(Game2Manager.Instance.gamePlayer)
                                 {
-                                    case 1:
-                                        if(Input.GetAxisRaw("LeftHorizontal1") != 0 && !weightStick)
+                                    case Game2Manager.GamePlayer.One:
+                                        if(Input.GetAxisRaw("LeftHorizontal1") != 0 && !inputStick)
                                         {
-                                            weightStick = true;
-                                            rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal1"));
+                                            inputStick = true;
+                                            Game2Manager.Instance.SetCpuLevelSlider(Input.GetAxisRaw("LeftHorizontal1"));
                                         }
-                                        if(Input.GetAxisRaw("LeftVertical1") != 0 && !weightStick)
+                                        else
                                         {
-                                            weightStick = true;
-                                            rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical1"));
-                                        }
-                                        if(Input.GetAxisRaw("LeftHorizontal1") == 0 && Input.GetAxisRaw("LeftVertical1") == 0)
-                                        {
-                                            weightStick = false;
+                                            inputStick = false;
                                         }
                                         if(Input.GetButtonDown("Decide1"))
                                         {
-                                            rikishiUI.SetWeightInput();
+                                            cpuLevelDecide = true;
+                                            Game2Manager.Instance.SetCpuLevelMode();
                                         }
                                         break;
-                                    case 2:
-                                        switch(Game2Manager.Instance.gamePlayer)
-                                        {
-                                            case Game2Manager.GamePlayer.One:
-                                                rikishiUI.SetWeightInput();
-                                                break;
-                                            case Game2Manager.GamePlayer.Two:
-                                                if(Input.GetAxisRaw("LeftHorizontal2") != 0 && !weightStick)
-                                                {
-                                                    weightStick = true;
-                                                    rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal2"));
-                                                }
-                                                if(Input.GetAxisRaw("LeftVertical2") != 0 && !weightStick)
-                                                {
-                                                    weightStick = true;
-                                                    rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical2"));
-                                                }
-                                                if(Input.GetAxisRaw("LeftHorizontal2") == 0 && Input.GetAxisRaw("LeftVertical2") == 0)
-                                                {
-                                                    weightStick = false;
-                                                }
-                                                if(Input.GetButtonDown("Decide2"))
-                                                {
-                                                    rikishiUI.SetWeightInput();
-                                                }
-                                                break;
-                                        }
+                                    case Game2Manager.GamePlayer.Two:
+                                        cpuLevelDecide = true;
+                                        Game2Manager.Instance.SetCpuLevelMode();
                                         break;
                                 }
                             }
                 #endregion
-                #region 立会いペナルティ入力
+                #region 体重入力
                             else
                             {
-                                if(tachiaiInput)
+                                if(!weightInput)
                                 {
+                                    rikishiUI.SetWeightText(weightNum);
+
                                     switch(playerNum)
                                     {
                                         case 1:
+                                            if(Input.GetAxisRaw("LeftHorizontal1") != 0 && !inputStick)
+                                            {
+                                                inputStick = true;
+                                                rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal1"));
+                                            }
+                                            if(Input.GetAxisRaw("LeftVertical1") != 0 && !inputStick)
+                                            {
+                                                inputStick = true;
+                                                rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical1"));
+                                            }
+                                            if(Input.GetAxisRaw("LeftHorizontal1") == 0 && Input.GetAxisRaw("LeftVertical1") == 0)
+                                            {
+                                                inputStick = false;
+                                            }
                                             if(Input.GetButtonDown("Decide1"))
                                             {
-                                                SetPenalty();
-                                                rikishiUI.SetTachiaiBActive(true);
+                                                rikishiUI.SetWeightInput();
                                             }
                                             break;
                                         case 2:
-                                            if(Input.GetButtonDown("Decide2"))
+                                            switch(Game2Manager.Instance.gamePlayer)
                                             {
-                                                SetPenalty();
-                                                rikishiUI.SetTachiaiBActive(true);
+                                                case Game2Manager.GamePlayer.One:
+                                                    rikishiUI.SetWeightInput();
+                                                    break;
+                                                case Game2Manager.GamePlayer.Two:
+                                                    if(Input.GetAxisRaw("LeftHorizontal2") != 0 && !inputStick)
+                                                    {
+                                                        inputStick = true;
+                                                        rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal2"));
+                                                    }
+                                                    if(Input.GetAxisRaw("LeftVertical2") != 0 && !inputStick)
+                                                    {
+                                                        inputStick = true;
+                                                        rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical2"));
+                                                    }
+                                                    if(Input.GetAxisRaw("LeftHorizontal2") == 0 && Input.GetAxisRaw("LeftVertical2") == 0)
+                                                    {
+                                                        inputStick = false;
+                                                    }
+                                                    if(Input.GetButtonDown("Decide2"))
+                                                    {
+                                                        rikishiUI.SetWeightInput();
+                                                    }
+                                                    break;
                                             }
                                             break;
+                                    }
+                                }
+                #endregion
+                #region 立会いペナルティ入力
+                                else
+                                {
+                                    if(tachiaiInput)
+                                    {
+                                        switch(playerNum)
+                                        {
+                                            case 1:
+                                                if(Input.GetButtonDown("Decide1"))
+                                                {
+                                                    SetPenalty();
+                                                    rikishiUI.SetTachiaiBActive(true);
+                                                }
+                                                break;
+                                            case 2:
+                                                if(Input.GetButtonDown("Decide2"))
+                                                {
+                                                    SetPenalty();
+                                                    rikishiUI.SetTachiaiBActive(true);
+                                                }
+                                                break;
+                                        }
                                     }
                                 }
                             }
@@ -826,6 +859,36 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region コンピュータ対戦に関するスクリプト
+    // コンピュータのレベルの入力
+    public void SetCpuLevel(int _level)
+    {
+        cpuLevel = _level;
+        SetCpuLevelMagNum();
+    }
+
+    // コンピュータのレベルに応じた倍率の決定
+    private void SetCpuLevelMagNum()
+    {
+        switch(cpuLevel)
+        {
+            case 1:
+                levelMagNum = 0.9f;
+                break;
+            case 2:
+                levelMagNum = 1f;
+                break;
+            case 3:
+                levelMagNum = 1.25f;
+                break;
+            case 4:
+                levelMagNum = 1.5f;
+                break;
+            case 5:
+                levelMagNum = 1.75f;
+                break;
+        }
+    }
+
     // コンピュータの立会いの入力に関するスクリプト
     private void SetCpuTachiaiInput()
     {
@@ -964,7 +1027,7 @@ public class Rikishi2Manager : MonoBehaviour
             myInputLRNum = -(1 - fbPerNum);
         }
 
-        SetOwnGravity(2, myInputLRNum, myInputFBNum);
+        SetOwnGravity(2, myInputLRNum * levelMagNum, myInputFBNum * levelMagNum);
     }
 
     // CpuState.MyGraMoveの終了処理
@@ -999,7 +1062,7 @@ public class Rikishi2Manager : MonoBehaviour
             eneInputLRNum = -(1f - rnd);
         }
 
-        SetEnemyGraInput(eneInputLRNum , eneInputFBNum);
+        SetEnemyGraInput(eneInputLRNum * levelMagNum, eneInputFBNum * levelMagNum);
     }
 
     // CpuState.EneGraMoveの終了処理
@@ -1022,7 +1085,7 @@ public class Rikishi2Manager : MonoBehaviour
         {
             lfInputFBNum = 1f;
         }
-        SetLeftFootNum(0, lfInputFBNum * speedMagNum);
+        SetLeftFootNum(0, lfInputFBNum  * levelMagNum * speedMagNum);
     }
 
     // CpuState.LFMoveの終了処理
@@ -1046,7 +1109,7 @@ public class Rikishi2Manager : MonoBehaviour
         {
             rfInputFBNum = 1f;
         }
-        SetRightFootNum(0, rfInputFBNum * speedMagNum);
+        SetRightFootNum(0, rfInputFBNum  * levelMagNum * speedMagNum);
     }
 
     // CpuState.RFMoveの終了処理
@@ -1083,10 +1146,17 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 体重に関するスクリプト
-    // 体重の数値の入力
+    // 体重の数値の入力と体重値による設定
     public void SetWeightNum(float _weightNum)
     {
         weightNum = _weightNum;
+        localScaleNum = (weightNum + weightMax - 2 * weightMin) / (weightMax - weightMin);
+        powerMagNum = localScaleNum;
+        speedMagNum = 3f - localScaleNum;
+        kumiMagNum = 1f;
+        oshiMagNum = 0.2f * localScaleNum + 0.7f;
+        hatakiMagNum = -0.2f * localScaleNum + 1.3f;
+        rikishiUI.SetAbilityNumSlider(powerMagNum, speedMagNum, kumiMagNum, oshiMagNum, hatakiMagNum);
     }
 
     // 体重の決定
@@ -1094,17 +1164,10 @@ public class Rikishi2Manager : MonoBehaviour
     {
         weightInput = true;
         Game2Manager.Instance.GameStart(playerNum);
-        localScaleNum = (weightNum + weightMax - 2 * weightMin) / (weightMax - weightMin);
-        powerMagNum = localScaleNum;
-        speedMagNum = 3f - localScaleNum;
         rb.mass = powerMagNum;
-        kumiMagNum = 1f;
-        oshiMagNum = 0.2f * localScaleNum + 0.7f;
-        hatakiMagNum = -0.2f * localScaleNum + 1.3f;
-        changeStyleTime = UnityEngine.Random.Range(3f, 6f);
+        changeStyleTime = UnityEngine.Random.Range(3f, 8f);
         SetBodyScale();
-        rikishiUI.SetMatchResultText(winsNum, lossesNum);
-        rikishiUI.SetAbilityNumSlider(powerMagNum, speedMagNum, kumiMagNum, oshiMagNum, hatakiMagNum);
+        SetPlayStyle(PlayStyle.Yothu);
     }
     #endregion
 
@@ -2747,6 +2810,12 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 勝敗に関するスクリプト
+    // 勝敗数をUIに送る関数
+    public void TellWinsLosses()
+    {
+        rikishiUI.SetMatchResultText(winsNum, lossesNum);
+    }
+
     // 相手と衝突の有無時に呼ばれる関数
     public void SetCollision(bool _isCollision)
     {
@@ -2819,6 +2888,7 @@ public class Rikishi2Manager : MonoBehaviour
     {
         playStart = false;
         playerModeDecide = false;
+        cpuLevelDecide = false;
         weightInput = false;
         isStartPush = false;
         SetTachiaiInput(false);

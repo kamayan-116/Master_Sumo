@@ -35,6 +35,7 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private GameObject gameModeUI;  // ゲームモードのパネルオブジェクト
     [SerializeField] private Button onePlayerButton;  // OnePlayerModeのボタンUI
     [SerializeField] private Button twoPlayerButton;  // TwoPlayerModeのボタンUI
+    [SerializeField] private Slider cpuSlider;  // コンピュータレベルのSliderUI
     [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
     [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
     [SerializeField] private Text resultText;  // 決まり手のテキスト
@@ -137,6 +138,7 @@ public class Game2Manager : MonoBehaviour
         SetCenterGravityPlace();
         SetCenterPlace();
         SetCameraPlace();
+        p2Ctrl.SetCpuLevel((int)cpuSlider.value);
         if(titleUI.gameObject.activeSelf)
         {
             SetBlinkButtonText();
@@ -199,6 +201,18 @@ public class Game2Manager : MonoBehaviour
         {
             twoPlayerButton.image.color = new Color32(255, 150, 150, 255);
         }
+    }
+
+    // コンピュータレベルのSliderの入力
+    public void SetCpuLevelSlider(float _changeLevel)
+    {
+        cpuSlider.value += _changeLevel;
+    }
+
+    // コンピュータレベル選択を行った
+    public void SetCpuLevelMode()
+    {
+        cpuSlider.interactable = false;
         StartCoroutine("DeleteModeScene");
     }
 
@@ -207,8 +221,10 @@ public class Game2Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         gameModeUI.SetActive(false);
-        p1UICtrl.SetWeightPanel(true);
-        p2UICtrl.SetWeightPanel(true);
+        p1Ctrl.TellWinsLosses();
+        p2Ctrl.TellWinsLosses();
+        p1UICtrl.SetPlayerPanel(true);
+        p2UICtrl.SetPlayerPanel(true);
     }
     #endregion
 
@@ -242,10 +258,6 @@ public class Game2Manager : MonoBehaviour
 
         if(p1WeightInput && p2WeightInput)
         {
-            p1UICtrl.SetWeightPanel(false);
-            p2UICtrl.SetWeightPanel(false);
-            p1UICtrl.SetPlayerPanel(true);
-            p2UICtrl.SetPlayerPanel(true);
             StartCoroutine("SoundStart");
         }
     }
@@ -699,6 +711,7 @@ public class Game2Manager : MonoBehaviour
     public void PushReplayDown()
     {
         gameResultUI.SetActive(false);
+        cpuSlider.interactable = true;
         resultText.text = "";
         replayButton.gameObject.SetActive(false);
         p1WeightInput = false;

@@ -238,6 +238,46 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 271329734899012364, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 271329734899012364, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 271329734899012364, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583393033194112560, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583393033194112560, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583393033194112560, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7573922203371537010, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7573922203371537010, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393112231021887527, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393112231021887527, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8431638723581560992, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -368,6 +408,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &151651874 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3638292561257774718, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 151651869}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &151651876 stripped
@@ -1243,6 +1294,7 @@ MonoBehaviour:
   gameModeUI: {fileID: 151651878}
   onePlayerButton: {fileID: 151651877}
   twoPlayerButton: {fileID: 151651876}
+  cpuSlider: {fileID: 151651874}
   gyojiText: {fileID: 151651873}
   gameResultUI: {fileID: 151651870}
   resultText: {fileID: 151651871}
@@ -3836,6 +3888,7 @@ MonoBehaviour:
   gameStart: 0
   playStart: 0
   playerModeDecide: 0
+  cpuLevelDecide: 0
   weightStick: 0
   weightInput: 0
   tachiaiInput: 0
@@ -3856,6 +3909,7 @@ MonoBehaviour:
   isFallDown: 0
   isOutDohyo: 0
   isReplay: 0
+  cpuLevel: 0
   myGraFBPer: 0
   myGraLRPer: 0
   dohyoLDisPer: 0
@@ -4539,10 +4593,8 @@ MonoBehaviour:
   kumiSlider: {fileID: 0}
   oshiSlider: {fileID: 0}
   hatakiSlider: {fileID: 0}
-  weightPanel: {fileID: 828093374820397417}
   weightText: {fileID: 1833178436609053938}
   weightSlider: {fileID: 1761843184785634695}
-  decideButton: {fileID: 6367703490245232525}
   weightInitialNum: 0
   tachiaiPanel: {fileID: 5407018666628505536}
   tachiaiInputImage: {fileID: 7912589301175710022}
