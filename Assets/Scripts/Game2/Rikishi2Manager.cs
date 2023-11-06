@@ -70,6 +70,8 @@ public class Rikishi2Manager : MonoBehaviour
     #region 基本情報に関する変数
     [Header("基本情報")]
     public int playerNum;  // プレイヤーナンバー
+    [SerializeField] private int winsNum = 0;  // 勝利数
+    [SerializeField] private int lossesNum = 0;  // 敗北数
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
     [SerializeField] private float localScaleNum;  // プレイヤーオブジェクトのローカルの大きさ
     [SerializeField] private float scaleYNum;  // プレイヤーオブジェクトの身長の大きさ
@@ -358,7 +360,6 @@ public class Rikishi2Manager : MonoBehaviour
                                 SetCameraPlace();
                                 Game2Manager.Instance.SetMainCamera();
                                 rikishiUI.SetUIPlace(playerNum);
-                                rikishiUI.SetWeightPanel(true);
                             }
                         }
                 #endregion
@@ -2738,6 +2739,12 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region 勝敗に関するスクリプト
+    // 勝敗数をUIに送る関数
+    public void TellWinLosses()
+    {
+        rikishiUI.SetMatchResultText(winsNum, lossesNum);
+    }
+
     // 相手と衝突の有無時に呼ばれる関数
     public void SetCollision(bool _isCollision)
     {
@@ -2783,6 +2790,14 @@ public class Rikishi2Manager : MonoBehaviour
         {
             isEnd =  _isEnd;
             isResult = _isResult;
+            if(isResult)
+            {
+                winsNum++;
+            }
+            else
+            {
+                lossesNum++;
+            }
             isFallDown = _isfallDown;
             isOutDohyo = _isOutDohyo;
             Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif, isInColl, isOutColl);

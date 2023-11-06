@@ -207,6 +207,8 @@ public class Game2Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         gameModeUI.SetActive(false);
+        p1UICtrl.SetWeightPanel(true);
+        p2UICtrl.SetWeightPanel(true);
     }
     #endregion
 
@@ -242,6 +244,8 @@ public class Game2Manager : MonoBehaviour
         {
             p1UICtrl.SetWeightPanel(false);
             p2UICtrl.SetWeightPanel(false);
+            p1Ctrl.TellWinLosses();
+            p2Ctrl.TellWinLosses();
             p1UICtrl.SetPlayerPanel(true);
             p2UICtrl.SetPlayerPanel(true);
             StartCoroutine("SoundStart");

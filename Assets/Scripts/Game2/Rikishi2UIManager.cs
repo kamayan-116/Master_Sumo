@@ -10,6 +10,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Text resultText;  // 結果テキスト
     [SerializeField] private GameObject playerPanel;  // プレイヤーパネル
     [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
+    [SerializeField] private Text matchiResultText;  // 勝敗結果のテキスト
     #region 体重関連
     [SerializeField] private Image weightPanel; // 体重パネルのImage
     [SerializeField] private Text weightText; // 体重テキスト
@@ -155,6 +156,12 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetInGamePanel(bool _isActive)
     {
         inGamePanel.SetActive(_isActive);
+    }
+
+    // 勝敗結果のテキストを管理する関数
+    public void SetMatchResultText(int _winsNum, int _lossesNum)
+    {
+        matchiResultText.text = _winsNum + "勝 " + _lossesNum + "敗";
     }
 
     // 立会いのBボタンの画像の表示状態に関する関数

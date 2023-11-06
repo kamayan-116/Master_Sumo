@@ -519,6 +519,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1374932572}
     m_Modifications:
+    - target: {fileID: 1185235730059031014, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1185235730059031014, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1347058435525947430, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
       value: 
@@ -603,6 +611,18 @@ PrefabInstance:
       propertyPath: enemy
       value: 
       objectReference: {fileID: 1822412441}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7340775919414070914, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Name
       value: rikishi1UI
@@ -1770,6 +1790,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1374932572}
     m_Modifications:
+    - target: {fileID: 1185235730059031014, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1185235730059031014, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1347058435525947430, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: enemy
       value: 
@@ -1866,6 +1894,18 @@ PrefabInstance:
       propertyPath: enemy
       value: 
       objectReference: {fileID: 940831087}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892203530154161766, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6923475104301539858, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_Text
       value: "\u5E78 \u57FA"
@@ -3298,6 +3338,8 @@ MonoBehaviour:
   rIFObj: {fileID: 95371379787118220}
   rIBObj: {fileID: 7208937728746243580}
   playerNum: 0
+  winsNum: 0
+  lossesNum: 0
   lossyScaleNum: 0
   localScaleNum: 0
   scaleYNum: 0
@@ -4067,6 +4109,7 @@ MonoBehaviour:
   resultText: {fileID: 7722065620474303702}
   playerPanel: {fileID: 0}
   inGamePanel: {fileID: 0}
+  matchiResultText: {fileID: 0}
   weightPanel: {fileID: 828093374820397417}
   weightText: {fileID: 1833178436609053938}
   weightSlider: {fileID: 1761843184785634695}
