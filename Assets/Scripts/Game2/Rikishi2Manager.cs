@@ -253,8 +253,10 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] bool isRotEnd = true;  // 回転終わるか否か
     [SerializeField] bool isEneRotStart = false;  // 敵の周りを回転するか否か
     [SerializeField] bool isEneRotEnd = true;  // 敵の周りの回転終わるか否か
-    private float eneRotStartNum = 7f;  // 相手が倒れてきた際に相手の周りを回転する基準重心値
-    private float eneRotEndNum = 3f;  // 相手の周りの回転を終える基準重心値
+    private float eneRotStartNum = 6.5f;  // 相手が倒れてきた際に相手の周りを回転する基準重心値
+    private float eneRotEndNum = 2.5f;  // 相手の周りの回転を終える基準重心値
+    private float rotStartDisNum = 0.85f;  // 土俵際の際に相手の周りを回転する基準値
+    private float rotEndDisNum = 0.8f;  // 土俵際の際に相手の周りの回転を終える基準値
     private float rotStartPerNum = 0.2f;  // 相手が回転した際に自身も回転し始める際の基準値
     private float rotEndPerNum = 0.02f;  // 自身の回転を終える際の基準値
     private float graMovePerNum = 0.7f;  // 自身の重心を戻す際の基準値
@@ -533,7 +535,7 @@ public class Rikishi2Manager : MonoBehaviour
                 {
                     #region 共通入力
                     SetEnemyTransform();
-                    SetEnemyRot();
+                    SetDirectionRot();
                     SetArrowPat();
                     SetFootInput();
                     SetShoulderRot();
@@ -974,7 +976,7 @@ public class Rikishi2Manager : MonoBehaviour
             isRotStart = true;
         }
 
-        if(eneGraForMeNum > eneRotEndNum && isEneRotStart)
+        if(eneGraForMeNum > eneRotEndNum || (dohyoLDisPer > rotEndDisNum || dohyoRDisPer > rotEndDisNum && cpuLevel >= 3) && isEneRotStart)
         {
             isEneRotEnd =  false;
         }
@@ -984,7 +986,7 @@ public class Rikishi2Manager : MonoBehaviour
             isEneRotStart = false;
         }
 
-        if(eneGraForMeNum > eneRotStartNum)
+        if(eneGraForMeNum > eneRotStartNum || ((dohyoLDisPer > rotStartDisNum || dohyoRDisPer > rotStartDisNum) && cpuLevel >= 3))
         {
             isEneRotStart = true;
         }
@@ -1160,6 +1162,15 @@ public class Rikishi2Manager : MonoBehaviour
     // EneRotateのUpdate処理
     private void EneRotateUpdate()
     {
+        // float angInputNum;
+        // if(dohyoLDisPer > dohyoRDisPer)
+        // {
+        //     angInputNum = -1f;
+        // }
+        // else
+        // {
+        //     angInputNum = 1f;
+        // }
         SetWholeRot(enemy.gameObject, 1 * levelMagNum * speedMagNum);
     }
 
@@ -1315,8 +1326,6 @@ public class Rikishi2Manager : MonoBehaviour
     // 直接相手の重心値の変化入力を行う関数
     private void SetEnemyGraInput(float rightPosi, float frontPosi)
     {
-        angleY = this.transform.eulerAngles.y;
-        enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
         float graChaELRNum = 0;
         float graChaEFBNum = 0;
         float graChaMLRNum = 0;
@@ -1428,8 +1437,6 @@ public class Rikishi2Manager : MonoBehaviour
     // 左足の入力値の変化を行う関数
     private void SetLeftFootNum(float rightPosi, float frontPosi)
     {
-        angleY = this.transform.eulerAngles.y;
-        enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
         float enemyRight = rightPosi;
         float enemyFront = frontPosi;
         float myLFLRGra = 0;
@@ -1571,8 +1578,6 @@ public class Rikishi2Manager : MonoBehaviour
     // 右足の入力値の変化を行う関数
     private void SetRightFootNum(float rightPosi, float frontPosi)
     {
-        angleY = this.transform.eulerAngles.y;
-        enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
         float enemyRight = rightPosi;
         float enemyFront = frontPosi;
         float myRFLRGra = 0;
@@ -2221,9 +2226,11 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region オブジェクトの角度に関するスクリプト  
-    // 相手の向きとの角度計算を行う関数
-    private void SetEnemyRot()
+    // 各プレイヤーの向きと相手の向きとの角度計算を行う関数
+    private void SetDirectionRot()
     {
+        angleY = this.transform.eulerAngles.y;
+        enemyAngleY = enemy.gameObject.transform.eulerAngles.y;
         angularDif = Vector3.SignedAngle(target, viewDir, Vector3.up);
         angDifAbs = Mathf.Abs(angularDif);
     }
