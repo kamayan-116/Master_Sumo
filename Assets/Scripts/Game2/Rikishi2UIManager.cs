@@ -138,7 +138,7 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetWeightInput()
     {   
         weightSlider.interactable = false;
-        playerPanel.color = new Color32(0, 0, 0, 200);
+        playerPanel.color = new Color32(255, 255, 255, 200);
         rikishiManager.WeightInput();
     }
     #endregion
