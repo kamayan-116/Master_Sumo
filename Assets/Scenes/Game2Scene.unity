@@ -563,6 +563,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &534936526 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 638867252097333040, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 151651869}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &940831083
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1314,6 +1325,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5a2ab90f103728c4887e72e2c8f47a42, type: 3}
   - {fileID: 21300000, guid: c4c703296ee7d0b46a4903cd4da3a597, type: 3}
   replayButton: {fileID: 151651872}
+  endButton: {fileID: 534936526}
   cameraObj: {fileID: 1539995576}
   cameraInitialPos: {x: 0, y: 0, z: 0}
   cameraInitialRot: {x: 0, y: 0, z: 0, w: 0}
@@ -3814,12 +3826,21 @@ MonoBehaviour:
   rIFObj: {fileID: 95371379787118220}
   rIBObj: {fileID: 7208937728746243580}
   playerNum: 0
-  winsNum: 0
-  lossesNum: 0
+  pWinsNum: 0
+  pLossesNum: 0
+  c1WinsNum: 0
+  c1LossesNum: 0
+  c2WinsNum: 0
+  c2LossesNum: 0
+  c3WinsNum: 0
+  c3LossesNum: 0
+  c4WinsNum: 0
+  c4LossesNum: 0
+  c5WinsNum: 0
+  c5LossesNum: 0
   lossyScaleNum: 0
   localScaleNum: 0
   scaleYNum: 0
-  scaleVector: {x: 0, y: 0, z: 0}
   footLengNum: 0
   lf: {x: 0, y: 0, z: 0}
   rf: {x: 0, y: 0, z: 0}
@@ -3889,7 +3910,7 @@ MonoBehaviour:
   playStart: 0
   playerModeDecide: 0
   cpuLevelDecide: 0
-  weightStick: 0
+  inputStick: 0
   weightInput: 0
   tachiaiInput: 0
   isStartPush: 0
@@ -3910,8 +3931,10 @@ MonoBehaviour:
   isOutDohyo: 0
   isReplay: 0
   cpuLevel: 0
+  levelMagNum: 0
   myGraFBPer: 0
   myGraLRPer: 0
+  eneGraForMeNum: 0
   dohyoLDisPer: 0
   dohyoRDisPer: 0
   angDifPer: 0
@@ -3919,6 +3942,8 @@ MonoBehaviour:
   isLFMove: 1
   isRotStart: 0
   isRotEnd: 1
+  isEneRotStart: 0
+  isEneRotEnd: 1
   stayNowTime: 0
   cpuState: 0
   cpuNextState: 0
@@ -4587,6 +4612,7 @@ MonoBehaviour:
   resultText: {fileID: 7722065620474303702}
   inGamePanel: {fileID: 0}
   playerPanel: {fileID: 0}
+  cpuLevelText: {fileID: 0}
   matchiResultText: {fileID: 0}
   powerSlider: {fileID: 0}
   speedSlider: {fileID: 0}

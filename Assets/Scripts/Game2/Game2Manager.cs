@@ -42,6 +42,7 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Image resultImage; // 決まり手のUI画像
     [SerializeField] private Sprite[] resultSprite; // 決まり手の画像配列
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
+    [SerializeField] private Button endButton;  // EndButtonのボタンUI
     #endregion
     #region カメラの参照を取る変数
     [Header("カメラ")]
@@ -128,6 +129,7 @@ public class Game2Manager : MonoBehaviour
     {
         SetGameState(GameState.BeforePlay);
         SelectTwoPlayer();
+        SelectReplay();
         cameraInitialPos = cameraObj.gameObject.transform.position;
         cameraInitialRot = cameraObj.gameObject.transform.rotation;
     }
@@ -138,6 +140,7 @@ public class Game2Manager : MonoBehaviour
         SetCenterGravityPlace();
         SetCenterPlace();
         SetCameraPlace();
+        p1Ctrl.SetCpuLevel((int)cpuSlider.value);
         p2Ctrl.SetCpuLevel((int)cpuSlider.value);
         if(titleUI.gameObject.activeSelf)
         {
@@ -701,19 +704,52 @@ public class Game2Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(_replayWaitTime);
         replayButton.gameObject.SetActive(true);
+        endButton.gameObject.SetActive(true);
         p1Ctrl.SetResetOK();
         p2Ctrl.SetResetOK();
     }
     #endregion
 
     #region Replayに関するスクリプト
-    // ReplayButtonを押した(値のリセット)
-    public void PushReplayDown()
+    // ReplayButtonの選択
+    public void SelectReplay()
     {
-        gameResultUI.SetActive(false);
+        replayButton.interactable = true;
+        endButton.interactable = false;
+    }
+
+    // EndButtonの選択
+    public void SelectEnd()
+    {
+        replayButton.interactable = false;
+        endButton.interactable = true;
+    }
+
+    // 再度選択を行った
+    public void SetReset()
+    {
+        if(replayButton.interactable)
+        {
+            gameResultUI.SetActive(false);
+            operatorUI.SetActive(true);
+        }
+        if(endButton.interactable)
+        {
+            p1Ctrl.SetAllReset();
+            p2Ctrl.SetAllReset();
+            gameResultUI.SetActive(false);
+            titleUI.SetActive(true);
+        }
+        SetGameReset();
+    }
+
+    // 値のリセットを行う関数
+    private void SetGameReset()
+    {
         cpuSlider.interactable = true;
         resultText.text = "";
         replayButton.gameObject.SetActive(false);
+        endButton.gameObject.SetActive(false);
         p1WeightInput = false;
         p2WeightInput = false;
         p1TachiaiInput = false;
@@ -748,6 +784,8 @@ public class Game2Manager : MonoBehaviour
         p2OutColl = false;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
+        replayButton.image.color = new Color32(255, 255, 255, 255);
+        endButton.image.color = new Color32(255, 255, 255, 255);
         StartCoroutine("Reload");
     }
 
@@ -755,7 +793,6 @@ public class Game2Manager : MonoBehaviour
     private IEnumerator Reload()
     {
         yield return new WaitForSeconds(1f);
-        operatorUI.SetActive(true);
         p1Ctrl.SetReset();
         p2Ctrl.SetReset();
         p1UICtrl.SetResetUI();

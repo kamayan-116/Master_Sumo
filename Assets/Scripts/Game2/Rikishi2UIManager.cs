@@ -11,6 +11,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
     #region プレイヤーパネル関連
     [SerializeField] private Image playerPanel;  // プレイヤーパネル
+    [SerializeField] private Text cpuLevelText;  // 対戦相手のテキスト
     [SerializeField] private Text matchiResultText;  // 勝敗結果のテキスト
     [SerializeField] private Slider powerSlider;  // パワースライダー
     [SerializeField] private Slider speedSlider;  // スピードスライダー
@@ -154,6 +155,20 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetInGamePanel(bool _isActive)
     {
         inGamePanel.SetActive(_isActive);
+    }
+
+    // 対戦相手レベルのテキストを表示する関数
+    public void SetEnemyLevelText(int _cpulevel)
+    {
+        switch(Game2Manager.Instance.gamePlayer)
+        {
+            case Game2Manager.GamePlayer.One:
+                cpuLevelText.text = "CPU " + _cpulevel + "：";
+                break;
+            case Game2Manager.GamePlayer.Two:
+                cpuLevelText.text = "対人：";
+                break;
+        }
     }
 
     // 勝敗結果のテキストを管理する関数

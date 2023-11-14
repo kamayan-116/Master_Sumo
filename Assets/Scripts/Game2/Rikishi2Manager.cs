@@ -70,12 +70,22 @@ public class Rikishi2Manager : MonoBehaviour
     #region 基本情報に関する変数
     [Header("基本情報")]
     public int playerNum;  // プレイヤーナンバー
-    [SerializeField] private int winsNum = 0;  // 勝利数
-    [SerializeField] private int lossesNum = 0;  // 敗北数
+    [SerializeField] private int pWinsNum = 0;  // 対人勝利数
+    [SerializeField] private int pLossesNum = 0;  // 対人敗北数
+    [SerializeField] private int c1WinsNum = 0;  // コンピュータレベル1との勝利数
+    [SerializeField] private int c1LossesNum = 0;  // コンピュータレベル1との敗北数
+    [SerializeField] private int c2WinsNum = 0;  // コンピュータレベル2との勝利数
+    [SerializeField] private int c2LossesNum = 0;  // コンピュータレベル2との敗北数
+    [SerializeField] private int c3WinsNum = 0;  // コンピュータレベル3との勝利数
+    [SerializeField] private int c3LossesNum = 0;  // コンピュータレベル3との敗北数
+    [SerializeField] private int c4WinsNum = 0;  // コンピュータレベル4との勝利数
+    [SerializeField] private int c4LossesNum = 0;  // コンピュータレベル4との敗北数
+    [SerializeField] private int c5WinsNum = 0;  // コンピュータレベル5との勝利数
+    [SerializeField] private int c5LossesNum = 0;  // コンピュータレベル5との敗北数
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
     [SerializeField] private float localScaleNum;  // プレイヤーオブジェクトのローカルの大きさ
     [SerializeField] private float scaleYNum;  // プレイヤーオブジェクトの身長の大きさ
-    [SerializeField] private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
+    // private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
     #endregion
@@ -260,7 +270,7 @@ public class Rikishi2Manager : MonoBehaviour
     private float rotStartPerNum = 0.2f;  // 相手が回転した際に自身も回転し始める際の基準値
     private float rotEndPerNum = 0.02f;  // 自身の回転を終える際の基準値
     private float graMovePerNum = 0.7f;  // 自身の重心を戻す際の基準値
-    private float cpuPushTime = 1f;  // コンピュータの立会いのボタンを押す時間
+    private float cpuPushTime;  // コンピュータの立会いのボタンを押す時間
     [SerializeField] private float stayNowTime = 0f;  // 状態遷移時間の待機計測時間
     private float changeStayTime = 0.5f;  // 状態遷移時間の待機時間
     private enum CpuState
@@ -714,9 +724,17 @@ public class Rikishi2Manager : MonoBehaviour
                 #endregion
                 break;
             case Game2Manager.GameState.End:
+                if(Input.GetAxisRaw("LeftHorizontal1") < 0)
+                {
+                    Game2Manager.Instance.SelectEnd();
+                }
+                if(Input.GetAxisRaw("LeftHorizontal1") > 0)
+                {
+                    Game2Manager.Instance.SelectReplay();
+                }
                 if(Input.GetButtonDown("Decide1") && isReplay)
                 {
-                    Game2Manager.Instance.PushReplayDown();
+                    Game2Manager.Instance.SetReset();
                 }
                 break;
         }
@@ -770,7 +788,6 @@ public class Rikishi2Manager : MonoBehaviour
         // playerObj.transform.localScale = scaleVector;
         lossyScaleNum = playerObj.transform.lossyScale.x;
         SetMoveDisMagNum();
-        // SetMoveGraMagNum();
     }
 
     // 移動距離倍率の数値の計算を行う関数
@@ -781,48 +798,6 @@ public class Rikishi2Manager : MonoBehaviour
         moveLRDisMagNum = (((120f / 90f) * footLengNum) - footInidis.x) / (footMax * lossyScaleNum * 2f);
         moveFBDisMagNum = (((75f / 90f) * footLengNum) - footInidis.y) / (footMax * lossyScaleNum * 2f);
     }
-
-    // 重心移動倍率の数値の計算を行う関数
-    // private void SetMoveGraMagNum()
-    // {
-    //     switch(Game2Manager.Instance.gameMode)
-    //     {
-    //         case Game2Manager.GameMode.Easy:
-    //             break;
-    //         case Game2Manager.GameMode.Normal:
-    //             graLRMagSlope = 0.2f / graMax;
-    //             if(localScaleNum < 1.5f)
-    //             {
-    //                 if(graFBNum < 0f)
-    //                 {
-    //                     graFBMagSlope = 0.22f / graMax;
-    //                     graFBMagIntercept = -0.15f / graMax;
-    //                 }
-    //                 else
-    //                 {
-    //                     graFBMagSlope = 0.19f / graMax;
-    //                     graFBMagIntercept = -0.11f / graMax;
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 if(graFBNum < 0f)
-    //                 {
-    //                     graFBMagSlope = 0.14f / graMax;
-    //                     graFBMagIntercept = -0.03f / graMax;
-    //                 }
-    //                 else
-    //                 {
-    //                     graFBMagSlope = 0.1f / graMax;
-    //                     graFBMagIntercept = 0.025f / graMax;
-    //                 }
-    //             }
-    //             break;
-    //     }
-        
-    //     moveFBGraMagNum = graFBMagSlope * localScaleNum + graFBMagIntercept;
-    //     moveLRGraMagNum = graLRMagSlope * localScaleNum + graLRMagIntercept;
-    // }
 
     // 初期状態の記録
     private void SetInitialNum()
@@ -882,18 +857,23 @@ public class Rikishi2Manager : MonoBehaviour
         {
             case 1:
                 levelMagNum = 1f;
+                cpuPushTime = 1.5f;
                 break;
             case 2:
-                levelMagNum = 1.25f;
+                levelMagNum = 1.3f;
+                cpuPushTime = 1.25f;
                 break;
             case 3:
-                levelMagNum = 1.5f;
+                levelMagNum = 1.6f;
+                cpuPushTime = 1f;
                 break;
             case 4:
-                levelMagNum = 1.75f;
+                levelMagNum = 1.9f;
+                cpuPushTime = 0.75f;
                 break;
             case 5:
-                levelMagNum = 2f;
+                levelMagNum = 2.2f;
+                cpuPushTime = 0.5f;
                 break;
         }
     }
@@ -2098,7 +2078,6 @@ public class Rikishi2Manager : MonoBehaviour
     {
         graFBNum += Time.deltaTime * frontPosi * moveSpeedMagNum;
         graLRNum += Time.deltaTime * rightPosi * moveSpeedMagNum;
-        // SetMoveGraMagNum();
     }
 
     // 重心の位置の変更を行う関数
@@ -2846,7 +2825,33 @@ public class Rikishi2Manager : MonoBehaviour
     // 勝敗数をUIに送る関数
     public void TellWinsLosses()
     {
-        rikishiUI.SetMatchResultText(winsNum, lossesNum);
+        rikishiUI.SetEnemyLevelText(cpuLevel);
+        switch(Game2Manager.Instance.gamePlayer)
+        {
+            case Game2Manager.GamePlayer.One:
+                switch(cpuLevel)
+                {
+                    case 1:
+                        rikishiUI.SetMatchResultText(c1WinsNum, c1LossesNum);
+                        break;
+                    case 2:
+                        rikishiUI.SetMatchResultText(c2WinsNum, c2LossesNum);
+                        break;
+                    case 3:
+                        rikishiUI.SetMatchResultText(c3WinsNum, c3LossesNum);
+                        break;
+                    case 4:
+                        rikishiUI.SetMatchResultText(c4WinsNum, c4LossesNum);
+                        break;
+                    case 5:
+                        rikishiUI.SetMatchResultText(c5WinsNum, c5LossesNum);
+                        break;
+                }
+                break;
+            case Game2Manager.GamePlayer.Two:
+                rikishiUI.SetMatchResultText(pWinsNum, pLossesNum);
+                break;
+        }
     }
 
     // 相手と衝突の有無時に呼ばれる関数
@@ -2894,17 +2899,73 @@ public class Rikishi2Manager : MonoBehaviour
         {
             isEnd =  _isEnd;
             isResult = _isResult;
-            if(isResult)
-            {
-                winsNum++;
-            }
-            else
-            {
-                lossesNum++;
-            }
             isFallDown = _isfallDown;
             isOutDohyo = _isOutDohyo;
             Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif, isInColl, isOutColl);
+            SetWinsLosses(isResult);
+        }
+    }
+
+    // 勝敗数の管理を行う関数
+    private void SetWinsLosses(bool _isResult)
+    {
+        if(_isResult)
+        {
+            switch(Game2Manager.Instance.gamePlayer)
+            {
+                case Game2Manager.GamePlayer.One:
+                    switch(cpuLevel)
+                    {
+                        case 1:
+                            c1WinsNum++;
+                            break;
+                        case 2:
+                            c2WinsNum++;
+                            break;
+                        case 3:
+                            c3WinsNum++;
+                            break;
+                        case 4:
+                            c4WinsNum++;
+                            break;
+                        case 5:
+                            c5WinsNum++;
+                            break;
+                    }
+                    break;
+                case Game2Manager.GamePlayer.Two:
+                    pWinsNum++;
+                    break;
+            }
+        }
+        else
+        {
+            switch(Game2Manager.Instance.gamePlayer)
+            {
+                case Game2Manager.GamePlayer.One:
+                    switch(cpuLevel)
+                    {
+                        case 1:
+                            c1LossesNum++;
+                            break;
+                        case 2:
+                            c2LossesNum++;
+                            break;
+                        case 3:
+                            c3LossesNum++;
+                            break;
+                        case 4:
+                            c4LossesNum++;
+                            break;
+                        case 5:
+                            c5LossesNum++;
+                            break;
+                    }
+                    break;
+                case Game2Manager.GamePlayer.Two:
+                    pLossesNum++;
+                    break;
+            }
         }
     }
     #endregion
@@ -2914,6 +2975,24 @@ public class Rikishi2Manager : MonoBehaviour
     public void SetResetOK()
     {
         isReplay = true;
+    }
+
+    // タイトルに戻る際に状態をResetする関数
+    public void SetAllReset()
+    {
+        gameStart = false;
+        pWinsNum = 0;
+        pLossesNum = 0;
+        c1WinsNum = 0;
+        c1LossesNum = 0;
+        c2WinsNum = 0;
+        c2LossesNum = 0;
+        c3WinsNum = 0;
+        c3LossesNum = 0;
+        c4WinsNum = 0;
+        c4LossesNum = 0;
+        c5WinsNum = 0;
+        c5LossesNum = 0;
     }
 
     // 再度遊ぶ際に状態をResetする関数
