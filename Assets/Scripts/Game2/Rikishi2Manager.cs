@@ -1288,6 +1288,14 @@ public class Rikishi2Manager : MonoBehaviour
         else
         {
             nextStyleNum = UnityEngine.Random.Range(1, 5);
+            if(nextStyleNum == 3 && enemy.graFBNum > 0)
+            {
+                nextStyleNum = UnityEngine.Random.Range(1, 3);
+            }
+            if(nextStyleNum == 4 && enemy.graFBNum < 0)
+            {
+                nextStyleNum = UnityEngine.Random.Range(1, 3);
+            }
             SetPlayStyle((PlayStyle)nextStyleNum);
             styleNowTime = 0;
         }
