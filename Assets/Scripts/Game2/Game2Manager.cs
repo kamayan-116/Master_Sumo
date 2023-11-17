@@ -41,7 +41,9 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private Text resultText;  // 決まり手のテキスト
     [SerializeField] private Image resultImage; // 決まり手のUI画像
     [SerializeField] private Sprite[] resultSprite; // 決まり手の画像配列
+    [SerializeField] private Slider replaySlider;  //  Replayの状態を管理するSliderUI
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
+    [SerializeField] private Button replayOperateButton;  // ReplayOperateButtonのボタンUI
     [SerializeField] private Button endButton;  // EndButtonのボタンUI
     #endregion
     #region カメラの参照を取る変数
@@ -129,7 +131,7 @@ public class Game2Manager : MonoBehaviour
     {
         SetGameState(GameState.BeforePlay);
         SelectTwoPlayer();
-        SelectReplay();
+        SetReplayNum(0);
         cameraInitialPos = cameraObj.gameObject.transform.position;
         cameraInitialRot = cameraObj.gameObject.transform.rotation;
     }
@@ -704,6 +706,7 @@ public class Game2Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(_replayWaitTime);
         replayButton.gameObject.SetActive(true);
+        replayOperateButton.gameObject.SetActive(true);
         endButton.gameObject.SetActive(true);
         p1Ctrl.SetResetOK();
         p2Ctrl.SetResetOK();
@@ -711,34 +714,52 @@ public class Game2Manager : MonoBehaviour
     #endregion
 
     #region Replayに関するスクリプト
-    // ReplayButtonの選択
-    public void SelectReplay()
+    // Replayの状態を管理する関数
+    public void SetReplayNum(int _changeNum)
     {
-        replayButton.interactable = true;
-        endButton.interactable = false;
-    }
-
-    // EndButtonの選択
-    public void SelectEnd()
-    {
-        replayButton.interactable = false;
-        endButton.interactable = true;
+        replaySlider.value += _changeNum;
+        
+        switch(replaySlider.value)
+        {
+            case 0:
+                replayButton.interactable = false;
+                replayOperateButton.interactable = false;
+                endButton.interactable = true;
+                break;
+            case 1:
+                replayButton.interactable = false;
+                replayOperateButton.interactable = true;
+                endButton.interactable = false;
+                break;
+            case 2:
+                replayButton.interactable = true;
+                replayOperateButton.interactable = false;
+                endButton.interactable = false;
+                break;
+        }
     }
 
     // 再度選択を行った
     public void SetReset()
     {
-        if(replayButton.interactable)
+        switch(replaySlider.value)
         {
-            gameResultUI.SetActive(false);
-            operatorUI.SetActive(true);
-        }
-        if(endButton.interactable)
-        {
-            p1Ctrl.SetAllReset();
-            p2Ctrl.SetAllReset();
-            gameResultUI.SetActive(false);
-            titleUI.SetActive(true);
+            case 0:
+                p1Ctrl.SetAllReset();
+                p2Ctrl.SetAllReset();
+                gameResultUI.SetActive(false);
+                titleUI.SetActive(true);
+                break;
+            case 1:
+                p1Ctrl.SetOperateReset();
+                p2Ctrl.SetOperateReset();
+                gameResultUI.SetActive(false);
+                operatorUI.SetActive(true);
+                break;
+            case 2:
+                gameResultUI.SetActive(false);
+                gameModeUI.SetActive(true);
+                break;
         }
         SetGameReset();
     }
@@ -749,6 +770,7 @@ public class Game2Manager : MonoBehaviour
         cpuSlider.interactable = true;
         resultText.text = "";
         replayButton.gameObject.SetActive(false);
+        replayOperateButton.gameObject.SetActive(false);
         endButton.gameObject.SetActive(false);
         p1WeightInput = false;
         p2WeightInput = false;
@@ -785,6 +807,7 @@ public class Game2Manager : MonoBehaviour
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
         replayButton.image.color = new Color32(255, 255, 255, 255);
+        replayOperateButton.image.color = new Color32(255, 255, 255, 255);
         endButton.image.color = new Color32(255, 255, 255, 255);
         StartCoroutine("Reload");
     }

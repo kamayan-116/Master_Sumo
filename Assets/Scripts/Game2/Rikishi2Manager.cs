@@ -19,7 +19,6 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private float changeStyleTime;  //  攻撃状態の変更時間
     [SerializeField] private int nextStyleNum;  // 次の攻撃状態の番号
     #endregion
-
     #region 参照に関する変数
     [Header("各オブジェクト")]
     [SerializeField] private Rikishi2UIManager rikishiUI;  // プレイヤーのUIを表示するプログラム
@@ -724,13 +723,17 @@ public class Rikishi2Manager : MonoBehaviour
                 #endregion
                 break;
             case Game2Manager.GameState.End:
-                if(Input.GetAxisRaw("LeftHorizontal1") < 0)
+                if(Input.GetAxisRaw("LeftVertical1") != 0 && playerNum == 1)
                 {
-                    Game2Manager.Instance.SelectEnd();
+                    if(!inputStick)
+                    {
+                        inputStick = true;
+                        Game2Manager.Instance.SetReplayNum((int)(1 * Input.GetAxisRaw("LeftVertical1")));
+                    }
                 }
-                if(Input.GetAxisRaw("LeftHorizontal1") > 0)
+                else
                 {
-                    Game2Manager.Instance.SelectReplay();
+                    inputStick = false;
                 }
                 if(Input.GetButtonDown("Decide1") && isReplay)
                 {
@@ -2989,6 +2992,7 @@ public class Rikishi2Manager : MonoBehaviour
     public void SetAllReset()
     {
         gameStart = false;
+        playStart = false;
         pWinsNum = 0;
         pLossesNum = 0;
         c1WinsNum = 0;
@@ -3003,10 +3007,15 @@ public class Rikishi2Manager : MonoBehaviour
         c5LossesNum = 0;
     }
 
+    // 操作方法に戻る際に状態をResetする関数
+    public void SetOperateReset()
+    {
+        playStart = false;
+    }
+
     // 再度遊ぶ際に状態をResetする関数
     public void SetReset()
     {
-        playStart = false;
         playerModeDecide = false;
         cpuLevelDecide = false;
         weightInput = false;
