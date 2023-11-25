@@ -365,13 +365,27 @@ public class Rikishi2Manager : MonoBehaviour
                     {
                         if(!playerModeDecide)
                         {
-                            if(Input.GetAxisRaw("LeftHorizontal1") < 0)
+                            if(Input.GetAxisRaw("LeftHorizontal1") != 0 && playerNum == 1)
                             {
-                                Game2Manager.Instance.SelectOnePlayer();
+                                if(!inputStick)
+                                {
+                                    if(Input.GetAxisRaw("LeftHorizontal1") < 0)
+                                    {
+                                        inputStick = true;
+                                        Game2Manager.Instance.SelectOnePlayer();
+                                        Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                                    }
+                                    if(Input.GetAxisRaw("LeftHorizontal1") > 0)
+                                    {
+                                        inputStick = true;
+                                        Game2Manager.Instance.SelectTwoPlayer();
+                                        Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                                    }
+                                }
                             }
-                            if(Input.GetAxisRaw("LeftHorizontal1") > 0)
+                            else
                             {
-                                Game2Manager.Instance.SelectTwoPlayer();
+                                inputStick = false;
                             }
                             if(Input.GetButtonDown("Decide1"))
                             {
@@ -430,11 +444,13 @@ public class Rikishi2Manager : MonoBehaviour
                                             {
                                                 inputStick = true;
                                                 rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal1"));
+                                                Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
                                             }
                                             if(Input.GetAxisRaw("LeftVertical1") != 0 && !inputStick)
                                             {
                                                 inputStick = true;
                                                 rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical1"));
+                                                Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
                                             }
                                             if(Input.GetAxisRaw("LeftHorizontal1") == 0 && Input.GetAxisRaw("LeftVertical1") == 0)
                                             {
@@ -729,6 +745,7 @@ public class Rikishi2Manager : MonoBehaviour
                     {
                         inputStick = true;
                         Game2Manager.Instance.SetReplayNum((int)(1 * Input.GetAxisRaw("LeftVertical1")));
+                        Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
                     }
                 }
                 else

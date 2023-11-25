@@ -1424,6 +1424,8 @@ MonoBehaviour:
   winnerSound:
   - {fileID: 8300000, guid: 260ba8d4a2d81ba4aa74b49276d59bb6, type: 3}
   - {fileID: 8300000, guid: e4691f45fc7b06e4abf2ae2b09a37e41, type: 3}
+  cursorMoveSound: {fileID: 8300000, guid: 1712f437233e77042b84d0283468783c, type: 3}
+  decisionSound: {fileID: 8300000, guid: 32b0644b5c3ab9240b41940057760ee2, type: 3}
   playAudioSource: {fileID: 1374932574}
   seAudioSource: {fileID: 1374932575}
 --- !u!82 &1374932574

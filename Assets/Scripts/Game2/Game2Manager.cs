@@ -113,6 +113,8 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private AudioClip announceSound;  // ただいまの決まり手はのサウンド
     [SerializeField] private AudioClip[] kimariteSound;  // 決まり手のサウンド
     [SerializeField] private AudioClip[] winnerSound;  // 勝者のサウンド
+    public AudioClip cursorMoveSound;  // カーソル移動のサウンド
+    [SerializeField] private AudioClip decisionSound;  // 決定のサウンド
     [SerializeField] private AudioSource playAudioSource;  // プレイ中のAudioSource
     [SerializeField] private AudioSource seAudioSource;  // 効果音のAudioSource
     #endregion
@@ -156,12 +158,19 @@ public class Game2Manager : MonoBehaviour
         gameState = _gameState;
     }
 
+    // サウンドに関するスクリプト
+    public void SetSESound(AudioClip _sound)
+    {
+        seAudioSource.PlayOneShot(_sound);
+    }
+
     #region 操作方法までに関するスクリプト
     // PushBtoStartボタンを押した
     public void PushGameStart()
     {
         titleUI.SetActive(false);
         operatorUI.SetActive(true);
+        SetSESound(decisionSound);
     }
 
     // ゲームスタートのボタンテキストの点滅を行う関数
@@ -175,6 +184,7 @@ public class Game2Manager : MonoBehaviour
     {
         operatorUI.SetActive(false);
         gameModeUI.SetActive(true);
+        SetSESound(decisionSound);
     }
     #endregion
 
@@ -206,18 +216,21 @@ public class Game2Manager : MonoBehaviour
         {
             twoPlayerButton.image.color = new Color32(255, 150, 150, 255);
         }
+        SetSESound(decisionSound);
     }
 
     // コンピュータレベルのSliderの入力
     public void SetCpuLevelSlider(float _changeLevel)
     {
         cpuSlider.value += _changeLevel;
+        SetSESound(cursorMoveSound);
     }
 
     // コンピュータレベル選択を行った
     public void SetCpuLevelMode()
     {
         cpuSlider.interactable = false;
+        SetSESound(decisionSound);
         StartCoroutine("DeleteModeScene");
     }
 
@@ -260,6 +273,7 @@ public class Game2Manager : MonoBehaviour
                 p2WeightInput = true;
                 break;
         }
+        SetSESound(decisionSound);
 
         if(p1WeightInput && p2WeightInput)
         {
@@ -271,7 +285,7 @@ public class Game2Manager : MonoBehaviour
     private IEnumerator SoundStart()
     {
         yield return new WaitForSeconds(waitTime);
-        seAudioSource.PlayOneShot(broadcastSound);
+        SetSESound(broadcastSound);
         float broadcastTime = broadcastSound.length + waitTime;
         yield return new WaitForSeconds(broadcastTime);
         p1UICtrl.SetPlayerPanel(false);
@@ -282,11 +296,11 @@ public class Game2Manager : MonoBehaviour
         p2Ctrl.SetTachiaiInput(true);
         gyojiText.gameObject.SetActive(true);
         gyojiText.text = "はっけよい";
-        seAudioSource.PlayOneShot(shoutSound);
+        SetSESound(shoutSound);
         float shoutTime = shoutSound.length + waitTime * 2;
         yield return new WaitForSeconds(shoutTime);
         gyojiText.text = "のこった";
-        seAudioSource.PlayOneShot(startSound);
+        SetSESound(startSound);
         SetGameState(GameState.Play);
         p1UICtrl.SetTachiaiBActive(true);
         p2UICtrl.SetTachiaiBActive(true);
@@ -427,7 +441,7 @@ public class Game2Manager : MonoBehaviour
         {
             winnerNum = 2;
         }
-        seAudioSource.PlayOneShot(resultSound);
+        SetSESound(resultSound);
         kimariteNum = SetWinReason();
         StartCoroutine(SetKimarite(kimariteNum, winnerNum-1));
     }
@@ -646,7 +660,7 @@ public class Game2Manager : MonoBehaviour
     {
         float resWaitTime = resultSound.length + 0.9f;
         yield return new WaitForSeconds(resWaitTime);
-        seAudioSource.PlayOneShot(announceSound);
+        SetSESound(announceSound);
         float annWaitTime = announceSound.length + waitTime;
         yield return new WaitForSeconds(annWaitTime);
         switch(_kimarite)
@@ -692,11 +706,11 @@ public class Game2Manager : MonoBehaviour
                 break;
         }
         gameResultUI.SetActive(true);
-        seAudioSource.PlayOneShot(kimariteSound[_kimarite]);
+        SetSESound(kimariteSound[_kimarite]);
         resultImage.sprite = resultSprite[_kimarite];
         float winWaitTime = kimariteSound[_kimarite].length + waitTime;
         yield return new WaitForSeconds(winWaitTime);
-        seAudioSource.PlayOneShot(winnerSound[_winner]);
+        SetSESound(winnerSound[_winner]);
         float replayWaitTime = winnerSound[_winner].length + waitTime;
         StartCoroutine("SetReplayButton", replayWaitTime);
     }
@@ -762,6 +776,7 @@ public class Game2Manager : MonoBehaviour
                 break;
         }
         SetGameReset();
+        SetSESound(decisionSound);
     }
 
     // 値のリセットを行う関数
