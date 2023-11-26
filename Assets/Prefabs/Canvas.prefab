@@ -1133,7 +1133,7 @@ GameObject:
   - component: {fileID: 757514928846861208}
   - component: {fileID: 1544574856516972814}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: TitleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1189,7 +1189,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 300
+    m_FontSize: 200
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -1200,7 +1200,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u30BF\u30A4\u30C8\u30EB\u672A\u5B9A"
+  m_Text: "\u76F8\u64B2\u30DE\u30B9\u30BF\u30FC\n\u91CD\u5FC3\u306E\u5965\u7FA9"
 --- !u!1 &4497808730210338571
 GameObject:
   m_ObjectHideFlags: 0
