@@ -231,8 +231,8 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] private bool isStartPush = false;  // 立会いのスタートを押したか否か
     [SerializeField] private bool isTachiaiMove = false;  // 立会いの開始位置への移動可能か否か
     [SerializeField] private bool isTachiaiEnd = false;  // 立会いが終わったか否か
-    [SerializeField] private bool isLRPush = false;  // 左スティックで相手の重心を左右に操作しているか
-    [SerializeField] private bool isFBPush = false;  // 左スティックで相手の重心を前後に操作しているか
+    [SerializeField] private bool isLRPush = false;  // 直接相手の重心を左右に操作可能か
+    [SerializeField] private bool isFBPush = false;  // 直接相手の重心を前後に操作可能か
     [SerializeField] private bool lFOpeInput = false;  // 左足の操作をしているか否か
     [SerializeField] private bool rFOpeInput = false;  // 右足の操作をしているか否か
     [SerializeField] private bool  isCollision = false;  // 相手と当たっているか否か
@@ -876,23 +876,23 @@ public class Rikishi2Manager : MonoBehaviour
         switch(cpuLevel)
         {
             case 1:
-                levelMagNum = 1f;
+                levelMagNum = 0.95f;
                 cpuPushTime = 1.5f;
                 break;
             case 2:
-                levelMagNum = 1.3f;
+                levelMagNum = 1.25f;
                 cpuPushTime = 1.25f;
                 break;
             case 3:
-                levelMagNum = 1.6f;
+                levelMagNum = 1.55f;
                 cpuPushTime = 1f;
                 break;
             case 4:
-                levelMagNum = 1.9f;
+                levelMagNum = 1.85f;
                 cpuPushTime = 0.75f;
                 break;
             case 5:
-                levelMagNum = 2.2f;
+                levelMagNum = 2.15f;
                 cpuPushTime = 0.5f;
                 break;
         }
@@ -2271,7 +2271,7 @@ public class Rikishi2Manager : MonoBehaviour
             case PlayStyle.Yothu:
                 if(angDifAbs <= 60)
                 {
-                    if(-graMax < graFBNum && graFBNum < 0f)
+                    if(graFBNum < 0f)
                     {
                         sXSlope = -2.3222f;
                         sXIntercept = -261.569f;
@@ -2293,7 +2293,7 @@ public class Rikishi2Manager : MonoBehaviour
                         eXScaleSlope = -0.068f;
                         eXScaleIntercept = 0.8f;
                     }
-                    else if(graFBNum < graMax)
+                    else
                     {
                         sXSlope = 3.9496f;
                         sXIntercept = -285.179f;
@@ -2346,7 +2346,7 @@ public class Rikishi2Manager : MonoBehaviour
             case PlayStyle.Mawashi: 
                 if(angDifAbs <= 60)
                 {
-                    if(-graMax < graFBNum && graFBNum < 0f)
+                    if(graFBNum < 0f)
                     {
                         sXSlope = -1.5444f;
                         sXIntercept = -228.113f;
@@ -2368,7 +2368,7 @@ public class Rikishi2Manager : MonoBehaviour
                         eXScaleSlope = -0.048f;
                         eXScaleIntercept = 1.26f;
                     }
-                    else if(graFBNum < graMax)
+                    else
                     {
                         sXSlope = -1.3932f;
                         sXIntercept = -223.61f;
@@ -2421,7 +2421,7 @@ public class Rikishi2Manager : MonoBehaviour
             case PlayStyle.Oshi:
                 if(angDifAbs <= 60)
                 {
-                    if(-graMax < graFBNum && graFBNum < 0f)
+                    if(graFBNum < 0f)
                     {
                         if(enemy.graFBNum < 0f)
                         {
@@ -2458,7 +2458,7 @@ public class Rikishi2Manager : MonoBehaviour
                             hZIntercept = 104.666f - 2.9786f * enemy.graFBNum;
                         }
                     }
-                    else if(graFBNum < graMax)
+                    else
                     {
                         if(enemy.graFBNum < 0f)
                         {
@@ -2527,7 +2527,7 @@ public class Rikishi2Manager : MonoBehaviour
             case PlayStyle.Hataki:
                 if(angDifAbs <= 60)
                 {
-                    if(-graMax < graFBNum && graFBNum < 0f)
+                    if(graFBNum < 0f)
                     {   
                         if(enemy.graFBNum < 0f)
                         {
@@ -2552,7 +2552,7 @@ public class Rikishi2Manager : MonoBehaviour
                             eXScaleIntercept = -1.105f + 1.95f * enemyDis + (-0.0602f - 0.022f * enemyDis) * enemy.graFBNum;
                         }
                     }
-                    else if(graFBNum < graMax)
+                    else
                     {
                         if(enemy.graFBNum < 0f)
                         {
@@ -3041,6 +3041,7 @@ public class Rikishi2Manager : MonoBehaviour
         isTachiaiMove = false;
         isTachiaiEnd = false;
         isEnd = false;
+        isResult = false;
         isFallDown = false;
         isOutDohyo = false;
         isReplay = false;
