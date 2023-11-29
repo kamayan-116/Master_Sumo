@@ -250,6 +250,7 @@ public class Rikishi2Manager : MonoBehaviour
     [Header("コンピュータ対戦")]
     [SerializeField] int cpuLevel;  // コンピュータの強さ
     [SerializeField] private float levelMagNum;  // コンピュータの強さに応じた倍率
+    [SerializeField] private Vector2 moveDir;  // 相手の胸元方向への単位ベクトル
     [SerializeField] float myGraFBPer;  // 自身の前後重心の状態割合
     [SerializeField] float myGraLRPer;  // 自身の左右重心の状態割合
     [SerializeField] float eneGraForMeNum;  // 自身の方向への相手の重心値
@@ -257,7 +258,6 @@ public class Rikishi2Manager : MonoBehaviour
     [SerializeField] float dohyoRDisPer;  // 土俵の中心と右足との距離の状態割合
     [SerializeField] float angDifPer;  // 相手の方向と自身の向きの角度差の状態割合
     [SerializeField] bool isPlayerMove = false;  // プレイヤーが移動しているかの判定（SetPlayerPos関数が呼ばれているか否か）
-    [SerializeField] bool isLFMove = true;  // 左足を動かすか否か（trueなら左足、falseなら右足）
     [SerializeField] bool isRotStart = false;  // 回転するか否か
     [SerializeField] bool isRotEnd = true;  // 回転終わるか否か
     [SerializeField] bool isEneRotStart = false;  // 敵の周りを回転するか否か
@@ -277,8 +277,7 @@ public class Rikishi2Manager : MonoBehaviour
         StateStay,  // 状態遷移時間の待機状態
         MyGraMove,  // 直接自身の重心移動の入力
         EneGraMove,  // 直接相手の重心移動の入力
-        LFMove,  // 左足の移動の入力
-        RFMove,  // 右足の移動の入力
+        Move,  // 移動の入力
     };
     [SerializeField] private CpuState cpuState = CpuState.StateStay;  // コンピュータの現在の入力状態
     [SerializeField] private CpuState cpuNextState = CpuState.StateStay;  // コンピュータの次の入力状態
@@ -651,11 +650,8 @@ public class Rikishi2Manager : MonoBehaviour
                                         case CpuState.EneGraMove:
                                             EneGraMoveUpdate();
                                             break;
-                                        case CpuState.LFMove:
-                                            LFMoveUpdate();
-                                            break;
-                                        case CpuState.RFMove:
-                                            RFMoveUpdate();
+                                        case CpuState.Move:
+                                            MoveUpdate();
                                             break;
                                     }
 
@@ -672,11 +668,8 @@ public class Rikishi2Manager : MonoBehaviour
                                             case CpuState.EneGraMove:
                                                 EneGraMoveEnd();
                                                 break;
-                                            case CpuState.LFMove:
-                                                LFMoveEnd();
-                                                break;
-                                            case CpuState.RFMove:
-                                                RFMoveEnd();
+                                            case CpuState.Move:
+                                                MoveEnd();
                                                 break;
                                         }
                                         cpuState = cpuNextState;
@@ -863,6 +856,7 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
 
     #region コンピュータ対戦に関するスクリプト
+    #region CPU本体の動きに関するスクリプト
     // コンピュータのレベルの入力
     public void SetCpuLevel(int _level)
     {
@@ -876,23 +870,23 @@ public class Rikishi2Manager : MonoBehaviour
         switch(cpuLevel)
         {
             case 1:
-                levelMagNum = 0.95f;
+                levelMagNum = 0.9f;
                 cpuPushTime = 1.5f;
                 break;
             case 2:
-                levelMagNum = 1.25f;
+                levelMagNum = 1.2f;
                 cpuPushTime = 1.25f;
                 break;
             case 3:
-                levelMagNum = 1.55f;
+                levelMagNum = 1.5f;
                 cpuPushTime = 1f;
                 break;
             case 4:
-                levelMagNum = 1.85f;
+                levelMagNum = 1.8f;
                 cpuPushTime = 0.75f;
                 break;
             case 5:
-                levelMagNum = 2.15f;
+                levelMagNum = 2.1f;
                 cpuPushTime = 0.5f;
                 break;
         }
@@ -935,16 +929,9 @@ public class Rikishi2Manager : MonoBehaviour
         }
         else
         {
-            if(dohyoLDisPer > 0.7f || dohyoRDisPer > 0.7f || (isPlayerMove && myGraFBPer > 0.5f))
+            if(dohyoLDisPer > 0.7f || dohyoRDisPer > 0.7f || (isPlayerMove && myGraFBPer > 0.5f) || !isCollision)
             {
-                if(dohyoLDisPer - dohyoRDisPer > -0.3f && isLFMove)
-                {
-                    nextState = CpuState.LFMove;
-                }
-                if(dohyoRDisPer - dohyoLDisPer > -0.3f && !isLFMove)
-                {
-                    nextState = CpuState.RFMove;
-                }
+                nextState = CpuState.Move;
             }
             else
             {
@@ -976,7 +963,7 @@ public class Rikishi2Manager : MonoBehaviour
             isRotStart = true;
         }
 
-        if(eneGraForMeNum > eneRotEndNum || (dohyoLDisPer > rotEndDisNum || dohyoRDisPer > rotEndDisNum && cpuLevel >= 3) && isEneRotStart)
+        if(eneGraForMeNum > eneRotEndNum || (dohyoLDisPer > rotEndDisNum || dohyoRDisPer > rotEndDisNum && cpuLevel >= 4) && isEneRotStart)
         {
             isEneRotEnd =  false;
         }
@@ -986,7 +973,7 @@ public class Rikishi2Manager : MonoBehaviour
             isEneRotStart = false;
         }
 
-        if(eneGraForMeNum > eneRotStartNum || ((dohyoLDisPer > rotStartDisNum || dohyoRDisPer > rotStartDisNum) && cpuLevel >= 3))
+        if(eneGraForMeNum > eneRotStartNum || ((dohyoLDisPer > rotStartDisNum || dohyoRDisPer > rotStartDisNum) && cpuLevel >= 4))
         {
             isEneRotStart = true;
         }
@@ -1013,7 +1000,8 @@ public class Rikishi2Manager : MonoBehaviour
             EneRotateEnd();
         }
     }
-
+    #endregion
+    
     #region StateStay状態の処理
     // CpuState.StateStayのUpdate処理
     private void StateStayUpdate()
@@ -1104,34 +1092,147 @@ public class Rikishi2Manager : MonoBehaviour
         SetEnemyGraInput(0, 0);
     }
     #endregion
-    #region LFMove状態の処理
-    // CpuState.LFMoveのUpdate処理
-    private void LFMoveUpdate()
+    #region Move状態の処理
+    // CpuState.MoveのUpdate処理
+    private void MoveUpdate()
     {
-        float lfInputFBNum = 1f;
-        SetLeftFootNum(0, lfInputFBNum  * levelMagNum * speedMagNum);
+        moveDir = FindTransform();
+        SetCPUMoveNum(moveDir.x  * levelMagNum * speedMagNum, moveDir.y  * levelMagNum * speedMagNum);
     }
 
-    // CpuState.LFMoveの終了処理
-    private void LFMoveEnd()
+    // 相手の胸元方向のベクトルを計算する関数
+    private Vector2 FindTransform()
     {
-        SetLeftFootNum(0, 0);
-        isLFMove = false;
-    }
-    #endregion
-    #region RFMove状態の処理
-    // CpuState.RFMoveのUpdate処理
-    private void RFMoveUpdate()
-    {
-        float rfInputFBNum = 1f;
-        SetRightFootNum(0, rfInputFBNum * levelMagNum * speedMagNum);
+        nowPos = this.transform.position;
+        enemyPos = enemy.gameObject.transform.position;
+        target = enemyPos - nowPos;
+
+        Vector2 _move = new Vector2();
+        if(target.x > 0)
+        {
+            _move.x = 1f;
+        }
+        else if(target.x < 0)
+        {
+            _move.x = -1f;
+        }
+
+        if(target.z > 0)
+        {
+            _move.y = 1f;
+        }
+        else if(target.z < 0)
+        {
+            _move.y = -1f;
+        }
+
+        return _move;
     }
 
-    // CpuState.RFMoveの終了処理
-    private void RFMoveEnd()
+    // CPUのプレイヤーの移動入力に関する関数
+    private void SetCPUMoveNum(float rightPosi, float frontPosi)
     {
-        SetRightFootNum(0, 0);
-        isLFMove = true;
+        float enemyRight = rightPosi;
+        float enemyFront = frontPosi;
+        float myLRGra = 0;
+        float myFBGra = 0;
+        float eneLRGra = 0;
+        float eneFBGra = 0;
+        float eneLRPos = 0;
+        float eneFBPos = 0;
+
+        if((playStyle == PlayStyle.Yothu || playStyle == PlayStyle.Mawashi) && !isAttack)
+        {
+            enemyRight = 0;
+            enemyFront = 0;
+        }
+
+        if(playStyle == PlayStyle.Oshi)
+        {
+            if(angDifAbs <= 60f && isAttack)
+            {
+                if(enemyFront <= 0)
+                {
+                    enemyFront = 0;
+                }
+            }
+            else
+            {
+                enemyRight = 0;
+                enemyFront = 0;
+            }
+        }
+
+        if(playStyle == PlayStyle.Hataki)
+        {
+            if(angDifAbs <= 60f && isHataki)
+            {
+                if(enemyFront >= 0)
+                {
+                    enemyFront = 0;
+                }
+            }
+            else
+            {
+                enemyRight = 0;
+                enemyFront = 0;
+            }
+        }
+
+        if((graLRNum < 0 && rightPosi < 0) || (graLRNum > 0 && rightPosi > 0))
+        {
+            myLRGra += -rightPosi;
+        }
+        if((graFBNum < 0 && frontPosi < 0) || (graFBNum > 0 && frontPosi > 0))
+        {
+            myFBGra += -frontPosi;
+        }
+
+        if(angDifAbs <= 120f)
+        {
+            if((playStyle == PlayStyle.Hataki && enemyDis < hatakiNotMoveMax) || (playStyle != PlayStyle.Hataki && isAttack && !isCollision))
+            {
+                eneLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                eneFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            }
+            else
+            {
+                eneLRGra += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                eneFBGra += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                eneLRPos += enemyRight * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                eneFBPos += enemyRight * Mathf.Cos((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            }
+        }
+
+        if(angDifAbs <= 60f || 
+            (60f <= angDifAbs && angDifAbs <= 120f && enemyFront > 0f) ||
+            (120f <= angDifAbs && angDifAbs <= 180f && enemyFront < 0f)
+            )
+        {
+            if((playStyle == PlayStyle.Hataki && enemyDis < hatakiNotMoveMax) || (playStyle != PlayStyle.Hataki && isAttack && !isCollision))
+            {
+                eneLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                eneFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            }
+            else
+            {
+                eneLRGra += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                eneFBGra += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+                eneLRPos += enemyFront * Mathf.Cos((180f - (angleY + (90f - enemyAngleY))) * Mathf.Deg2Rad);
+                eneFBPos += enemyFront * Mathf.Sin((angleY + (90f - enemyAngleY)) * Mathf.Deg2Rad);
+            }
+        }
+
+        SetPlayerPos(rightPosi, frontPosi);
+        enemy.SetPlayerPos(eneLRPos, eneFBPos);
+        SetOwnGravity(3, myLRGra, myFBGra);
+        SetEnemyGravity(2, eneLRGra, eneFBGra);
+    }
+
+    // CpuState.Moveの終了処理
+    private void MoveEnd()
+    {
+        SetCPUMoveNum(0, 0);
     }
     #endregion
     #region 自身が回転する際の処理
@@ -1162,15 +1263,6 @@ public class Rikishi2Manager : MonoBehaviour
     // EneRotateのUpdate処理
     private void EneRotateUpdate()
     {
-        // float angInputNum;
-        // if(dohyoLDisPer > dohyoRDisPer)
-        // {
-        //     angInputNum = -1f;
-        // }
-        // else
-        // {
-        //     angInputNum = 1f;
-        // }
         SetWholeRot(enemy.gameObject, 1 * levelMagNum * speedMagNum);
     }
 
