@@ -43,6 +43,7 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Sprite[] graMoveSprite; // 重心移動画像
     #endregion
     #region 操作関連
+    [SerializeField] private Image playStylePanel;  // 攻撃状態のUIパネル
     [SerializeField] private Image ArrowInputImage; // 方向パッドの入力状態のUI画像
     [SerializeField] private Text ArrowInputText;
     [SerializeField] private Sprite[] ArrowInputSprite; // 方向パッドの入力状態の画像配列（0が未入力、1が上入力、2が下入力、3が左入力、4が右入力）
@@ -91,8 +92,9 @@ public class Rikishi2UIManager : MonoBehaviour
                 switch(_playerNum)
                 {
                     case 1:
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(-735f, 450f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(-785f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(-585f, -415f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
                         break;
                 }
@@ -101,13 +103,15 @@ public class Rikishi2UIManager : MonoBehaviour
                 switch(_playerNum)
                 {
                     case 1:
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(-255f, 450f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(-305f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(-105f, -415f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
                         break;
                     case 2:
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(255f, 450f, 0);
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(305f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(105f, -415f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
                         break;
                 }
