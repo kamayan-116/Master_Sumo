@@ -6,7 +6,7 @@ using UnityEngine;
 public class Rikishi2Manager : MonoBehaviour
 {
     #region 変数宣言
-    #region プレイヤーの攻撃状態の変数
+    #region プレイヤーの技の変数
     private enum PlayStyle
     {
         Yothu = 1,
@@ -14,10 +14,10 @@ public class Rikishi2Manager : MonoBehaviour
         Oshi = 3,
         Hataki = 4
     };
-    private PlayStyle playStyle;  // 現在の攻撃状態
-    [SerializeField] private float styleNowTime = 0;  //  攻撃状態の計測時間
-    [SerializeField] private float changeStyleTime;  //  攻撃状態の変更時間
-    [SerializeField] private int nextStyleNum;  // 次の攻撃状態の番号
+    private PlayStyle playStyle;  // 現在の技
+    [SerializeField] private float styleNowTime = 0;  //  技の計測時間
+    [SerializeField] private float changeStyleTime;  //  技の変更時間
+    [SerializeField] private int nextStyleNum;  // 次の技の番号
     #endregion
     #region 参照に関する変数
     [Header("各オブジェクト")]
@@ -1296,7 +1296,6 @@ public class Rikishi2Manager : MonoBehaviour
         rb.mass = powerMagNum;
         changeStyleTime = UnityEngine.Random.Range(3f, 8f);
         SetBodyScale();
-        SetPlayStyle(PlayStyle.Yothu);
     }
     #endregion
 
@@ -1385,12 +1384,12 @@ public class Rikishi2Manager : MonoBehaviour
     public void SetTachiaiEnd()
     {
         isTachiaiEnd = true;
-        rikishiUI.SetPlayImage(1);
+        SetPlayStyle(PlayStyle.Yothu);
     }
     #endregion
 
-    #region 攻撃状態に関するスクリプト
-    // 攻撃状態の遷移時間の計測
+    #region 技に関するスクリプト
+    // 技の遷移時間の計測
     private void SetStyleTimeMeasure()
     {
         if(styleNowTime < changeStyleTime)
@@ -1413,11 +1412,11 @@ public class Rikishi2Manager : MonoBehaviour
         }
     }
 
-    // プレイ状態の変化入力を行う関数
+    // 技の変化入力を行う関数
     private void SetPlayStyle(PlayStyle _playStyle)
     {
         playStyle = _playStyle;
-        rikishiUI.SetPlayImage((int)playStyle);
+        rikishiUI.SetPlayStyleUI((int)playStyle);
         SetPlayStyleMagNum();
     }
     #endregion
@@ -3166,7 +3165,6 @@ public class Rikishi2Manager : MonoBehaviour
         SetFootPlace();
         SetGravityPlace();
         SetSpineRot();
-        SetPlayStyle(PlayStyle.Yothu);
         cpuState = CpuState.StateStay;
         cpuNextState = CpuState.StateStay;
         nextState = CpuState.StateStay;

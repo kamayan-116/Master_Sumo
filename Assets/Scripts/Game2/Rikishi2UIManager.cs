@@ -43,9 +43,10 @@ public class Rikishi2UIManager : MonoBehaviour
     [SerializeField] private Sprite[] graMoveSprite; // 重心移動画像
     #endregion
     #region 操作関連
-    [SerializeField] private Image playStylePanel;  // 攻撃状態のUIパネル
+    [SerializeField] private Image playStylePanel;  // 技のUIパネル
+    [SerializeField] private Text playStyleText;  // 技のテキスト
     [SerializeField] private Image ArrowInputImage; // 方向パッドの入力状態のUI画像
-    [SerializeField] private Text ArrowInputText;
+    [SerializeField] private Text ArrowInputText;  // 重心攻撃状態のテキスト
     [SerializeField] private Sprite[] ArrowInputSprite; // 方向パッドの入力状態の画像配列（0が未入力、1が上入力、2が下入力、3が左入力、4が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
     [SerializeField] private Image rFCircleImage; // 右足の操作中のUI画像
@@ -77,6 +78,7 @@ public class Rikishi2UIManager : MonoBehaviour
         }
     }
 
+    #region UIの基礎設定に関するスクリプト
     // 重心値のUIの移動値を計算する関数
     public void SetGraUIMoveMagNum(float _graMax)
     {
@@ -94,7 +96,7 @@ public class Rikishi2UIManager : MonoBehaviour
                     case 1:
                         tachiaiPanel.rectTransform.localPosition = new Vector3(-785f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
-                        playStylePanel.rectTransform.localPosition = new Vector3(-585f, -415f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(-565f, -395f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
                         break;
                 }
@@ -105,19 +107,20 @@ public class Rikishi2UIManager : MonoBehaviour
                     case 1:
                         tachiaiPanel.rectTransform.localPosition = new Vector3(-305f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
-                        playStylePanel.rectTransform.localPosition = new Vector3(-105f, -415f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(-85f, -395f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
                         break;
                     case 2:
                         tachiaiPanel.rectTransform.localPosition = new Vector3(305f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
-                        playStylePanel.rectTransform.localPosition = new Vector3(105f, -415f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(85f, -395f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
                         break;
                 }
                 break;
         }
     }
+    #endregion
 
     #region 体重に関するスクリプト
     // 体重スライダーの最大値と最小値を入力する関数
@@ -230,10 +233,28 @@ public class Rikishi2UIManager : MonoBehaviour
         penaltyText.text = "✖：" + _penaltyNum + "回";
     }
 
-    // プレイ中の画像を変更する関数
-    public void SetPlayImage(int _playNum)
+    // プレイ中の技のUIを変更する関数
+    public void SetPlayStyleUI(int _playNum)
     {
         playImage.sprite = playSprite[_playNum];
+        switch(_playNum)
+        {
+            case 0:
+                playStyleText.text = "立会い";
+                break;
+            case 1:
+                playStyleText.text = "四つ";
+                break;
+            case 2:
+                playStyleText.text = "まわし";
+                break;
+            case 3:
+                playStyleText.text = "押し";
+                break;
+            case 4:
+                playStyleText.text = "はたき";
+                break;
+        }
     }
 
     // プレイ中の画像の点滅を行う関数
@@ -419,7 +440,7 @@ public class Rikishi2UIManager : MonoBehaviour
         tachiaiPanel.color = new Color32(255, 255, 255, 100);
         tachiaiInputImage.sprite = tachiaiInputSprite[0];
         gravityPanel.color = new Color32(255, 255, 255, 100);
-        SetPlayImage(0);
+        SetPlayStyleUI(0);
         SetPenaltyText(0);
         SetArrowActive(0, false);
         SetArrowActive(1, false);

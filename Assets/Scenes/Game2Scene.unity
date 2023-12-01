@@ -2137,6 +2137,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1555595396261425016, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1876593708349831391, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: playSprite.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 769dab20fc247aa499eeb6477ed0e065, type: 3}
     - target: {fileID: 2742367724767889663, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2421,6 +2429,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7749468303460049447, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 769dab20fc247aa499eeb6477ed0e065, type: 3}
     - target: {fileID: 7938998735298334565, guid: 52fae2dca14991a4fa2511907e3cb046, type: 3}
       propertyPath: m_NormalizedViewPortRect.x
       value: 0.5
@@ -3974,6 +3986,7 @@ MonoBehaviour:
   isReplay: 0
   cpuLevel: 0
   levelMagNum: 0
+  moveDir: {x: 0, y: 0}
   myGraFBPer: 0
   myGraLRPer: 0
   eneGraForMeNum: 0
@@ -3981,7 +3994,6 @@ MonoBehaviour:
   dohyoRDisPer: 0
   angDifPer: 0
   isPlayerMove: 0
-  isLFMove: 1
   isRotStart: 0
   isRotEnd: 1
   isEneRotStart: 0
@@ -4686,6 +4698,8 @@ MonoBehaviour:
   graMoveSprite:
   - {fileID: 21300000, guid: 1a744dc07ad4b8d40adbc9ed6287e28a, type: 3}
   - {fileID: 21300000, guid: bff6cf2204e4dee4ba9c113ddc0193b0, type: 3}
+  playStylePanel: {fileID: 0}
+  playStyleText: {fileID: 0}
   ArrowInputImage: {fileID: 0}
   ArrowInputText: {fileID: 0}
   ArrowInputSprite: []
