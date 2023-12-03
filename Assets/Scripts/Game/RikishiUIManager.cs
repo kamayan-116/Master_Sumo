@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Rikishi2UIManager : MonoBehaviour
+public class RikishiUIManager : MonoBehaviour
 {
     #region 変数宣言
-    [SerializeField] private Rikishi2Manager rikishiManager;  // RikishiManagerプログラム
+    [SerializeField] private RikishiManager rikishiManager;  // RikishiManagerプログラム
     [SerializeField] private Text resultText;  // 結果テキスト
     [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
     #region プレイヤーパネル関連
@@ -72,7 +72,7 @@ public class Rikishi2UIManager : MonoBehaviour
     void Update()
     {
         rikishiManager.SetWeightNum(weightSlider.value);
-        if(tachiaiInputImage.gameObject.activeSelf && Game2Manager.Instance.gameState == Game2Manager.GameState.Play)
+        if(tachiaiInputImage.gameObject.activeSelf && GameManager.Instance.gameState == GameManager.GameState.Play)
         {
             SetBlinkTachiai();
         }
@@ -88,9 +88,9 @@ public class Rikishi2UIManager : MonoBehaviour
     // プレイヤー人数に対するUIの配置
     public void SetUIPlace(int _playerNum)
     {
-        switch(Game2Manager.Instance.gamePlayer)
+        switch(GameManager.Instance.gamePlayer)
         {
-            case Game2Manager.GamePlayer.One:
+            case GameManager.GamePlayer.One:
                 switch(_playerNum)
                 {
                     case 1:
@@ -101,7 +101,7 @@ public class Rikishi2UIManager : MonoBehaviour
                         break;
                 }
                 break;
-            case Game2Manager.GamePlayer.Two:
+            case GameManager.GamePlayer.Two:
                 switch(_playerNum)
                 {
                     case 1:
@@ -167,12 +167,12 @@ public class Rikishi2UIManager : MonoBehaviour
     // 対戦相手レベルのテキストを表示する関数
     public void SetEnemyLevelText(int _cpulevel)
     {
-        switch(Game2Manager.Instance.gamePlayer)
+        switch(GameManager.Instance.gamePlayer)
         {
-            case Game2Manager.GamePlayer.One:
+            case GameManager.GamePlayer.One:
                 cpuLevelText.text = "CPU " + _cpulevel + "：";
                 break;
-            case Game2Manager.GamePlayer.Two:
+            case GameManager.GamePlayer.Two:
                 cpuLevelText.text = "対人：";
                 break;
         }
@@ -198,11 +198,11 @@ public class Rikishi2UIManager : MonoBehaviour
     public void SetTachiaiBActive(bool _isActive)
     {   
         tachiaiInputImage.gameObject.SetActive(_isActive);
-        if(Game2Manager.Instance.gameState == Game2Manager.GameState.Play)
+        if(GameManager.Instance.gameState == GameManager.GameState.Play)
         {
             tachiaiInputImage.sprite = tachiaiInputSprite[1];
         }
-        if(tachiaiInputImage.gameObject.activeSelf && Game2Manager.Instance.gameState == Game2Manager.GameState.BeforePlay)
+        if(tachiaiInputImage.gameObject.activeSelf && GameManager.Instance.gameState == GameManager.GameState.BeforePlay)
         {
             StartCoroutine("SetTachiaiDelete");
         }

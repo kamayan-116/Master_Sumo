@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class DohyoJudgeCtrl : MonoBehaviour
 {
-    [SerializeField] private Rikishi2Manager me;  // 自身の全体スクリプト
-    [SerializeField] private Rikishi2Manager enemy;  // 相手の全体スクリプト
+    [SerializeField] private RikishiManager me;  // 自身の全体スクリプト
+    [SerializeField] private RikishiManager enemy;  // 相手の全体スクリプト
 
     private void OnTriggerEnter(Collider other)
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Game2Manager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     #region 変数宣言
     #region ゲーム状態の変数
@@ -58,8 +58,8 @@ public class Game2Manager : MonoBehaviour
     #endregion
     #region プレイヤー1に対する変数
     [Header("プレイヤー1")]
-    [SerializeField] private Rikishi2Manager p1Ctrl;  // プレイヤー1のスクリプト
-    [SerializeField] private Rikishi2UIManager p1UICtrl;  // プレイヤー1のUIスクリプト
+    [SerializeField] private RikishiManager p1Ctrl;  // プレイヤー1のスクリプト
+    [SerializeField] private RikishiUIManager p1UICtrl;  // プレイヤー1のUIスクリプト
     [SerializeField] private GameObject p1Obj;  // プレイヤー1のオブジェクト
     [SerializeField] private Vector3 p1Gravity;  // プレイヤー1の重心座標
     [SerializeField] private Vector2 p1Place;  // プレイヤー1の位置座標
@@ -82,8 +82,8 @@ public class Game2Manager : MonoBehaviour
     #endregion
     #region プレイヤー2に対する変数
     [Header("プレイヤー2")]
-    [SerializeField] private Rikishi2Manager p2Ctrl;  // プレイヤー2のスクリプト
-    [SerializeField] private Rikishi2UIManager p2UICtrl;  // プレイヤー2のUIスクリプト
+    [SerializeField] private RikishiManager p2Ctrl;  // プレイヤー2のスクリプト
+    [SerializeField] private RikishiUIManager p2UICtrl;  // プレイヤー2のUIスクリプト
     [SerializeField] private GameObject p2Obj;  // プレイヤー2のオブジェクト
     [SerializeField] private Vector3 p2Gravity;  // プレイヤー2の重心座標
     [SerializeField] private Vector2 p2Place;  // プレイヤー2の位置座標
@@ -119,13 +119,13 @@ public class Game2Manager : MonoBehaviour
     [SerializeField] private AudioSource seAudioSource;  // 効果音のAudioSource
     #endregion
     
-    private static Game2Manager instance;
-    public static Game2Manager Instance {get => instance;}
+    private static GameManager instance;
+    public static GameManager Instance {get => instance;}
     #endregion
 
     private void Awake()
     {
-        instance = this.GetComponent<Game2Manager>();
+        instance = this.GetComponent<GameManager>();
     }
 
     // Start is called before the first frame update

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rikishi2CollisionCheck : MonoBehaviour
+public class RikishiCollisionCheck : MonoBehaviour
 {
-    [SerializeField] private Rikishi2Manager me;  // 自身の全体スクリプト
+    [SerializeField] private RikishiManager me;  // 自身の全体スクリプト
 
     private void OnCollisionEnter(Collision other)
     {

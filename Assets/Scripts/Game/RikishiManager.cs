@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rikishi2Manager : MonoBehaviour
+public class RikishiManager : MonoBehaviour
 {
     #region 変数宣言
     #region プレイヤーの技の変数
@@ -21,8 +21,8 @@ public class Rikishi2Manager : MonoBehaviour
     #endregion
     #region 参照に関する変数
     [Header("各オブジェクト")]
-    [SerializeField] private Rikishi2UIManager rikishiUI;  // プレイヤーのUIを表示するプログラム
-    [SerializeField] private Rikishi2Manager enemy;  // 相手のスクリプト
+    [SerializeField] private RikishiUIManager rikishiUI;  // プレイヤーのUIを表示するプログラム
+    [SerializeField] private RikishiManager enemy;  // 相手のスクリプト
     [SerializeField] private GameObject dohyoObj;  // 土俵オブジェクト
     [SerializeField] private Camera playerCamera;  // プレイヤーカメラオブジェクト
     [SerializeField] private GameObject playerObj;  // プレイヤーオブジェクト
@@ -334,16 +334,16 @@ public class Rikishi2Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        switch(Game2Manager.Instance.gameState)
+        switch(GameManager.Instance.gameState)
         {
-            case Game2Manager.GameState.BeforePlay:
+            case GameManager.GameState.BeforePlay:
                 #region タイトルスタート
                 if(!gameStart)
                 {
                     if(Input.GetButtonDown("Decide1"))
                     {
                         gameStart = true;
-                        Game2Manager.Instance.PushGameStart();
+                        GameManager.Instance.PushGameStart();
                     }
                 }
                 #endregion
@@ -355,7 +355,7 @@ public class Rikishi2Manager : MonoBehaviour
                         if(Input.GetButtonDown("Decide1"))
                         {
                             playStart = true;
-                            Game2Manager.Instance.PushPlayStart();
+                            GameManager.Instance.PushPlayStart();
                         }
                     }
                 #endregion
@@ -371,14 +371,14 @@ public class Rikishi2Manager : MonoBehaviour
                                     if(Input.GetAxisRaw("LeftHorizontal1") < 0)
                                     {
                                         inputStick = true;
-                                        Game2Manager.Instance.SelectOnePlayer();
-                                        Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                                        GameManager.Instance.SelectOnePlayer();
+                                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                     }
                                     if(Input.GetAxisRaw("LeftHorizontal1") > 0)
                                     {
                                         inputStick = true;
-                                        Game2Manager.Instance.SelectTwoPlayer();
-                                        Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                                        GameManager.Instance.SelectTwoPlayer();
+                                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                     }
                                 }
                             }
@@ -389,9 +389,9 @@ public class Rikishi2Manager : MonoBehaviour
                             if(Input.GetButtonDown("Decide1"))
                             {
                                 playerModeDecide = true;
-                                Game2Manager.Instance.SetPlayerMode();
+                                GameManager.Instance.SetPlayerMode();
                                 SetCameraPlace();
-                                Game2Manager.Instance.SetMainCamera();
+                                GameManager.Instance.SetMainCamera();
                                 rikishiUI.SetUIPlace(playerNum);
                             }
                         }
@@ -401,15 +401,15 @@ public class Rikishi2Manager : MonoBehaviour
                         {
                             if(!cpuLevelDecide)
                             {
-                                switch(Game2Manager.Instance.gamePlayer)
+                                switch(GameManager.Instance.gamePlayer)
                                 {
-                                    case Game2Manager.GamePlayer.One:
+                                    case GameManager.GamePlayer.One:
                                         if(Input.GetAxisRaw("LeftHorizontal1") != 0 && playerNum == 1)
                                         {
                                             if(!inputStick)
                                             {
                                                 inputStick = true;
-                                                Game2Manager.Instance.SetCpuLevelSlider(1f * Input.GetAxisRaw("LeftHorizontal1"));
+                                                GameManager.Instance.SetCpuLevelSlider(1f * Input.GetAxisRaw("LeftHorizontal1"));
                                             }
                                         }
                                         else
@@ -419,12 +419,12 @@ public class Rikishi2Manager : MonoBehaviour
                                         if(Input.GetButtonDown("Decide1"))
                                         {
                                             cpuLevelDecide = true;
-                                            Game2Manager.Instance.SetCpuLevelMode();
+                                            GameManager.Instance.SetCpuLevelMode();
                                         }
                                         break;
-                                    case Game2Manager.GamePlayer.Two:
+                                    case GameManager.GamePlayer.Two:
                                         cpuLevelDecide = true;
-                                        Game2Manager.Instance.SetCpuLevelMode();
+                                        GameManager.Instance.SetCpuLevelMode();
                                         break;
                                 }
                             }
@@ -443,13 +443,13 @@ public class Rikishi2Manager : MonoBehaviour
                                             {
                                                 inputStick = true;
                                                 rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal1"));
-                                                Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                                                GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                             }
                                             if(Input.GetAxisRaw("LeftVertical1") != 0 && !inputStick)
                                             {
                                                 inputStick = true;
                                                 rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical1"));
-                                                Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                                                GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                             }
                                             if(Input.GetAxisRaw("LeftHorizontal1") == 0 && Input.GetAxisRaw("LeftVertical1") == 0)
                                             {
@@ -461,12 +461,12 @@ public class Rikishi2Manager : MonoBehaviour
                                             }
                                             break;
                                         case 2:
-                                            switch(Game2Manager.Instance.gamePlayer)
+                                            switch(GameManager.Instance.gamePlayer)
                                             {
-                                                case Game2Manager.GamePlayer.One:
+                                                case GameManager.GamePlayer.One:
                                                     rikishiUI.SetWeightInput();
                                                     break;
-                                                case Game2Manager.GamePlayer.Two:
+                                                case GameManager.GamePlayer.Two:
                                                     if(Input.GetAxisRaw("LeftHorizontal2") != 0 && !inputStick)
                                                     {
                                                         inputStick = true;
@@ -521,7 +521,7 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 #endregion
                 break;
-            case Game2Manager.GameState.Play:
+            case GameManager.GameState.Play:
                 #region 立会い入力
                 if(!isTachiaiEnd)
                 {
@@ -535,12 +535,12 @@ public class Rikishi2Manager : MonoBehaviour
                             }
                             break;
                         case 2:
-                            switch(Game2Manager.Instance.gamePlayer)
+                            switch(GameManager.Instance.gamePlayer)
                             {
-                                case Game2Manager.GamePlayer.One:
+                                case GameManager.GamePlayer.One:
                                     SetCpuTachiaiInput();
                                     break;
-                                case Game2Manager.GamePlayer.Two:
+                                case GameManager.GamePlayer.Two:
                                     if(Input.GetButtonDown("Decide2"))
                                     {
                                         TachiaiInput();
@@ -633,9 +633,9 @@ public class Rikishi2Manager : MonoBehaviour
                         #endregion
                         #region プレイヤー2の入力
                         case 2:
-                            switch(Game2Manager.Instance.gamePlayer)
+                            switch(GameManager.Instance.gamePlayer)
                             {
-                                case Game2Manager.GamePlayer.One:
+                                case GameManager.GamePlayer.One:
                                     SetStatePercent();
                                     SetRotPerNum();
                                     SetRotMove();
@@ -675,7 +675,7 @@ public class Rikishi2Manager : MonoBehaviour
                                         cpuState = cpuNextState;
                                     }
                                     break;
-                                case Game2Manager.GamePlayer.Two:
+                                case GameManager.GamePlayer.Two:
                                     if(Input.GetAxis("LeftVertical2") > 0f && (arrowPatNum == 0 || arrowPatNum == 1))
                                     {
                                         arrowPatNum = 1;
@@ -731,14 +731,14 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 #endregion
                 break;
-            case Game2Manager.GameState.End:
+            case GameManager.GameState.End:
                 if(Input.GetAxisRaw("LeftVertical1") != 0 && playerNum == 1)
                 {
                     if(!inputStick)
                     {
                         inputStick = true;
-                        Game2Manager.Instance.SetReplayNum((int)(1 * Input.GetAxisRaw("LeftVertical1")));
-                        Game2Manager.Instance.SetSESound(Game2Manager.Instance.cursorMoveSound);
+                        GameManager.Instance.SetReplayNum((int)(1 * Input.GetAxisRaw("LeftVertical1")));
+                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                     }
                 }
                 else
@@ -747,7 +747,7 @@ public class Rikishi2Manager : MonoBehaviour
                 }
                 if(Input.GetButtonDown("Decide1") && isReplay)
                 {
-                    Game2Manager.Instance.SetReset();
+                    GameManager.Instance.SetReset();
                 }
                 break;
         }
@@ -761,9 +761,9 @@ public class Rikishi2Manager : MonoBehaviour
     // プレイヤー人数におけるカメラ設定
     private void SetCameraPlace()
     {
-        switch(Game2Manager.Instance.gamePlayer)
+        switch(GameManager.Instance.gamePlayer)
         {
-            case Game2Manager.GamePlayer.One:
+            case GameManager.GamePlayer.One:
                 switch(playerNum)
                 {
                     case 1:
@@ -775,7 +775,7 @@ public class Rikishi2Manager : MonoBehaviour
                         break;
                 }
                 break;
-            case Game2Manager.GamePlayer.Two:
+            case GameManager.GamePlayer.Two:
                 switch(playerNum)
                 {
                     case 1:
@@ -1292,7 +1292,7 @@ public class Rikishi2Manager : MonoBehaviour
     public void WeightInput()
     {
         weightInput = true;
-        Game2Manager.Instance.GameStart(playerNum);
+        GameManager.Instance.GameStart(playerNum);
         rb.mass = powerMagNum;
         changeStyleTime = UnityEngine.Random.Range(3f, 8f);
         SetBodyScale();
@@ -1328,7 +1328,7 @@ public class Rikishi2Manager : MonoBehaviour
     {
         isStartPush = true;
         rikishiUI.SetTachiaiBActive(false);
-        Game2Manager.Instance.TachiaiStart(playerNum, startPushTime);
+        GameManager.Instance.TachiaiStart(playerNum, startPushTime);
     }
 
     // 立会いの入力時間差の入力と開始位置の決定
@@ -1375,7 +1375,7 @@ public class Rikishi2Manager : MonoBehaviour
             if(this.transform.position == startPos)
             {
                 isTachiaiMove = false;
-                Game2Manager.Instance.TachiaiEnd(playerNum);
+                GameManager.Instance.TachiaiEnd(playerNum);
             }
         }
     }
@@ -2945,9 +2945,9 @@ public class Rikishi2Manager : MonoBehaviour
     public void TellWinsLosses()
     {
         rikishiUI.SetEnemyLevelText(cpuLevel);
-        switch(Game2Manager.Instance.gamePlayer)
+        switch(GameManager.Instance.gamePlayer)
         {
-            case Game2Manager.GamePlayer.One:
+            case GameManager.GamePlayer.One:
                 switch(cpuLevel)
                 {
                     case 1:
@@ -2967,7 +2967,7 @@ public class Rikishi2Manager : MonoBehaviour
                         break;
                 }
                 break;
-            case Game2Manager.GamePlayer.Two:
+            case GameManager.GamePlayer.Two:
                 rikishiUI.SetMatchResultText(pWinsNum, pLossesNum);
                 break;
         }
@@ -3020,7 +3020,7 @@ public class Rikishi2Manager : MonoBehaviour
             isResult = _isResult;
             isFallDown = _isfallDown;
             isOutDohyo = _isOutDohyo;
-            Game2Manager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif, isInColl, isOutColl);
+            GameManager.Instance.SetGameResult(playerNum, isResult, graFBNum, graLRNum, isFallDown, isOutDohyo, (int)playStyle, angularDif, isInColl, isOutColl);
             SetWinsLosses(isResult);
         }
     }
@@ -3030,9 +3030,9 @@ public class Rikishi2Manager : MonoBehaviour
     {
         if(_isResult)
         {
-            switch(Game2Manager.Instance.gamePlayer)
+            switch(GameManager.Instance.gamePlayer)
             {
-                case Game2Manager.GamePlayer.One:
+                case GameManager.GamePlayer.One:
                     switch(cpuLevel)
                     {
                         case 1:
@@ -3052,16 +3052,16 @@ public class Rikishi2Manager : MonoBehaviour
                             break;
                     }
                     break;
-                case Game2Manager.GamePlayer.Two:
+                case GameManager.GamePlayer.Two:
                     pWinsNum++;
                     break;
             }
         }
         else
         {
-            switch(Game2Manager.Instance.gamePlayer)
+            switch(GameManager.Instance.gamePlayer)
             {
-                case Game2Manager.GamePlayer.One:
+                case GameManager.GamePlayer.One:
                     switch(cpuLevel)
                     {
                         case 1:
@@ -3081,7 +3081,7 @@ public class Rikishi2Manager : MonoBehaviour
                             break;
                     }
                     break;
-                case Game2Manager.GamePlayer.Two:
+                case GameManager.GamePlayer.Two:
                     pLossesNum++;
                     break;
             }
