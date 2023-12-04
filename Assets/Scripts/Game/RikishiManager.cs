@@ -84,7 +84,6 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
     [SerializeField] private float localScaleNum;  // プレイヤーオブジェクトのローカルの大きさ
     [SerializeField] private float scaleYNum;  // プレイヤーオブジェクトの身長の大きさ
-    // private Vector3 scaleVector;  // プレイヤーオブジェクトの大きさVector
     [SerializeField] private float footLengNum;  // 足の長さの値
     private Rigidbody rb;
     #endregion
@@ -1885,7 +1884,6 @@ public class RikishiManager : MonoBehaviour
             loCol = false;
         }
         #endregion
-
         #region 左足内側の判定
         Vector3 liOrigin = lIBObj.transform.position;
         Vector3 liDirection = new Vector3(
@@ -1930,7 +1928,6 @@ public class RikishiManager : MonoBehaviour
             liCol = false;
         }
         #endregion
-
         #region 右足外側の判定
         Vector3 roOrigin = rOBObj.transform.position;
         Vector3 roDirection = new Vector3(
@@ -1975,7 +1972,6 @@ public class RikishiManager : MonoBehaviour
             roCol = false;
         }
         #endregion
-
         #region 右足内側の判定
         Vector3 riOrigin = rIBObj.transform.position;
         Vector3 riDirection = new Vector3(
@@ -3016,6 +3012,7 @@ public class RikishiManager : MonoBehaviour
     {
         if(!isEnd)
         {
+            rb.isKinematic = true;
             isEnd =  _isEnd;
             isResult = _isResult;
             isFallDown = _isfallDown;
@@ -3141,6 +3138,7 @@ public class RikishiManager : MonoBehaviour
         playerObj.transform.localPosition = playerInitialPos;
         playerObj.transform.localRotation = playerInitialRot;
         playerObj.transform.localScale = playerInitialScale;
+        rb.isKinematic = false;
         SetShoulderRot(0);
         SetElbowRot(0);
         SetElbowHandScale(0);
