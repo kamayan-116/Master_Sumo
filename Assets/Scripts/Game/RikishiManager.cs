@@ -470,11 +470,13 @@ public class RikishiManager : MonoBehaviour
                                                     {
                                                         inputStick = true;
                                                         rikishiUI.SetWeightSliderNum(10 * Input.GetAxisRaw("LeftHorizontal2"));
+                                                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                                     }
                                                     if(Input.GetAxisRaw("LeftVertical2") != 0 && !inputStick)
                                                     {
                                                         inputStick = true;
                                                         rikishiUI.SetWeightSliderNum(1 * Input.GetAxisRaw("LeftVertical2"));
+                                                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                                     }
                                                     if(Input.GetAxisRaw("LeftHorizontal2") == 0 && Input.GetAxisRaw("LeftVertical2") == 0)
                                                     {
