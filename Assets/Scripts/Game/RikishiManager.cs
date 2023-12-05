@@ -112,7 +112,7 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private float pushTimeLag = 0f;  // 立会いのボタンを押した時間差
     private float pushMaxLag = 6f;  // 立会いの最大時間差
     [SerializeField] private Vector3 startPos;  // プレイヤーの立会いによる開始座標
-    private float startPosXSlope = 0.55f;  // 立会い開始X座標の傾き
+    private float startPosXSlope = 0.6f;  // 立会い開始X座標の傾き
     private float startPosXIntercept = 0.45f;  // 立会い開始X座標の切片
     private float tachiaiSpeedMag = 3f;  // 立会いのスピード倍率
     #endregion
@@ -1360,7 +1360,7 @@ public class RikishiManager : MonoBehaviour
     {
         if(isTachiaiMove)
         {
-            if(pushTimeLag < 1.5f)
+            if(pushTimeLag < 1.75f)
             {
                 this.transform.position = Vector3.MoveTowards(this.transform.position, startPos, Time.deltaTime * tachiaiSpeedMag);
             }
