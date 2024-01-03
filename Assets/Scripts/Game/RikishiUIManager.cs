@@ -26,11 +26,11 @@ public class RikishiUIManager : MonoBehaviour
     #endregion
     #region 立会いパネルや立会いの入力UI
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
+    [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
     [SerializeField] private Image tachiaiInputImage; // 立合いの入力に応じた画像
     [SerializeField] private Sprite[] tachiaiInputSprite; // 立合いの入力に応じた画像配列（0が開始前、1が立会い時）
     [SerializeField] private Image playImage; // プレイ状態のUI画像
     [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が四つ、2がまわし、3が押し、4がはたき）
-    [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
     #endregion
     #region 重心関連
     [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
@@ -50,6 +50,8 @@ public class RikishiUIManager : MonoBehaviour
     [SerializeField] private Sprite[] ArrowInputSprite; // 方向パッドの入力状態の画像配列（0が未入力、1が上入力、2が下入力、3が左入力、4が右入力）
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
     [SerializeField] private Image rFCircleImage; // 右足の操作中のUI画像
+    [SerializeField] private Image dragPanel;  // 抵抗のUIパネル
+    [SerializeField] private Slider dragSlider;  // 抵抗値のスライダー
     private float lfCircley;  // 左足のUIのワールドY座標
     private float rfCircley;  // 右足のUIのワールドY座標
     #endregion
@@ -97,6 +99,7 @@ public class RikishiUIManager : MonoBehaviour
                         tachiaiPanel.rectTransform.localPosition = new Vector3(-785f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
                         playStylePanel.rectTransform.localPosition = new Vector3(-565f, -395f, 0);
+                        dragPanel.rectTransform.localPosition = new Vector3(-370f, -395f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
                         break;
                 }
@@ -108,12 +111,14 @@ public class RikishiUIManager : MonoBehaviour
                         tachiaiPanel.rectTransform.localPosition = new Vector3(-305f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
                         playStylePanel.rectTransform.localPosition = new Vector3(-85f, -395f, 0);
+                        dragPanel.rectTransform.localPosition = new Vector3(110f, -395f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
                         break;
                     case 2:
                         tachiaiPanel.rectTransform.localPosition = new Vector3(305f, 480f, 0);
                         gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
                         playStylePanel.rectTransform.localPosition = new Vector3(85f, -395f, 0);
+                        dragPanel.rectTransform.localPosition = new Vector3(-110f, -395f, 0);
                         ArrowInputImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
                         break;
                 }
@@ -162,6 +167,12 @@ public class RikishiUIManager : MonoBehaviour
     public void SetInGamePanel(bool _isActive)
     {
         inGamePanel.SetActive(_isActive);
+    }
+
+    // 抵抗値パネルの表示状態を管理する関数
+    public void SetDragPanel(bool _isActive)
+    {
+        dragPanel.gameObject.SetActive(_isActive);
     }
 
     // 対戦相手レベルのテキストを表示する関数
@@ -231,6 +242,12 @@ public class RikishiUIManager : MonoBehaviour
     public void SetPenaltyText(int _penaltyNum)
     {
         penaltyText.text = "✖：" + _penaltyNum + "回";
+    }
+
+    // ペナルティ回数(立会いパネル)を非表示する関数
+    public void SetPenaltyDisappear(bool _isbool)
+    {
+        tachiaiPanel.gameObject.SetActive(_isbool);
     }
 
     // プレイ中の技のUIを変更する関数
@@ -417,6 +434,12 @@ public class RikishiUIManager : MonoBehaviour
                 break;
         }
     }
+
+    // 抵抗値をUI表示する関数
+    public void SetDragUI(float _dragNum)
+    {
+        dragSlider.value = _dragNum;
+    }
     #endregion
     
     #region ゲーム終了後のUI
@@ -441,6 +464,7 @@ public class RikishiUIManager : MonoBehaviour
         tachiaiInputImage.sprite = tachiaiInputSprite[0];
         gravityPanel.color = new Color32(255, 255, 255, 100);
         SetPlayStyleUI(0);
+        SetPenaltyDisappear(true);
         SetPenaltyText(0);
         SetArrowActive(0, false);
         SetArrowActive(1, false);

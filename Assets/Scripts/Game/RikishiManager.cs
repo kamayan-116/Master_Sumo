@@ -119,6 +119,7 @@ public class RikishiManager : MonoBehaviour
     #region 抵抗に関する変数
     [Header("抵抗")]
     [SerializeField] private float dragNum = 0f;  // 倒れる際の抵抗値
+    private float maxDragNum = 20f;  // 倒れる際の抵抗値の最大値
     [SerializeField] private float maxAngle;  // 倒れている時の最大角度
     private float angleMagNum = 20f;  // 角度による抵抗値減速係数
     [SerializeField] private float minusPerSecond;  // 抵抗値の減る秒速値
@@ -239,6 +240,7 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private bool  isOutColl = false;  // 足の外側が当たっているか否か
     [SerializeField] private bool isAttack = false;  // はたき以外の攻撃ができるか否か
     [SerializeField] private bool isHataki = false;  // はたきができるか否か
+    [SerializeField] private bool isDrag = false;  // 抵抗の入力ができるか否か
     [SerializeField] private bool  isEnd = false;  // 勝敗決着しているか否か
     [SerializeField] private bool  isResult;  // 勝敗結果の表示（true:勝ち,false:負け）
     [SerializeField] private bool  isFallDown = false;  // 土俵に倒れたか否か
@@ -575,6 +577,7 @@ public class RikishiManager : MonoBehaviour
                     SetHandCollider();
                     SetInDohyo();
                     SetRayCast();
+                    SetDragJudge();
                     maxAngle = SetMaxAngle();
                     SetDragNum(0, maxAngle);
                     #endregion
@@ -626,7 +629,7 @@ public class RikishiManager : MonoBehaviour
                                 SetWholeRot(this.gameObject, Input.GetAxis("MyRotation1") * speedMagNum);
                             }
 
-                            if(Input.GetButtonDown("Decide1"))
+                            if(Input.GetButtonDown("Decide1") && isDrag)
                             {
                                 SetDragNum(1f, 0);
                             }
@@ -720,7 +723,7 @@ public class RikishiManager : MonoBehaviour
                                         SetWholeRot(this.gameObject, Input.GetAxis("MyRotation2") * speedMagNum);
                                     }
 
-                                    if(Input.GetButtonDown("Decide2"))
+                                    if(Input.GetButtonDown("Decide2") && isDrag)
                                     {
                                         SetDragNum(1f, 0);
                                     }
@@ -1386,6 +1389,7 @@ public class RikishiManager : MonoBehaviour
     {
         isTachiaiEnd = true;
         SetPlayStyle(PlayStyle.Yothu);
+        rikishiUI.SetPenaltyDisappear(false);
     }
     #endregion
 
@@ -2916,6 +2920,21 @@ public class RikishiManager : MonoBehaviour
     #endregion
 
     #region 抵抗に関するスクリプト
+    // 抵抗の入力の可否を判断する関数
+    private void SetDragJudge()
+    {
+        if(Mathf.Abs(graFBNum) > graMax-2 || Mathf.Abs(graLRNum) > graMax-2)
+        {
+            isDrag = true;
+            rikishiUI.SetDragPanel(true);
+        }
+        else
+        {
+            isDrag = false;
+            rikishiUI.SetDragPanel(false);
+        }
+    }
+
     // プレイヤーの角度の最大値を計算する関数
     private float SetMaxAngle()
     {
@@ -2934,7 +2953,12 @@ public class RikishiManager : MonoBehaviour
         {
             dragNum = 0f;
         }
+        else if(maxDragNum <= dragNum)
+        {
+            dragNum = maxDragNum;
+        }
         rb.drag = dragNum;
+        rikishiUI.SetDragUI(dragNum);
     }
     #endregion
 
