@@ -369,16 +369,10 @@ public class RikishiManager : MonoBehaviour
                             {
                                 if(!inputStick)
                                 {
-                                    if(Input.GetAxisRaw("LeftHorizontal1") < 0)
+                                    if(Input.GetAxisRaw("LeftHorizontal1") != 0)
                                     {
                                         inputStick = true;
-                                        GameManager.Instance.SelectOnePlayer();
-                                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
-                                    }
-                                    if(Input.GetAxisRaw("LeftHorizontal1") > 0)
-                                    {
-                                        inputStick = true;
-                                        GameManager.Instance.SelectTwoPlayer();
+                                        GameManager.Instance.SelectPlayerButton(1f * Input.GetAxisRaw("LeftHorizontal1"));
                                         GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                     }
                                 }
@@ -389,11 +383,19 @@ public class RikishiManager : MonoBehaviour
                             }
                             if(Input.GetButtonDown("Decide1"))
                             {
-                                playerModeDecide = true;
-                                GameManager.Instance.SetPlayerMode();
-                                SetCameraPlace();
-                                GameManager.Instance.SetMainCamera();
-                                rikishiUI.SetUIPlace(playerNum);
+                                if(GameManager.Instance.playerNum <=2)
+                                {
+                                    playerModeDecide = true;
+                                    GameManager.Instance.SetPlayerMode();
+                                    SetCameraPlace();
+                                    GameManager.Instance.SetMainCamera();
+                                    rikishiUI.SetUIPlace(playerNum);
+                                }
+                                else
+                                {
+                                    playStart = false;
+                                    GameManager.Instance.PushBackButton(); 
+                                }
                             }
                         }
                 #endregion

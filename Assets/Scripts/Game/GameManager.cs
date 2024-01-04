@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
         Two
     };
     public GamePlayer gamePlayer;  // 現在のプレイヤー人数
+    public int playerNum = 2;  // プレイヤー画面におけるプレイヤー人数の選択
     #endregion
     #region UIオブジェクトの変数
     [Header("UI")]
@@ -35,6 +37,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameModeUI;  // ゲームモードのパネルオブジェクト
     [SerializeField] private Button onePlayerButton;  // OnePlayerModeのボタンUI
     [SerializeField] private Button twoPlayerButton;  // TwoPlayerModeのボタンUI
+    [SerializeField] private Button backButton;  // BackButtonのボタンUI
     [SerializeField] private Slider cpuSlider;  // コンピュータレベルのSliderUI
     [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
     [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
@@ -132,7 +135,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetGameState(GameState.BeforePlay);
-        SelectTwoPlayer();
+        SelectPlayerButton(0);
         SetReplayNum(0);
         cameraInitialPos = cameraObj.gameObject.transform.position;
         cameraInitialRot = cameraObj.gameObject.transform.rotation;
@@ -189,20 +192,48 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region プレイヤー人数選択に関するスクリプト
+    // 人数選択画面のボタン選択
+    public void SelectPlayerButton(float _playerNum)
+    {
+        playerNum += (int)_playerNum;
+        switch(playerNum)
+        {
+            case 1:
+                SelectOnePlayer();
+                break;
+            case 2:
+                SelectTwoPlayer();
+                break;
+            case 3:
+                SelectBackButton();
+                break;
+        }
+    }
+
     // プレイヤー1人への変更
-    public void SelectOnePlayer()
+    private void SelectOnePlayer()
     {
         onePlayerButton.interactable = true;
         twoPlayerButton.interactable = false;
+        backButton.interactable = false;
         gamePlayer = GamePlayer.One;
     }
 
     // プレイヤー2人への変更
-    public void SelectTwoPlayer()
+    private void SelectTwoPlayer()
     {
         onePlayerButton.interactable = false;
         twoPlayerButton.interactable = true;
+        backButton.interactable = false;
         gamePlayer = GamePlayer.Two;
+    }
+
+    // 操作方法画面に戻る
+    private void SelectBackButton()
+    {
+        onePlayerButton.interactable = false;
+        twoPlayerButton.interactable = false;
+        backButton.interactable = true;
     }
 
     // プレイヤー人数選択を行った
@@ -216,6 +247,14 @@ public class GameManager : MonoBehaviour
         {
             twoPlayerButton.image.color = new Color32(255, 150, 150, 255);
         }
+        SetSESound(decisionSound);
+    }
+
+    // BackButtonボタンを押した
+    public void PushBackButton()
+    {
+        operatorUI.SetActive(true);
+        gameModeUI.SetActive(false);
         SetSESound(decisionSound);
     }
 
@@ -821,6 +860,7 @@ public class GameManager : MonoBehaviour
         p2OutColl = false;
         onePlayerButton.image.color = new Color32(255, 255, 255, 255);
         twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
+        backButton.image.color = new Color32(255, 255, 255, 255);
         replayButton.image.color = new Color32(255, 255, 255, 255);
         replayOperateButton.image.color = new Color32(255, 255, 255, 255);
         endButton.image.color = new Color32(255, 255, 255, 255);

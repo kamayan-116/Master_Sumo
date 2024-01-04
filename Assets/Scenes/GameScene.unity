@@ -952,6 +952,7 @@ MonoBehaviour:
   gameModeUI: {fileID: 151651878}
   onePlayerButton: {fileID: 151651877}
   twoPlayerButton: {fileID: 151651876}
+  backButton: {fileID: 2136771126}
   cpuSlider: {fileID: 151651874}
   gyojiText: {fileID: 151651873}
   gameResultUI: {fileID: 151651870}
@@ -1942,5 +1943,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2136771126 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5510757144587449858, guid: 03d94b33f778fb24a8f8a00c2b26dd19, type: 3}
+  m_PrefabInstance: {fileID: 151651869}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
