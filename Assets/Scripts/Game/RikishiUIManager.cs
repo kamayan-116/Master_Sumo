@@ -7,12 +7,16 @@ public class RikishiUIManager : MonoBehaviour
 {
     #region 変数宣言
     [SerializeField] private RikishiManager rikishiManager;  // RikishiManagerプログラム
-    [SerializeField] private Text resultText;  // 結果テキスト
+    [SerializeField] private Image resultImage;  // 結果画像
+    [SerializeField] private Sprite[] resultSprite;  // 結果画像配列
     [SerializeField] private GameObject inGamePanel;  // ゲーム中のUIパネル
+    [SerializeField] private Image playerNameImage;  // ゲーム中の名前画像
+    [SerializeField] private Sprite[] playerNameSprite;  // ゲーム中の名前画像配列
     #region プレイヤーパネル関連
     [SerializeField] private Image playerPanel;  // プレイヤーパネル
     [SerializeField] private Text cpuLevelText;  // 対戦相手のテキスト
-    [SerializeField] private Text matchiResultText;  // 勝敗結果のテキスト
+    [SerializeField] private Text matchiWinText;  // 勝利数のテキスト
+    [SerializeField] private Text matchiLoseText;  // 敗北数のテキスト
     [SerializeField] private Slider powerSlider;  // パワースライダー
     [SerializeField] private Slider speedSlider;  // スピードスライダー
     [SerializeField] private Slider kumiSlider;  // 組みスライダー
@@ -28,13 +32,16 @@ public class RikishiUIManager : MonoBehaviour
     [SerializeField] private Image tachiaiPanel; // 立合いパネルのImage
     [SerializeField] private Text penaltyText; // 立会いのペナルティテキスト
     [SerializeField] private Image tachiaiInputImage; // 立合いの入力に応じた画像
-    [SerializeField] private Sprite[] tachiaiInputSprite; // 立合いの入力に応じた画像配列（0が開始前、1が立会い時）
-    [SerializeField] private Image playImage; // プレイ状態のUI画像
-    [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が四つ、2がまわし、3が押し、4がはたき）
+    [SerializeField] private Image tachiaiSuccessImage; // 立合いの入力成功状況の画像
+    [SerializeField] private Sprite[] tachiaiSuccessSprite; // 立合いの成功入力に応じた画像配列
+    [SerializeField] private Image tachiaiFailureImage; // 立合いの入力失敗状況の画像
+    [SerializeField] private Sprite[] tachiaiFailureSprite; // 立合いの失敗入力に応じた画像配列
     #endregion
     #region 重心関連
     [SerializeField] private Image gravityPanel; // 重心座標パネルのImage
+    [SerializeField] private Sprite[] graInputSprite; // 重心入力に応じた画像配列
     [SerializeField] private Image gravityImage; // 重心座標のUI画像
+    [SerializeField] private Vector3 graImageInitialPos;  // 重心座標のUI画像の初期座標
     private float graUIMoveMagNum;  // 重心UIの移動倍率数値
     [SerializeField] private Image graMoveUpArrow; // 上方向重心移動可能画像
     [SerializeField] private Image graMoveDownArrow; // 下方向重心移動可能画像
@@ -43,14 +50,22 @@ public class RikishiUIManager : MonoBehaviour
     [SerializeField] private Sprite[] graMoveSprite; // 重心移動画像
     #endregion
     #region 操作関連
+    [SerializeField] private Image statePanel;  // 力士状態の全体UIパネル
+    [SerializeField] private Sprite[] stateSprite;  // 力士状態の全体画像配列
     [SerializeField] private Image playStylePanel;  // 技のUIパネル
+    [SerializeField] private Image playImage; // プレイ状態のUI画像
+    [SerializeField] private Sprite[] playSprite; // プレイ状態の画像配列（0が立合い、1が四つ、2がまわし、3が押し、4がはたき）
     [SerializeField] private Text playStyleText;  // 技のテキスト
     [SerializeField] private Image ArrowInputImage; // 方向パッドの入力状態のUI画像
-    [SerializeField] private Text ArrowInputText;  // 重心攻撃状態のテキスト
     [SerializeField] private Sprite[] ArrowInputSprite; // 方向パッドの入力状態の画像配列（0が未入力、1が上入力、2が下入力、3が左入力、4が右入力）
+    [SerializeField] private Image InputImage; // 入力状態のUI画像
+    [SerializeField] private Sprite[] InputSprite; // 入力状態の画像配列（0が未入力、1が上入力、2が下入力、3が左入力、4が右入力）
+    [SerializeField] private Text InputText;  // 重心攻撃状態のテキスト
     [SerializeField] private Image lFCircleImage; // 左足の操作中のUI画像
     [SerializeField] private Image rFCircleImage; // 右足の操作中のUI画像
     [SerializeField] private Image dragPanel;  // 抵抗のUIパネル
+    [SerializeField] private Sprite[] dragSprite; // 抵抗パネルの画像配列
+    [SerializeField] private Image dragBImage;  // 抵抗のBボタン
     [SerializeField] private Slider dragSlider;  // 抵抗値のスライダー
     private float lfCircley;  // 左足のUIのワールドY座標
     private float rfCircley;  // 右足のUIのワールドY座標
@@ -66,6 +81,7 @@ public class RikishiUIManager : MonoBehaviour
     void Start()
     {
         weightInitialNum = weightSlider.value;
+        graImageInitialPos = gravityImage.rectTransform.localPosition;
         lfCircley = lFCircleImage.gameObject.transform.position.y;
         rfCircley = rFCircleImage.gameObject.transform.position.y;
     }
@@ -74,9 +90,9 @@ public class RikishiUIManager : MonoBehaviour
     void Update()
     {
         rikishiManager.SetWeightNum(weightSlider.value);
-        if(tachiaiInputImage.gameObject.activeSelf && GameManager.Instance.gameState == GameManager.GameState.Play)
+        if(tachiaiInputImage.gameObject.activeSelf)
         {
-            SetBlinkTachiai();
+            SetBlink(tachiaiInputImage);
         }
     }
 
@@ -84,7 +100,7 @@ public class RikishiUIManager : MonoBehaviour
     // 重心値のUIの移動値を計算する関数
     public void SetGraUIMoveMagNum(float _graMax)
     {
-        graUIMoveMagNum = 140f / _graMax;
+        graUIMoveMagNum = 114f / _graMax;
     }
 
     // プレイヤー人数に対するUIの配置
@@ -96,30 +112,46 @@ public class RikishiUIManager : MonoBehaviour
                 switch(_playerNum)
                 {
                     case 1:
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(-785f, 480f, 0);
-                        gravityPanel.rectTransform.localPosition = new Vector3(-835f, -415f, 0);
-                        playStylePanel.rectTransform.localPosition = new Vector3(-565f, -395f, 0);
-                        dragPanel.rectTransform.localPosition = new Vector3(-370f, -395f, 0);
-                        ArrowInputImage.rectTransform.localPosition = new Vector3(885f, -390f, 0);
+                        playerNameImage.rectTransform.localPosition = new Vector3(-600f, 450f, 0);
+                        playerNameImage.sprite = playerNameSprite[0];
+                        tachiaiPanel.rectTransform.localPosition = new Vector3(0f, 260f, 0);
+                        statePanel.sprite = stateSprite[0];
+                        statePanel.rectTransform.sizeDelta = new Vector2(1228f, 263f);
+                        gravityPanel.rectTransform.localPosition = new Vector3(-135f, -10f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(127.5f, 0f, 0);
+                        dragPanel.rectTransform.localPosition = new Vector3(302.5f, 0f, 0);
+                        ArrowInputImage.rectTransform.localPosition = new Vector3(475f, -70f, 0);
+                        InputText.rectTransform.localPosition = new Vector3(100f, 160f, 0);
+                        resultImage.rectTransform.localPosition = new Vector3(0, 370f, 0);
                         break;
                 }
                 break;
             case GameManager.GamePlayer.Two:
+                statePanel.rectTransform.sizeDelta = new Vector2(960f, 262f);
+                tachiaiPanel.rectTransform.localPosition = new Vector3(0f, 190f, 0);
                 switch(_playerNum)
                 {
                     case 1:
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(-305f, 480f, 0);
-                        gravityPanel.rectTransform.localPosition = new Vector3(-355f, -415f, 0);
-                        playStylePanel.rectTransform.localPosition = new Vector3(-85f, -395f, 0);
-                        dragPanel.rectTransform.localPosition = new Vector3(110f, -395f, 0);
-                        ArrowInputImage.rectTransform.localPosition = new Vector3(405f, -390f, 0);
+                        playerNameImage.rectTransform.localPosition = new Vector3(-320f, 450f, 0);
+                        playerNameImage.sprite = playerNameSprite[1];
+                        statePanel.sprite = stateSprite[1];
+                        gravityPanel.rectTransform.localPosition = new Vector3(-270f, -10f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(-7.5f, 0f, 0);
+                        dragPanel.rectTransform.localPosition = new Vector3(167.5f, 0f, 0);
+                        ArrowInputImage.rectTransform.localPosition = new Vector3(336f, -70f, 0);
+                        InputText.rectTransform.localPosition = new Vector3(100f, 160f, 0);
+                        resultImage.rectTransform.localPosition = new Vector3(5f, 100f, 0);
                         break;
                     case 2:
-                        tachiaiPanel.rectTransform.localPosition = new Vector3(305f, 480f, 0);
-                        gravityPanel.rectTransform.localPosition = new Vector3(355f, -415f, 0);
-                        playStylePanel.rectTransform.localPosition = new Vector3(85f, -395f, 0);
-                        dragPanel.rectTransform.localPosition = new Vector3(-110f, -395f, 0);
-                        ArrowInputImage.rectTransform.localPosition = new Vector3(-405f, -390f, 0);
+                        playerNameImage.rectTransform.localPosition = new Vector3(320f, 450f, 0);
+                        playerNameImage.sprite = playerNameSprite[2];
+                        statePanel.sprite = stateSprite[2];
+                        gravityPanel.rectTransform.localPosition = new Vector3(270f, -10f, 0);
+                        playStylePanel.rectTransform.localPosition = new Vector3(7.5f, 0f, 0);
+                        dragPanel.rectTransform.localPosition = new Vector3(-167.5f, 0f, 0);
+                        ArrowInputImage.rectTransform.localPosition = new Vector3(-336f, -70f, 0);
+                        InputText.rectTransform.localPosition = new Vector3(-100f, 160f, 0);
+                        resultImage.rectTransform.localPosition = new Vector3(-5f, 100f, 0);
                         break;
                 }
                 break;
@@ -144,14 +176,13 @@ public class RikishiUIManager : MonoBehaviour
     // 体重の数値をテキストに表示する関数
     public void SetWeightText(float _weightNum)
     {
-        weightText.text = "Weight：" + _weightNum.ToString("f0") + "Kg";
+        weightText.text = _weightNum.ToString("f0");
     }
 
     // 決定ボタンを押して体重の入力を行った
     public void SetWeightInput()
     {   
         weightSlider.interactable = false;
-        playerPanel.color = new Color32(255, 255, 255, 200);
         rikishiManager.WeightInput();
     }
     #endregion
@@ -169,10 +200,20 @@ public class RikishiUIManager : MonoBehaviour
         inGamePanel.SetActive(_isActive);
     }
 
-    // 抵抗値パネルの表示状態を管理する関数
+    // 抵抗値パネルの表示を管理する関数
     public void SetDragPanel(bool _isActive)
     {
-        dragPanel.gameObject.SetActive(_isActive);
+        dragSlider.gameObject.SetActive(_isActive);
+        dragBImage.gameObject.SetActive(_isActive);
+        if(_isActive)
+        {
+            SetBlink(dragBImage);
+            dragPanel.sprite = dragSprite[1];
+        }
+        else
+        {
+            dragPanel.sprite = dragSprite[0];
+        }
     }
 
     // 対戦相手レベルのテキストを表示する関数
@@ -192,7 +233,8 @@ public class RikishiUIManager : MonoBehaviour
     // 勝敗結果のテキストを管理する関数
     public void SetMatchResultText(int _winsNum, int _lossesNum)
     {
-        matchiResultText.text = _winsNum + "勝 " + _lossesNum + "敗";
+        matchiWinText.text = _winsNum.ToString();
+        matchiLoseText.text = _lossesNum.ToString();
     }
 
     // 能力値のスライダーを管理する関数
@@ -205,47 +247,48 @@ public class RikishiUIManager : MonoBehaviour
         hatakiSlider.value = _hatakiValue;
     }
 
-    // 立会いのBボタンの画像の表示状態に関する関数
-    public void SetTachiaiBActive(bool _isActive)
-    {   
-        tachiaiInputImage.gameObject.SetActive(_isActive);
-        if(GameManager.Instance.gameState == GameManager.GameState.Play)
-        {
-            tachiaiInputImage.sprite = tachiaiInputSprite[1];
-        }
-        if(tachiaiInputImage.gameObject.activeSelf && GameManager.Instance.gameState == GameManager.GameState.BeforePlay)
-        {
-            StartCoroutine("SetTachiaiDelete");
-        }
-    }
-
-    // 立会いの入力画像をすぐに消させるコルーチン関数
-    private IEnumerator SetTachiaiDelete()
+    // UIの点滅を行う関数
+    private void SetBlink(Image _image)
     {
-        yield return new WaitForSeconds(0.2f);
-        SetTachiaiBActive(false);
-    }
-
-    // 立会いのBボタンの点滅を行う関数
-    private void SetBlinkTachiai()
-    {
-        tachiaiInputImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
+        _image.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
     }
 
     // 立会いの入力を行った
     public void SetTachiaiInput()
+    {
+        if(GameManager.Instance.gameState == GameManager.GameState.Play)
+        {
+            tachiaiSuccessImage.sprite = tachiaiSuccessSprite[1];
+            SetTachiaiBActive(false);
+        }   
+        if(GameManager.Instance.gameState == GameManager.GameState.BeforePlay)
+        {
+            tachiaiFailureImage.sprite = tachiaiFailureSprite[1];
+            StartCoroutine("SetFailureDelete");
+        }
+    }
+
+    // 入力失敗画像をすぐに消すコルーチン関数
+    private IEnumerator SetFailureDelete()
+    {
+        yield return new WaitForSeconds(0.2f);
+        tachiaiFailureImage.sprite = tachiaiFailureSprite[0];
+    }
+
+    // 立会いのBボタンの画像の表示状態に関する関数
+    public void SetTachiaiBActive(bool _isActive)
     {   
-        tachiaiPanel.color = new Color32(0, 0, 0, 200);
+        tachiaiInputImage.gameObject.SetActive(_isActive);
     }
 
     // ペナルティ回数の数値をテキストに表示する関数
     public void SetPenaltyText(int _penaltyNum)
     {
-        penaltyText.text = "✖：" + _penaltyNum + "回";
+        penaltyText.text = _penaltyNum.ToString();
     }
 
-    // ペナルティ回数(立会いパネル)を非表示する関数
-    public void SetPenaltyDisappear(bool _isbool)
+    // 立会いパネルを表示する関数
+    public void SetTachiaiAppear(bool _isbool)
     {
         tachiaiPanel.gameObject.SetActive(_isbool);
     }
@@ -277,7 +320,7 @@ public class RikishiUIManager : MonoBehaviour
     // プレイ中の画像の点滅を行う関数
     public void SetBlinkPlay()
     {
-        playImage.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
+        SetBlink(playImage);
     }
 
     // プレイ中の画像の透明度を戻す関数
@@ -290,19 +333,28 @@ public class RikishiUIManager : MonoBehaviour
     public void SetArrowPatImage(int _operateNum)
     {
         ArrowInputImage.sprite = ArrowInputSprite[_operateNum];
+        InputImage.sprite = InputSprite[_operateNum];
 
-        // 仮：画像が来たら消す
-        if(_operateNum == 1)
+        if(_operateNum == 0)
         {
-            ArrowInputText.text = "攻";
-        }
-        else if(_operateNum == 2)
-        {
-            ArrowInputText.text = "守";
+            InputImage.rectTransform.sizeDelta = new Vector2(254f, 118f);
         }
         else
         {
-            ArrowInputText.text = "";
+            InputImage.rectTransform.sizeDelta = new Vector2(230f, 130f);
+        }
+
+        if(_operateNum == 1)
+        {
+            InputText.text = "攻";
+        }
+        else if(_operateNum == 2)
+        {
+            InputText.text = "守";
+        }
+        else
+        {
+            InputText.text = "";
         }
     }
 
@@ -320,24 +372,10 @@ public class RikishiUIManager : MonoBehaviour
         rFCircleImage.gameObject.transform.position = new Vector3( _rfplace.x, rfCircley, _rfplace.z);
     }
     
-    // 重心パネルの色を変更する関数
-    public void SetGraPanelColor(int _playerNum)
+    // 入力状況に応じた重心パネルの画像を変更する関数
+    public void SetGraInputImage(int _playerNum)
     {
-        switch(_playerNum)
-        {
-            case 0:
-                gravityPanel.color = new Color32(255, 255, 255, 100);
-                break;
-            case 1:
-                gravityPanel.color = new Color32(255, 0, 0, 100);
-                break;
-            case 2:
-                gravityPanel.color = new Color32(0, 0, 255, 100);
-                break;
-            case 3:
-                gravityPanel.color = new Color32(255, 0, 255, 100);
-                break;
-        }
+        gravityPanel.sprite = graInputSprite[_playerNum];
     }
 
     // 重心値のUIを表示する関数
@@ -345,9 +383,9 @@ public class RikishiUIManager : MonoBehaviour
     {
         gravityImage.rectTransform.localPosition = 
             new Vector3(
-                _graLRNum * graUIMoveMagNum,
-                _graFBNum * graUIMoveMagNum,
-                0
+                _graLRNum * graUIMoveMagNum + graImageInitialPos.x,
+                _graFBNum * graUIMoveMagNum + graImageInitialPos.y,
+                graImageInitialPos.z
             );
     }
 
@@ -444,28 +482,26 @@ public class RikishiUIManager : MonoBehaviour
     
     #region ゲーム終了後のUI
     // ゲーム結果の表示
-    public void GameResult(string _result, Color32 _color)
+    public void GameResult(int _result)
     {
-        resultText.gameObject.SetActive(true);
-        resultText.text = _result;
-        resultText.color = _color;
+        resultImage.gameObject.SetActive(true);
+        resultImage.sprite = resultSprite[_result];
     }
 
     // 再度遊ぶ際にUIをResetする関数
     public void SetResetUI()
     {
         inGamePanel.SetActive(false);
-        resultText.gameObject.SetActive(false);
-        playerPanel.color = new Color32(255, 255, 255, 100);
+        resultImage.gameObject.SetActive(false);
         weightSlider.interactable = true;
         weightSlider.value = weightInitialNum;
         SetWeightText(weightSlider.value);
-        tachiaiPanel.color = new Color32(255, 255, 255, 100);
-        tachiaiInputImage.sprite = tachiaiInputSprite[0];
+        SetTachiaiAppear(true);
+        SetPenaltyText(0);
+        tachiaiSuccessImage.sprite = tachiaiSuccessSprite[0];
         gravityPanel.color = new Color32(255, 255, 255, 100);
         SetPlayStyleUI(0);
-        SetPenaltyDisappear(true);
-        SetPenaltyText(0);
+        SetDragPanel(false);
         SetArrowActive(0, false);
         SetArrowActive(1, false);
         SetArrowActive(2, false);

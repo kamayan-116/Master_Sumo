@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     #region 変数宣言
     #region ゲーム状態の変数
     [SerializeField] private int kimariteNum;  // 決まり手ナンバー
-    private float waitTime = 0.3f;  // 各音声間の休止タイム
+    private readonly float waitTime = 0.3f;  // 各音声間の休止タイム
     public enum GameState
     {
         BeforePlay,
@@ -25,35 +25,42 @@ public class GameManager : MonoBehaviour
     };
     public GamePlayer gamePlayer;  // 現在のプレイヤー人数
     public int playerNum = 2;  // プレイヤー画面におけるプレイヤー人数の選択
+    private readonly int playerNumMin = 1; // 人数選択数値の最小値
+    private readonly int playerNumMax = 3; // 人数選択数値の最大値
     #endregion
     #region UIオブジェクトの変数
     [Header("UI")]
     [SerializeField] private GameObject titleUI;  // タイトルのパネルオブジェクト
-    [SerializeField] private Text startBText;  // スタートボタンのテキスト
-    private float blinkingSpeed = 0.2f;  // 点滅スピード
-    private Color32 startColor = new Color32(50, 50, 50, 255);  // ループ開始時の色
-    private Color32 endColor = new Color32(50, 50, 50, 128);  // ループ終了時の色
     [SerializeField] private GameObject operatorUI;  // 操作方法のパネルオブジェクト
     [SerializeField] private GameObject gameModeUI;  // ゲームモードのパネルオブジェクト
     [SerializeField] private Button onePlayerButton;  // OnePlayerModeのボタンUI
+    [SerializeField] private Sprite[] onePlayerSprite; // OnePlayerModeのボタン画像配列
     [SerializeField] private Button twoPlayerButton;  // TwoPlayerModeのボタンUI
+    [SerializeField] private Sprite[] twoPlayerSprite; // TwoPlayerModeのボタン画像配列
     [SerializeField] private Button backButton;  // BackButtonのボタンUI
+    [SerializeField] private Sprite[] backButtonSprite; // BackButtonのボタン画像配列
     [SerializeField] private Slider cpuSlider;  // コンピュータレベルのSliderUI
-    [SerializeField] private Text gyojiText;  // 始まりの掛け声のテキスト
+    [SerializeField] private GameObject gyojiUI;  // 行司のUIオブジェクト
+    [SerializeField] private Image gyojiImage; // 行司のUI画像
+    [SerializeField] private Sprite[] gyojiSprite; // 行司の画像配列
+    [SerializeField] private Image gyojiSoundImage; // 行司のサウンドUI画像
+    [SerializeField] private Sprite[] gyojiSoundSprite; // 行司のサウンド画像配列
+    [SerializeField] private Image playPanel; // プレイ中のメインカメラの画像
     [SerializeField] private GameObject gameResultUI;  // ゲーム結果のパネルオブジェクト
-    [SerializeField] private Text resultText;  // 決まり手のテキスト
     [SerializeField] private Image resultImage; // 決まり手のUI画像
     [SerializeField] private Sprite[] resultSprite; // 決まり手の画像配列
     [SerializeField] private Slider replaySlider;  //  Replayの状態を管理するSliderUI
     [SerializeField] private Button replayButton;  // ReplayButtonのボタンUI
+    [SerializeField] private Sprite[] replaySprite; //  ReplayButtonのボタン画像配列
     [SerializeField] private Button replayOperateButton;  // ReplayOperateButtonのボタンUI
+    [SerializeField] private Sprite[] replayOperateSprite; //  ReplayOperateButtonのボタン画像配列
     [SerializeField] private Button endButton;  // EndButtonのボタンUI
+    [SerializeField] private Sprite[] endSprite; //  EndButtonのボタン画像配列
     #endregion
     #region カメラの参照を取る変数
     [Header("カメラ")]
     [SerializeField] private Camera cameraObj;  // メインカメラのオブジェクト
     [SerializeField] private Vector3 cameraInitialPos;  // メインカメラの初期座標
-    [SerializeField] private Quaternion cameraInitialRot;  // メインカメラの初期角度
 
     [Header("中心座標")]
     [SerializeField] private Vector3 centerGravity;  // 二人のプレイヤーの中心重心座標
@@ -138,7 +145,6 @@ public class GameManager : MonoBehaviour
         SelectPlayerButton(0);
         SetReplayNum(0);
         cameraInitialPos = cameraObj.gameObject.transform.position;
-        cameraInitialRot = cameraObj.gameObject.transform.rotation;
     }
 
     // Update is called once per frame
@@ -149,10 +155,6 @@ public class GameManager : MonoBehaviour
         SetCameraPlace();
         p1Ctrl.SetCpuLevel((int)cpuSlider.value);
         p2Ctrl.SetCpuLevel((int)cpuSlider.value);
-        if(titleUI.gameObject.activeSelf)
-        {
-            SetBlinkButtonText();
-        }
     }
 
     // ゲーム状態の保存
@@ -176,12 +178,6 @@ public class GameManager : MonoBehaviour
         SetSESound(decisionSound);
     }
 
-    // ゲームスタートのボタンテキストの点滅を行う関数
-    private void SetBlinkButtonText()
-    {
-        startBText.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time / blinkingSpeed, 1.0f));
-    }
-
     // PlayStartボタンを押した
     public void PushPlayStart()
     {
@@ -195,7 +191,16 @@ public class GameManager : MonoBehaviour
     // 人数選択画面のボタン選択
     public void SelectPlayerButton(float _playerNum)
     {
-        playerNum += (int)_playerNum;
+        if(playerNumMin < playerNum && _playerNum < 0)
+        {
+            playerNum += (int)_playerNum;
+            SetSESound(cursorMoveSound);
+        }
+        if(playerNum < playerNumMax && 0 < _playerNum)
+        {
+            playerNum += (int)_playerNum;
+            SetSESound(cursorMoveSound);
+        }
         switch(playerNum)
         {
             case 1:
@@ -213,39 +218,41 @@ public class GameManager : MonoBehaviour
     // プレイヤー1人への変更
     private void SelectOnePlayer()
     {
-        onePlayerButton.interactable = true;
-        twoPlayerButton.interactable = false;
-        backButton.interactable = false;
+        onePlayerButton.image.sprite = onePlayerSprite[1];
+        twoPlayerButton.image.sprite = twoPlayerSprite[0];
+        backButton.image.sprite = backButtonSprite[0];
         gamePlayer = GamePlayer.One;
     }
 
     // プレイヤー2人への変更
     private void SelectTwoPlayer()
     {
-        onePlayerButton.interactable = false;
-        twoPlayerButton.interactable = true;
-        backButton.interactable = false;
+        onePlayerButton.image.sprite = onePlayerSprite[0];
+        twoPlayerButton.image.sprite = twoPlayerSprite[1];
+        backButton.image.sprite = backButtonSprite[0];
         gamePlayer = GamePlayer.Two;
     }
 
     // 操作方法画面に戻る
     private void SelectBackButton()
     {
-        onePlayerButton.interactable = false;
-        twoPlayerButton.interactable = false;
-        backButton.interactable = true;
+        onePlayerButton.image.sprite = onePlayerSprite[0];
+        twoPlayerButton.image.sprite = twoPlayerSprite[0];
+        backButton.image.sprite = backButtonSprite[1];
     }
 
     // プレイヤー人数選択を行った
     public void SetPlayerMode()
     {
-        if(onePlayerButton.interactable)
+        if(playerNum == 1)
         {
-            onePlayerButton.image.color = new Color32(255, 150, 150, 255);
+            onePlayerButton.image.sprite = onePlayerSprite[2];
+            twoPlayerButton.image.sprite = twoPlayerSprite[3];
         }
-        if(twoPlayerButton.interactable)
+        else if(playerNum == 2)
         {
-            twoPlayerButton.image.color = new Color32(255, 150, 150, 255);
+            onePlayerButton.image.sprite = onePlayerSprite[3];
+            twoPlayerButton.image.sprite = twoPlayerSprite[2];
         }
         SetSESound(decisionSound);
     }
@@ -292,10 +299,12 @@ public class GameManager : MonoBehaviour
         switch(gamePlayer)
         {
             case GamePlayer.One:
-                cameraObj.rect = new Rect(0.75f, 0.75f, 0.25f, 0.25f);
+                playPanel.rectTransform.localPosition = new Vector3(735f, 395f, 0);
+                cameraObj.rect = new Rect(0.795f, 0.78f, 0.175f, 0.175f);
                 break;
             case GamePlayer.Two:
-                cameraObj.rect = new Rect(0.375f, 0.75f, 0.25f, 0.25f);
+                playPanel.rectTransform.localPosition = new Vector3(0f, 395f, 0);
+                cameraObj.rect = new Rect(0.415f, 0.78f, 0.175f, 0.175f);
                 break;
         }
     }
@@ -316,6 +325,14 @@ public class GameManager : MonoBehaviour
 
         if(p1WeightInput && p2WeightInput)
         {
+            p1UICtrl.SetPlayerPanel(false);
+            p2UICtrl.SetPlayerPanel(false);
+            p1UICtrl.SetInGamePanel(true);
+            p2UICtrl.SetInGamePanel(true);
+            p1Ctrl.SetTachiaiInput(true);
+            p2Ctrl.SetTachiaiInput(true);
+            cameraObj.depth = 2;
+            playPanel.gameObject.SetActive(true);
             StartCoroutine("SoundStart");
         }
     }
@@ -327,18 +344,12 @@ public class GameManager : MonoBehaviour
         SetSESound(broadcastSound);
         float broadcastTime = broadcastSound.length + waitTime;
         yield return new WaitForSeconds(broadcastTime);
-        p1UICtrl.SetPlayerPanel(false);
-        p2UICtrl.SetPlayerPanel(false);
-        p1UICtrl.SetInGamePanel(true);
-        p2UICtrl.SetInGamePanel(true);
-        p1Ctrl.SetTachiaiInput(true);
-        p2Ctrl.SetTachiaiInput(true);
-        gyojiText.gameObject.SetActive(true);
-        gyojiText.text = "はっけよい";
+        gyojiUI.SetActive(true);
         SetSESound(shoutSound);
         float shoutTime = shoutSound.length + waitTime * 2;
         yield return new WaitForSeconds(shoutTime);
-        gyojiText.text = "のこった";
+        gyojiImage.sprite = gyojiSprite[1];
+        gyojiSoundImage.sprite = gyojiSoundSprite[1];
         SetSESound(startSound);
         SetGameState(GameState.Play);
         p1UICtrl.SetTachiaiBActive(true);
@@ -346,7 +357,7 @@ public class GameManager : MonoBehaviour
         float startWaitTime = startSound.length + waitTime;
         yield return new WaitForSeconds(startWaitTime);
         playAudioSource.Play();
-        gyojiText.gameObject.SetActive(false);
+        gyojiUI.SetActive(false);
     }
     #endregion
 
@@ -485,18 +496,18 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SetKimarite(kimariteNum, winnerNum-1));
     }
 
-    // 勝敗結果のテキストの表示
+    // 勝敗結果の表示
     private void SetResultText()
     {
         if(p1Result)
         {
-            p1UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
-            p2UICtrl.GameResult("L o s e !", new Color32(0, 0, 255, 255));
+            p1UICtrl.GameResult(0);
+            p2UICtrl.GameResult(1);
         }
         if(p2Result)
         {
-            p1UICtrl.GameResult("L o s e !", new Color32(0, 0, 255, 255));
-            p2UICtrl.GameResult("W i n !", new Color32(255, 0, 0, 255));
+            p1UICtrl.GameResult(1);
+            p2UICtrl.GameResult(0);
         }
     }
 
@@ -702,48 +713,6 @@ public class GameManager : MonoBehaviour
         SetSESound(announceSound);
         float annWaitTime = announceSound.length + waitTime;
         yield return new WaitForSeconds(annWaitTime);
-        switch(_kimarite)
-        {
-            case 0:
-                resultText.text = "寄り切り";
-                break;
-            case 1:
-                resultText.text = "寄り倒し";
-                break;
-            case 2:
-                resultText.text = "押し出し";
-                break;
-            case 3:
-                resultText.text = "押し倒し";
-                break;
-            case 4:
-                resultText.text = "浴びせ倒し";
-                break;
-            case 5:
-                resultText.text = "すくい投げ";
-                break;
-            case 6:
-                resultText.text = "上手投げ";
-                break;
-            case 7:
-                resultText.text = "引き落とし";
-                break;
-            case 8:
-                resultText.text = "はたき込み";
-                break;
-            case 9:
-                resultText.text = "外掛け";
-                break;
-            case 10:
-                resultText.text = "内掛け";
-                break;
-            case 11:
-                resultText.text = "掛け投げ";
-                break;
-            case 12:
-                resultText.text = "後ろもたれ";
-                break;
-        }
         gameResultUI.SetActive(true);
         SetSESound(kimariteSound[_kimarite]);
         resultImage.sprite = resultSprite[_kimarite];
@@ -775,19 +744,19 @@ public class GameManager : MonoBehaviour
         switch(replaySlider.value)
         {
             case 0:
-                replayButton.interactable = false;
-                replayOperateButton.interactable = false;
-                endButton.interactable = true;
+                replayButton.image.sprite = replaySprite[0];
+                replayOperateButton.image.sprite = replayOperateSprite[0];
+                endButton.image.sprite = endSprite[1];
                 break;
             case 1:
-                replayButton.interactable = false;
-                replayOperateButton.interactable = true;
-                endButton.interactable = false;
+                replayButton.image.sprite = replaySprite[0];
+                replayOperateButton.image.sprite = replayOperateSprite[1];
+                endButton.image.sprite = endSprite[0];
                 break;
             case 2:
-                replayButton.interactable = true;
-                replayOperateButton.interactable = false;
-                endButton.interactable = false;
+                replayButton.image.sprite = replaySprite[1];
+                replayOperateButton.image.sprite = replayOperateSprite[0];
+                endButton.image.sprite = endSprite[0];
                 break;
         }
     }
@@ -821,8 +790,9 @@ public class GameManager : MonoBehaviour
     // 値のリセットを行う関数
     private void SetGameReset()
     {
+        cameraObj.depth = 0;
+        playPanel.gameObject.SetActive(false);
         cpuSlider.interactable = true;
-        resultText.text = "";
         replayButton.gameObject.SetActive(false);
         replayOperateButton.gameObject.SetActive(false);
         endButton.gameObject.SetActive(false);
@@ -858,12 +828,9 @@ public class GameManager : MonoBehaviour
         p2InColl = false;
         p1OutColl = false;
         p2OutColl = false;
-        onePlayerButton.image.color = new Color32(255, 255, 255, 255);
-        twoPlayerButton.image.color = new Color32(255, 255, 255, 255);
-        backButton.image.color = new Color32(255, 255, 255, 255);
-        replayButton.image.color = new Color32(255, 255, 255, 255);
-        replayOperateButton.image.color = new Color32(255, 255, 255, 255);
-        endButton.image.color = new Color32(255, 255, 255, 255);
+        SelectPlayerButton(0);
+        gyojiImage.sprite = gyojiSprite[0];
+        gyojiSoundImage.sprite = gyojiSoundSprite[0];
         StartCoroutine("Reload");
     }
 

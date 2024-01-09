@@ -89,46 +89,43 @@ public class RikishiManager : MonoBehaviour
     #endregion
     #region 座標に関する変数
     [Header("足や座標の情報")]
-    [SerializeField] private Vector3 lf;  // 左足のワールド座標
-    [SerializeField] private Vector3 rf;  // 右足のワールド座標
-    [SerializeField] private Vector2 footDis;  // 左右の足の距離(xが横方向、yが縦方向)
     [SerializeField] private float dohyoLDis;  // 土俵の中心とプレイヤーの左足との距離
     [SerializeField] private float dohyoRDis;  // 土俵の中心とプレイヤーの左足との距離
-    private float dohyoRadius = 4.85f;  // 土俵の半径
+    private readonly float dohyoRadius = 4.85f;  // 土俵の半径
     [SerializeField] private Vector3 nowPos;  // 自身の座標
     [SerializeField] private Vector3 enemyPos;  // 相手の座標
     [SerializeField] private Vector3 target;  // 相手の胸元方向へのベクトル
     [SerializeField] private Vector3 viewPos;  // 視線の空オブジェクトの座標
     [SerializeField] private Vector3 viewDir;  // 視線方向のベクトル
     [SerializeField] private float enemyDis;  // 敵プレイヤーとの距離
-    private float hatakiNotMoveMax = 1.8f;  // はたきで動かずに重心移動する最大距離
-    private float hatakiMax = 1.9f;  // はたきができる最大距離
-    private float attackMax = 1.1f;  // はたき以外の攻撃ができる最大距離
+    private readonly float hatakiNotMoveMax = 1.8f;  // はたきで動かずに重心移動する最大距離
+    private readonly float hatakiMax = 1.9f;  // はたきができる最大距離
+    private readonly float attackMax = 1.1f;  // はたき以外の攻撃ができる最大距離
     #endregion
     #region 立会いに関する変数
     [Header("立会い")]
     [SerializeField] private float startPushTime = 0f;  // 立会いのボタンを押す時間
     [SerializeField] private int penaltyNum = 0;  // 立会いの反則回数
     [SerializeField] private float pushTimeLag = 0f;  // 立会いのボタンを押した時間差
-    private float pushMaxLag = 6f;  // 立会いの最大時間差
+    private readonly float pushMaxLag = 6f;  // 立会いの最大時間差
     [SerializeField] private Vector3 startPos;  // プレイヤーの立会いによる開始座標
-    private float startPosXSlope = 0.6f;  // 立会い開始X座標の傾き
-    private float startPosXIntercept = 0.45f;  // 立会い開始X座標の切片
-    private float tachiaiSpeedMag = 3f;  // 立会いのスピード倍率
+    private readonly float startPosXSlope = 0.6f;  // 立会い開始X座標の傾き
+    private readonly float startPosXIntercept = 0.45f;  // 立会い開始X座標の切片
+    private readonly float tachiaiSpeedMag = 3f;  // 立会いのスピード倍率
     #endregion
     #region 抵抗に関する変数
     [Header("抵抗")]
     [SerializeField] private float dragNum = 0f;  // 倒れる際の抵抗値
-    private float maxDragNum = 20f;  // 倒れる際の抵抗値の最大値
+    private readonly float maxDragNum = 20f;  // 倒れる際の抵抗値の最大値
     [SerializeField] private float maxAngle;  // 倒れている時の最大角度
-    private float angleMagNum = 20f;  // 角度による抵抗値減速係数
+    private readonly float angleMagNum = 20f;  // 角度による抵抗値減速係数
     [SerializeField] private float minusPerSecond;  // 抵抗値の減る秒速値
     #endregion
     #region 体重に関する変数
     [Header("体重")]
     [SerializeField] private float weightNum;  // 体重の数値
-    [SerializeField] private float weightMin = 80f;  // 体重の最小値
-    [SerializeField] private float weightMax = 220f;  // 体重の最大値
+    private readonly float weightMin = 80f;  // 体重の最小値
+    private readonly float weightMax = 220f;  // 体重の最大値
     [SerializeField] private float powerMagNum;  // 体重パワーの倍率
     [SerializeField] private float speedMagNum;  // 移動スピード倍率
     #endregion
@@ -139,21 +136,17 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private float rFFBNum = 0f;  // 右足前後方の値（前方と後方の最大値:5）
     [SerializeField] private float rFLRNum = 0f;  // 右足左右の値（左と右の最大値:5）
     [SerializeField] private int arrowPatNum = 0;  // 方向パッドの値（0が未入力、1が上、2が下、3が左、4が右）
-    private float notMoveMagNum = 0.97f;  // 重心移動のみの入力倍率
-    private float footMax = 5f;  // 足の値の最大値
-    private float clossMax = 2f;  // クロスの時の最大値
+    private readonly float notMoveMagNum = 0.97f;  // 重心移動のみの入力倍率
+    private readonly float footMax = 5f;  // 足の値の最大値
+    private readonly float clossMax = 2f;  // クロスの時の最大値
     #endregion
     #region 移動に関する変数
     [Header("移動倍率数値")]
     [SerializeField] private float moveLRDisMagNum;  // 左右移動距離の倍率数値
     [SerializeField] private float moveFBDisMagNum;  // 前後移動距離の倍率数値
-    float moveFBGraMagNum = 0.009f;  // 重心前後移動の倍率数値
-    private float moveLRGraMagNum = 0.02f;  // 重心左右移動の倍率数値
-    // private float graFBMagSlope;  // 重心前後移動の倍率の傾き
-    // private float graFBMagIntercept;  // 重心前後移動の倍率の切片
-    // private float graLRMagSlope;  // 重心左右移動の倍率の傾き
-    // private float graLRMagIntercept = 0f;  // 重心左右移動の倍率の切片
-    private float moveSpeedMagNum = 5f;  // 移動スピードの倍率数値
+    private readonly float moveFBGraMagNum = 0.009f;  // 重心前後移動の倍率数値
+    private readonly float moveLRGraMagNum = 0.02f;  // 重心左右移動の倍率数値
+    private readonly float moveSpeedMagNum = 5f;  // 移動スピードの倍率数値
     #endregion
     #region 重心に関する変数
     [Header("重心")]
@@ -186,7 +179,7 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private float front1 = 0f;  // プレイヤー１からの前後の重心移動値の合計
     [SerializeField] private float right2 = 0f;  // プレイヤー２からの左右の重心移動値の合計
     [SerializeField] private float front2 = 0f;  // プレイヤー２からの前後の重心移動値の合計
-    private float  inputMin = 0.1f;  // 入力値の最小値
+    private readonly float  inputMin = 0.1f;  // 入力値の最小値
     [SerializeField] private float inputLLR = 0f;  // 左スティックからの左右の重心移動入力値
     [SerializeField] private float inputLFB = 0f;  // 左スティックからの前後の重心移動入力値
     [SerializeField] private float inputMoveLLR = 0f;  // 左足移動時からの左右の重心移動入力値
@@ -200,10 +193,10 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] private float enemyAngleY;  // 相手の全身のY方向角度
     [SerializeField] private float angularDif = 0;  // 相手の方向と自身の向きの角度差
     [SerializeField] private float angDifAbs = 0;  // 相手方向と自身の向きの角度差の絶対値
-    private float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
-    private float spineFBIntercept = 10f;  // 上半身の前後の角度の切片
-    private float spineLRSlope = -3f;  // 上半身の左右の角度の傾き
-    private float spineLRIntercept = 0f;  // 上半身の左右の角度の切片
+    private readonly float spineFBSlope = 3f;  // 上半身の前後の角度の傾き
+    private readonly float spineFBIntercept = 10f;  // 上半身の前後の角度の切片
+    private readonly float spineLRSlope = -3f;  // 上半身の左右の角度の傾き
+    private readonly float spineLRIntercept = 0f;  // 上半身の左右の角度の切片
     private float sXSlope;  // 肩のX軸の角度の傾き
     private float sXIntercept;  // 肩のX軸の角度の切片
     private float sYSlope;  // 肩のY軸の角度の傾き
@@ -263,16 +256,16 @@ public class RikishiManager : MonoBehaviour
     [SerializeField] bool isRotEnd = true;  // 回転終わるか否か
     [SerializeField] bool isEneRotStart = false;  // 敵の周りを回転するか否か
     [SerializeField] bool isEneRotEnd = true;  // 敵の周りの回転終わるか否か
-    private float eneRotStartNum = 6.5f;  // 相手が倒れてきた際に相手の周りを回転する基準重心値
-    private float eneRotEndNum = 2.5f;  // 相手の周りの回転を終える基準重心値
-    private float rotStartDisNum = 0.85f;  // 土俵際の際に相手の周りを回転する基準値
-    private float rotEndDisNum = 0.8f;  // 土俵際の際に相手の周りの回転を終える基準値
-    private float rotStartPerNum = 0.2f;  // 相手が回転した際に自身も回転し始める際の基準値
-    private float rotEndPerNum = 0.02f;  // 自身の回転を終える際の基準値
-    private float graMovePerNum = 0.7f;  // 自身の重心を戻す際の基準値
+    private readonly float eneRotStartNum = 6.5f;  // 相手が倒れてきた際に相手の周りを回転する基準重心値
+    private readonly float eneRotEndNum = 2.5f;  // 相手の周りの回転を終える基準重心値
+    private readonly float rotStartDisNum = 0.85f;  // 土俵際の際に相手の周りを回転する基準値
+    private readonly float rotEndDisNum = 0.8f;  // 土俵際の際に相手の周りの回転を終える基準値
+    private readonly float rotStartPerNum = 0.2f;  // 相手が回転した際に自身も回転し始める際の基準値
+    private readonly float rotEndPerNum = 0.02f;  // 自身の回転を終える際の基準値
+    private readonly float graMovePerNum = 0.7f;  // 自身の重心を戻す際の基準値
     private float cpuPushTime;  // コンピュータの立会いのボタンを押す時間
     [SerializeField] private float stayNowTime = 0f;  // 状態遷移時間の待機計測時間
-    private float changeStayTime = 0.5f;  // 状態遷移時間の待機時間
+    private readonly float changeStayTime = 0.5f;  // 状態遷移時間の待機時間
     private enum CpuState
     {
         StateStay,  // 状態遷移時間の待機状態
@@ -373,7 +366,6 @@ public class RikishiManager : MonoBehaviour
                                     {
                                         inputStick = true;
                                         GameManager.Instance.SelectPlayerButton(1f * Input.GetAxisRaw("LeftHorizontal1"));
-                                        GameManager.Instance.SetSESound(GameManager.Instance.cursorMoveSound);
                                     }
                                 }
                             }
@@ -507,14 +499,14 @@ public class RikishiManager : MonoBehaviour
                                                 if(Input.GetButtonDown("Decide1"))
                                                 {
                                                     SetPenalty();
-                                                    rikishiUI.SetTachiaiBActive(true);
+                                                    rikishiUI.SetTachiaiInput();
                                                 }
                                                 break;
                                             case 2:
                                                 if(Input.GetButtonDown("Decide2"))
                                                 {
                                                     SetPenalty();
-                                                    rikishiUI.SetTachiaiBActive(true);
+                                                    rikishiUI.SetTachiaiInput();
                                                 }
                                                 break;
                                         }
@@ -536,7 +528,6 @@ public class RikishiManager : MonoBehaviour
                             if(Input.GetButtonDown("Decide1"))
                             {
                                 TachiaiInput();
-                                rikishiUI.SetTachiaiInput();
                             }
                             break;
                         case 2:
@@ -549,7 +540,6 @@ public class RikishiManager : MonoBehaviour
                                     if(Input.GetButtonDown("Decide2"))
                                     {
                                         TachiaiInput();
-                                        rikishiUI.SetTachiaiInput();
                                     }
                                     break;
                             }
@@ -757,10 +747,6 @@ public class RikishiManager : MonoBehaviour
                 }
                 break;
         }
-
-        lf = lWholeLObj.transform.position;
-        rf = rWholeLObj.transform.position;
-        footDis = new Vector2(Mathf.Abs(lf.x - rf.x), Mathf.Abs(lf.z - rf.z));
     }
 
     #region ゲーム設定に関するスクリプト
@@ -1333,7 +1319,7 @@ public class RikishiManager : MonoBehaviour
     private void TachiaiInput()
     {
         isStartPush = true;
-        rikishiUI.SetTachiaiBActive(false);
+        rikishiUI.SetTachiaiInput();
         GameManager.Instance.TachiaiStart(playerNum, startPushTime);
     }
 
@@ -1391,7 +1377,7 @@ public class RikishiManager : MonoBehaviour
     {
         isTachiaiEnd = true;
         SetPlayStyle(PlayStyle.Yothu);
-        rikishiUI.SetPenaltyDisappear(false);
+        rikishiUI.SetTachiaiAppear(false);
     }
     #endregion
 
@@ -2225,19 +2211,19 @@ public class RikishiManager : MonoBehaviour
     {
         if(Mathf.Abs(right1) < inputMin && Mathf.Abs(front1) < inputMin && Mathf.Abs(right2) < inputMin && Mathf.Abs(front2) < inputMin)
         {
-            rikishiUI.SetGraPanelColor(0);
+            rikishiUI.SetGraInputImage(0);
         }
         if((Mathf.Abs(right1) > inputMin || Mathf.Abs(front1) > inputMin) && Mathf.Abs(right2) < inputMin && Mathf.Abs(front2) < inputMin)
         {
-            rikishiUI.SetGraPanelColor(1);
+            rikishiUI.SetGraInputImage(1);
         }
         if(Mathf.Abs(right1) < inputMin && Mathf.Abs(front1) < inputMin && (Mathf.Abs(right2) > inputMin || Mathf.Abs(front2) > inputMin))
         {
-            rikishiUI.SetGraPanelColor(2);
+            rikishiUI.SetGraInputImage(2);
         }
         if((Mathf.Abs(right1) > inputMin || Mathf.Abs(front1) > inputMin) && (Mathf.Abs(right2) > inputMin || Mathf.Abs(front2) > inputMin))
         {
-            rikishiUI.SetGraPanelColor(3);
+            rikishiUI.SetGraInputImage(3);
         }
     }
     #endregion
