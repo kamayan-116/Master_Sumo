@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
     public int playerNum = 2;  // プレイヤー画面におけるプレイヤー人数の選択
     private readonly int playerNumMin = 1; // 人数選択数値の最小値
     private readonly int playerNumMax = 3; // 人数選択数値の最大値
+    [SerializeField] private int[] hiScore = new int[3];  // ハイスコアのデータ
+    [SerializeField] private int[] hiContWins = new int[3];  // 連勝記録のデータ
     #endregion
     #region UIオブジェクトの変数
     [Header("UI")]
@@ -56,6 +58,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Sprite[] replayOperateSprite; //  ReplayOperateButtonのボタン画像配列
     [SerializeField] private Button endButton;  // EndButtonのボタンUI
     [SerializeField] private Sprite[] endSprite; //  EndButtonのボタン画像配列
+    [SerializeField] private GameObject gameScoreUI;  // ゲームスコアのパネルオブジェクト
+    [SerializeField] private Image scoreImage; // スコアのUI画像
+    [SerializeField] private Sprite[] scoreSprite; // スコアの画像配列
+    [SerializeField] private Text[] hiScoreText = new Text[3]; //  ハイスコアのテキスト
+    [SerializeField] private Text myScoreText; //  自身のスコアのテキスト
     #endregion
     #region カメラの参照を取る変数
     [Header("カメラ")]
@@ -145,6 +152,12 @@ public class GameManager : MonoBehaviour
         SelectPlayerButton(0);
         SetReplayNum(0);
         cameraInitialPos = cameraObj.gameObject.transform.position;
+        hiScore[0] = PlayerPrefs.GetInt("SCORE1", 0);
+        hiScore[1] = PlayerPrefs.GetInt("SCORE2", 0);
+        hiScore[2] = PlayerPrefs.GetInt("SCORE3", 0);
+        hiContWins[0] = PlayerPrefs.GetInt("WIN1", 0);
+        hiContWins[1] = PlayerPrefs.GetInt("WIN2", 0);
+        hiContWins[2] = PlayerPrefs.GetInt("WIN3", 0);
     }
 
     // Update is called once per frame
@@ -248,11 +261,19 @@ public class GameManager : MonoBehaviour
         {
             onePlayerButton.image.sprite = onePlayerSprite[2];
             twoPlayerButton.image.sprite = twoPlayerSprite[3];
+            scoreImage.sprite = scoreSprite[0];
+            hiScore[0] = PlayerPrefs.GetInt("SCORE1", 0);
+            hiScore[1] = PlayerPrefs.GetInt("SCORE2", 0);
+            hiScore[2] = PlayerPrefs.GetInt("SCORE3", 0);
         }
         else if(playerNum == 2)
         {
             onePlayerButton.image.sprite = onePlayerSprite[3];
             twoPlayerButton.image.sprite = twoPlayerSprite[2];
+            scoreImage.sprite = scoreSprite[1];
+            hiContWins[0] = PlayerPrefs.GetInt("WIN1", 0);
+            hiContWins[1] = PlayerPrefs.GetInt("WIN2", 0);
+            hiContWins[2] = PlayerPrefs.GetInt("WIN3", 0);
         }
         SetSESound(decisionSound);
     }
@@ -713,7 +734,7 @@ public class GameManager : MonoBehaviour
         SetSESound(announceSound);
         float annWaitTime = announceSound.length + waitTime;
         yield return new WaitForSeconds(annWaitTime);
-        gameResultUI.SetActive(true);
+        SetResultPanel(true);
         SetSESound(kimariteSound[_kimarite]);
         resultImage.sprite = resultSprite[_kimarite];
         float winWaitTime = kimariteSound[_kimarite].length + waitTime;
@@ -732,6 +753,75 @@ public class GameManager : MonoBehaviour
         endButton.gameObject.SetActive(true);
         p1Ctrl.SetResetOK();
         p2Ctrl.SetResetOK();
+    }
+
+    // 結果パネルとスコアパネルの表示状態を管理する関数
+    private void SetResultPanel(bool _isActive)
+    {
+        gameResultUI.SetActive(_isActive);
+        gameScoreUI.SetActive(_isActive);
+    }
+
+    // ハイスコアの保存と表示を行う関数
+    public void SaveHighScore(int _scoreNum)
+    {
+        switch(gamePlayer)
+        {
+            case GamePlayer.One:
+                if(_scoreNum >= hiScore[0])
+                {
+                    hiScore[2] = hiScore[1];
+                    hiScore[1] = hiScore[0];
+                    hiScore[0] = _scoreNum;
+                    PlayerPrefs.SetInt("SCORE1", hiScore[0]);
+                    PlayerPrefs.SetInt("SCORE2", hiScore[1]);
+                    PlayerPrefs.SetInt("SCORE3", hiScore[2]);
+                }
+                else if(_scoreNum >= hiScore[1])
+                {
+                    hiScore[2] = hiScore[1];
+                    hiScore[1] = _scoreNum;
+                    PlayerPrefs.SetInt("SCORE2", hiScore[1]);
+                    PlayerPrefs.SetInt("SCORE3", hiScore[2]);
+                }
+                else if(_scoreNum >= hiScore[2])
+                {
+                    hiScore[2] = _scoreNum;
+                    PlayerPrefs.SetInt("SCORE3", hiScore[2]);
+                }
+                hiScoreText[0].text = hiScore[0].ToString();
+                hiScoreText[1].text = hiScore[1].ToString();
+                hiScoreText[2].text = hiScore[2].ToString();
+                break;
+            case GamePlayer.Two:
+                if(_scoreNum >= hiContWins[0])
+                {
+                    hiContWins[2] = hiContWins[1];
+                    hiContWins[1] = hiContWins[0];
+                    hiContWins[0] = _scoreNum;
+                    PlayerPrefs.SetInt("WIN1", hiContWins[0]);
+                    PlayerPrefs.SetInt("WIN2", hiContWins[1]);
+                    PlayerPrefs.SetInt("WIN3", hiContWins[2]);
+                }
+                else if(_scoreNum >= hiContWins[1])
+                {
+                    hiContWins[2] = hiContWins[1];
+                    hiContWins[1] = _scoreNum;
+                    PlayerPrefs.SetInt("WIN2", hiContWins[1]);
+                    PlayerPrefs.SetInt("WIN3", hiContWins[2]);
+                }
+                else if(_scoreNum >= hiContWins[2])
+                {
+                    hiContWins[2] = _scoreNum;
+                    PlayerPrefs.SetInt("WIN3", hiContWins[2]);
+                }
+                hiScoreText[0].text = hiContWins[0].ToString();
+                hiScoreText[1].text = hiContWins[1].ToString();
+                hiScoreText[2].text = hiContWins[2].ToString();
+                break;
+        }
+        PlayerPrefs.Save();
+        myScoreText.text = _scoreNum.ToString();
     }
     #endregion
 
@@ -769,17 +859,17 @@ public class GameManager : MonoBehaviour
             case 0:
                 p1Ctrl.SetAllReset();
                 p2Ctrl.SetAllReset();
-                gameResultUI.SetActive(false);
+                SetResultPanel(false);
                 titleUI.SetActive(true);
                 break;
             case 1:
                 p1Ctrl.SetOperateReset();
                 p2Ctrl.SetOperateReset();
-                gameResultUI.SetActive(false);
+                SetResultPanel(false);
                 operatorUI.SetActive(true);
                 break;
             case 2:
-                gameResultUI.SetActive(false);
+                SetResultPanel(false);
                 gameModeUI.SetActive(true);
                 break;
         }

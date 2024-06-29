@@ -69,16 +69,23 @@ public class RikishiManager : MonoBehaviour
     #region 基本情報に関する変数
     [Header("基本情報")]
     public int playerNum;  // プレイヤーナンバー
+    public int scoreNum = 0;  // スコア計算
+    [SerializeField] private int pContWinsNum = 0;  // プレイヤーの連勝数
     [SerializeField] private int pWinsNum = 0;  // 対人勝利数
     [SerializeField] private int pLossesNum = 0;  // 対人敗北数
+    [SerializeField] private int c1ContWinsNum = 0;  // コンピュータレベル1との連勝数
     [SerializeField] private int c1WinsNum = 0;  // コンピュータレベル1との勝利数
     [SerializeField] private int c1LossesNum = 0;  // コンピュータレベル1との敗北数
+    [SerializeField] private int c2ContWinsNum = 0;  // コンピュータレベル2との連勝数
     [SerializeField] private int c2WinsNum = 0;  // コンピュータレベル2との勝利数
     [SerializeField] private int c2LossesNum = 0;  // コンピュータレベル2との敗北数
+    [SerializeField] private int c3ContWinsNum = 0;  // コンピュータレベル3との連勝数
     [SerializeField] private int c3WinsNum = 0;  // コンピュータレベル3との勝利数
     [SerializeField] private int c3LossesNum = 0;  // コンピュータレベル3との敗北数
+    [SerializeField] private int c4ContWinsNum = 0;  // コンピュータレベル4との連勝数
     [SerializeField] private int c4WinsNum = 0;  // コンピュータレベル4との勝利数
     [SerializeField] private int c4LossesNum = 0;  // コンピュータレベル4との敗北数
+    [SerializeField] private int c5ContWinsNum = 0;  // コンピュータレベル5との連勝数
     [SerializeField] private int c5WinsNum = 0;  // コンピュータレベル5との勝利数
     [SerializeField] private int c5LossesNum = 0;  // コンピュータレベル5との敗北数
     [SerializeField] private float lossyScaleNum;  // プレイヤーオブジェクトの全体の大きさ
@@ -3048,23 +3055,34 @@ public class RikishiManager : MonoBehaviour
                     {
                         case 1:
                             c1WinsNum++;
+                            c1ContWinsNum++;
+                            scoreNum += cpuLevel * c1ContWinsNum;
                             break;
                         case 2:
                             c2WinsNum++;
+                            c2ContWinsNum++;
+                            scoreNum += cpuLevel * c2ContWinsNum;
                             break;
                         case 3:
                             c3WinsNum++;
+                            c3ContWinsNum++;
+                            scoreNum += cpuLevel * c3ContWinsNum;
                             break;
                         case 4:
                             c4WinsNum++;
+                            c4ContWinsNum++;
+                            scoreNum += cpuLevel * c4ContWinsNum;
                             break;
                         case 5:
                             c5WinsNum++;
+                            c5ContWinsNum++;
+                            scoreNum += cpuLevel * c5ContWinsNum;
                             break;
                     }
                     break;
                 case GameManager.GamePlayer.Two:
                     pWinsNum++;
+                    pContWinsNum++;
                     break;
             }
         }
@@ -3073,6 +3091,12 @@ public class RikishiManager : MonoBehaviour
             switch(GameManager.Instance.gamePlayer)
             {
                 case GameManager.GamePlayer.One:
+                    scoreNum = 0;
+                    c1ContWinsNum = 0;
+                    c2ContWinsNum = 0;
+                    c3ContWinsNum = 0;
+                    c4ContWinsNum = 0;
+                    c5ContWinsNum = 0;
                     switch(cpuLevel)
                     {
                         case 1:
@@ -3094,8 +3118,30 @@ public class RikishiManager : MonoBehaviour
                     break;
                 case GameManager.GamePlayer.Two:
                     pLossesNum++;
+                    pContWinsNum = 0;
                     break;
             }
+        }
+        SendScoreNum();
+    }
+
+    // 記録を送る関数
+    private void SendScoreNum()
+    {
+        switch(GameManager.Instance.gamePlayer)
+        {
+            case GameManager.GamePlayer.One:
+                if(playerNum == 1)
+                {
+                    GameManager.Instance.SaveHighScore(scoreNum);
+                }
+                break;
+            case GameManager.GamePlayer.Two:
+                if(isResult)
+                {
+                    GameManager.Instance.SaveHighScore(pContWinsNum);
+                }
+                break;
         }
     }
     #endregion
